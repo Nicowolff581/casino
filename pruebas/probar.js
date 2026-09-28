@@ -9,7 +9,7 @@ const { chromium } = require("playwright");
 const path = require("path");
 
 const RONDAS = +process.env.RONDAS || 4;
-const url = "file://" + path.resolve(__dirname, "..", "index.html");
+const url = process.env.URL || "file://" + path.resolve(__dirname, "..", "publico", "index.html");
 let fallos = 0;
 const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto); if (!cond) fallos++; };
 

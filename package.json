@@ -1,0 +1,13 @@
+{
+  "name": "casino-nico",
+  "private": true,
+  "description": "Casino de práctica con fichas de mentira. Sin dinero real.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node pruebas/probar.js"
+  },
+  "devDependencies": {
+    "wrangler": "4.143.0"
+  }
+}

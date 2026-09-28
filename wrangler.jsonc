@@ -1,0 +1,15 @@
+// Configuración para publicar Casino Nico en Cloudflare (gratis).
+// Cloudflare lee este archivo cada vez que se suben cambios a GitHub.
+{
+  "name": "casino-nico",                       // debe coincidir con el nombre del proyecto en Cloudflare
+  "main": "servidor/worker.js",                // el "crupier" en línea
+  "compatibility_date": "2025-09-01",
+  "assets": {                                  // la página del casino (index.html, css, js…)
+    "directory": "./publico",
+    "binding": "ASSETS"
+  },
+  "durable_objects": {                         // cada sala privada es un "Durable Object"
+    "bindings": [{ "name": "SALAS", "class_name": "Sala" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Sala"] }]
+}
