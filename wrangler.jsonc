@@ -5,7 +5,7 @@
   "main": "servidor/worker.js",                // el "crupier" en línea
   "compatibility_date": "2025-09-01",
   "assets": {                                  // la página del casino (index.html, css, js…)
-    "directory": "./publico",
+    "directory": "./public",
     "binding": "ASSETS"
   },
   "durable_objects": {                         // cada sala privada es un "Durable Object"
