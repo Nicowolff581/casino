@@ -108,7 +108,7 @@ function dibujarPremio(c, x, y, e, H, t){
   c.strokeStyle = mult ? "rgba(255,230,140,.55)" : "rgba(190,230,255,.5)"; c.lineWidth = 2;
   for (let i = 0; i < 10; i++){ c.rotate(Math.PI / 5); c.beginPath(); c.moveTo(r * 0.7, 0); c.lineTo(r * 1.35, 0); c.stroke(); }
   c.restore();
-  c.font = `800 ${H * (mult ? 0.065 : 0.055)}px Figtree, sans-serif`; c.textAlign = "center"; c.textBaseline = "middle";
+  c.font = `800 ${H * (mult ? 0.065 : 0.055)}px Manrope, sans-serif`; c.textAlign = "center"; c.textBaseline = "middle";
   c.fillStyle = "rgba(0,0,0,.35)"; c.fillText(e.t, x + 2, y + 3);
   c.fillStyle = mult ? "#ffe066" : "#ffffff"; c.fillText(e.t, x, y);
 }
@@ -185,13 +185,13 @@ function avDibujar(t){
   av.popups = av.popups.filter(p => t - p.t0 < 1000);
   av.popups.forEach(p => {
     const e = (t - p.t0) / 1000;
-    c.globalAlpha = 1 - e; c.font = `800 ${H * 0.06}px Figtree, sans-serif`; c.textAlign = "center";
+    c.globalAlpha = 1 - e; c.font = `800 ${H * 0.06}px Manrope, sans-serif`; c.textAlign = "center";
     c.fillStyle = p.color; c.fillText(p.txt, px + H * 0.02, py - H * 0.12 - e * H * 0.12);
     c.globalAlpha = 1;
   });
   if (av.estado !== "espera"){
     const txt = fmt(Math.floor(av.bet * av.c)) + "  ×" + av.c.toFixed(2);
-    c.font = `800 ${H * 0.04}px Figtree, sans-serif`; c.textAlign = "center"; c.textBaseline = "middle";
+    c.font = `800 ${H * 0.04}px Manrope, sans-serif`; c.textAlign = "center"; c.textBaseline = "middle";
     const w = c.measureText(txt).width + H * 0.05, yy = py - H * 0.11;
     c.fillStyle = "rgba(8,22,66,.8)"; c.beginPath(); c.roundRect(px - w / 2, yy - H * 0.03, w, H * 0.06, H * 0.03); c.fill();
     c.fillStyle = "#7dff7a"; c.fillText(txt, px, yy + 1);
@@ -202,8 +202,8 @@ function avDibujar(t){
   hud.forEach(([k, val], i) => {
     const x = H * 0.03 + i * (bw + H * 0.02), y = H * 0.03;
     c.fillStyle = "rgba(8,22,66,.65)"; c.beginPath(); c.roundRect(x, y, bw, bh, 8); c.fill();
-    c.fillStyle = "#9fb4e6"; c.font = `700 ${H * 0.028}px Figtree, sans-serif`; c.fillText(k, x + H * 0.02, y + H * 0.04);
-    c.fillStyle = "#fff"; c.font = `800 ${H * 0.042}px Figtree, sans-serif`; c.fillText(val, x + H * 0.02, y + H * 0.088);
+    c.fillStyle = "#9fb4e6"; c.font = `700 ${H * 0.028}px Manrope, sans-serif`; c.fillText(k, x + H * 0.02, y + H * 0.04);
+    c.fillStyle = "#fff"; c.font = `800 ${H * 0.042}px Manrope, sans-serif`; c.fillText(val, x + H * 0.02, y + H * 0.088);
   });
 }
 function avAplicar(e, t){

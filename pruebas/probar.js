@@ -22,6 +22,7 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
   pagina.on("console", m => { if (m.type() === "error") errores.push(m.text()); });
   pagina.on("pageerror", e => errores.push(e.message));
   await pagina.goto(url);
+  await pagina.waitForSelector("#carga.fuera", { state: "attached", timeout: 8000 });
   await pagina.evaluate(() => { localStorage.clear(); setSaldo(1e9); setApuesta(10); });
 
   console.log("\n1) Matemáticas de cada juego");
@@ -96,7 +97,29 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
   ok(m.escalera[0][0] === 4 && m.escalera[0][1] === 5, "Hold'em: A-2-3-4-5 es escalera");
   ok(m.tipos.join() === "win,neutral,parcial,lose", `Solo se celebra si recibes más de lo apostado: ${m.tipos.join(", ")}`);
 
-  console.log(`\n2) Jugando ${RONDAS} rondas de cada juego`);
+  console.log("\n2) Pantalla de inicio, reglas y celebraciones");
+  const tarjetas = await pagina.$$eval("#tarjetas .tarjeta", ts => ts.map(t => [t.dataset.ir, t.querySelector(".rtp").textContent]));
+  ok(tarjetas.length === 8 && tarjetas.every(([, r]) => r && !/NaN|undefined/.test(r)), `8 tarjetas en el inicio: ${tarjetas.map(t => t.join(" ")).join(" · ")}`);
+  for (const [id] of tarjetas){
+    await pagina.click(`nav button[data-juego="inicio"]`);
+    await pagina.click(`#tarjetas [data-ir="${id}"]`);
+    const visible = await pagina.isVisible(`#g-${id}`);
+    await pagina.click(`#g-${id} .btn-reglas`);
+    const r = await pagina.$eval("#reglas-cuerpo", el => ({ filas: el.querySelectorAll("tr").length, texto: el.textContent }));
+    await pagina.click("#reglas-cerrar");
+    ok(visible && r.filas > 2 && !/NaN|undefined|Infinity/.test(r.texto), `Tarjeta y reglas de ${id}: abre el juego, ${r.filas} filas de tabla, sin errores de texto`);
+  }
+  const fiestas = await pagina.evaluate(async () => {
+    const vistos = []; const orig = granPremio; window.granPremio = (...a) => { vistos.push("gran"); return orig(...a); };
+    const casos = [[50, 100], [100, 100], [0, 100], [150, 100], [400, 100], [2000, 100]];
+    const res = casos.map(([p, a]) => { const antes = document.querySelectorAll("#fiesta > *").length; celebrar(p, a); return document.querySelectorAll("#fiesta > *").length - antes + (document.querySelector("#gran-premio").hidden ? 0 : 1000); });
+    cerrarGranPremio(); return res;
+  });
+  ok(fiestas[0] === 0 && fiestas[1] === 0 && fiestas[2] === 0, "Sin celebración al recibir menos, lo mismo o nada");
+  ok(fiestas[3] === 0 && fiestas[4] > 0 && fiestas[4] < 1000 && fiestas[5] >= 1000, "Celebración proporcional: discreta (×1,5), confeti (×4), gran premio (×20)");
+  await pagina.waitForTimeout(300);
+
+  console.log(`\n3) Jugando ${RONDAS} rondas de cada juego`);
   const estado = () => pagina.evaluate(() => saldo);
   const esperarLibre = (cond, max = 30000) => pagina.waitForFunction(cond, null, { timeout: max, polling: 100 });
   async function jugar(juego, idMsg, accion){
@@ -136,7 +159,7 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     }
   });
 
-  console.log("\n3) Consola del navegador");
+  console.log("\n4) Consola del navegador");
   ok(errores.length === 0, errores.length ? "errores:\n    " + errores.join("\n    ") : "sin errores");
 
   if (process.env.CAPTURAS){

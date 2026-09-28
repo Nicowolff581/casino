@@ -180,7 +180,7 @@ $("#th-nueva").onclick = async () => {
   for (let f = 0; f < 4; f++){
     if (f > 0){
       th.mazo.pop();
-      for (let k = 0; k < nuevas[f]; k++) th.board.push(th.mazo.pop());
+      for (let k = 0; k < nuevas[f]; k++){ th.board.push(th.mazo.pop()); sonido.carta(k * 0.1); }
       th.jugadores.forEach(p => { p.apuesta = 0; if (!p.retirado && !p.allin) p.estado = ""; });
       th.apuestaActual = 0;
       pintarTH(false);

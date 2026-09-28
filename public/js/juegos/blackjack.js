@@ -27,6 +27,8 @@ function pintarBJ(ocultar){
   d.innerHTML = ""; p.innerHTML = "";
   bj.d.forEach((c, i) => { const el = cartaEl(c, ocultar && i === 1, i >= vd || (i === 1 && revela)); if (i >= vd && vd === 0) el.style.animationDelay = (i * 2 + 1) * 0.15 + "s"; d.appendChild(el); });
   bj.p.forEach((c, i) => { const el = cartaEl(c, false, i >= vp); if (i >= vp && vp === 0) el.style.animationDelay = i * 0.3 + "s"; p.appendChild(el); });
+  const nuevas = Math.max(0, bj.d.length - vd) + Math.max(0, bj.p.length - vp) + (revela ? 1 : 0);
+  for (let i = 0; i < nuevas; i++) sonido.carta(vd === 0 ? i * 0.15 : i * 0.08);
   bj.vistasD = bj.d.length; bj.vistasP = bj.p.length; bj.ocultaba = ocultar;
   $("#bj-dv").textContent = bj.d.length ? (ocultar ? "" : valorBJ(bj.d)) : "";
   $("#bj-pv").textContent = bj.p.length ? valorBJ(bj.p) : "";

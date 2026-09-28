@@ -34,7 +34,7 @@ $("#ft-jugar").onclick = async () => {
   while (quedan > 4){
     const fr = $$("#ft-monton .frijol:not(.fuera)").sort((a, b) => parseFloat(b.style.left) - parseFloat(a.style.left)).slice(0, 4);
     const y = fr.reduce((s, f) => s + parseFloat(f.style.top), 0) / 4;
-    palo.style.top = (24 + y * 0.52) + "%"; palo.classList.add("activo"); palo.style.transform = "translateX(0)";
+    palo.style.top = (24 + y * 0.52) + "%"; palo.classList.add("activo"); palo.style.transform = "translateX(0)"; sonido.carta();
     await espera(200);
     fr.forEach((f, j) => { f.classList.add("fuera"); f.style.left = (125 + j * 4) + "%"; f.style.opacity = "0"; });
     palo.style.transform = "translateX(60%)";

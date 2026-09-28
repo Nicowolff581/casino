@@ -4,216 +4,299 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Casino Nico</title>
+<meta name="description" content="Casino de práctica con fichas de mentira. Sin dinero real.">
+<meta name="theme-color" content="#0d1a14">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='22' fill='%23132820' stroke='%23d8b25a' stroke-width='3'/%3E%3Cpath d='M17.5 31V17l13 14V17' fill='none' stroke='%23f7f0de' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800&display=swap" rel="stylesheet">
-<meta name="description" content="Casino de práctica con fichas de mentira. Sin dinero real.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/juegos.css">
 </head>
 <body>
+<!-- Iconos dibujados a mano (se usan con <svg><use href="#i-..."/></svg>) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-logo" viewBox="0 0 48 48">
+    <circle cx="24" cy="24" r="21" fill="none" stroke="var(--acento)" stroke-width="3"/>
+    <circle cx="24" cy="24" r="21" fill="none" stroke="var(--acento2)" stroke-width="5" stroke-dasharray="5 11.5" transform="rotate(-12 24 24)"/>
+    <circle cx="24" cy="24" r="15" fill="var(--superficie2)"/>
+    <path d="M17.5 31V17l13 14V17" fill="none" stroke="var(--texto)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-inicio" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7M6 9.5V20h4.5v-5.5h3V20H18V9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-avion" viewBox="0 0 24 24"><path fill="currentColor" d="M22 12c0-.9-.8-1.5-1.8-1.5H15L10 3H7.8l2.6 7.5H5.2L3.4 8H1.8l1.1 4-1.1 4h1.6l1.8-2.5h5.2L7.8 21H10l5-7.5h5.2c1 0 1.8-.6 1.8-1.5z"/></symbol>
+  <symbol id="i-pollo" viewBox="0 0 24 24"><g fill="currentColor"><path d="M9.5 4.2c.6-1.3 2.2-1.5 2.8-.4.9-.9 2.4-.3 2.3 1-.1 1-1 1.5-1.8 1.4l-3.3-.1c-.4-.4-.5-1.2 0-1.9z"/><path d="M13.6 6.4c2.5.4 4 2.6 3.7 5 2.3.1 3.5 1.7 3.2 3.6-.6 3.6-3.9 5.5-8 5.5-4.4 0-7.5-2.4-7.5-5.8 0-2 1-3.4 2.3-4.3-.2-2.3 1.4-4.4 3.9-4.2l2.4.2z"/><path d="M6.1 9.8 3.3 10.9l2.9 1.1z"/><path d="M10 20.3v2.2M14 20.3v2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></g><circle cx="9.3" cy="9.6" r=".95" fill="var(--superficie)"/></symbol>
+  <symbol id="i-plinko" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="12" cy="6" r="1.4"/><circle cx="8.5" cy="10" r="1.4"/><circle cx="15.5" cy="10" r="1.4"/><circle cx="5" cy="14" r="1.4"/><circle cx="12" cy="14" r="1.4"/><circle cx="19" cy="14" r="1.4"/><rect x="2.5" y="18.5" width="4" height="3" rx="1"/><rect x="7.5" y="18.5" width="4" height="3" rx="1"/><rect x="12.5" y="18.5" width="4" height="3" rx="1"/><rect x="17.5" y="18.5" width="4" height="3" rx="1"/></g><circle cx="10.2" cy="2.8" r="2" fill="var(--rojo)"/></symbol>
+  <symbol id="i-slots" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M7.5 13C8.5 8 12 4.5 17.5 3.5M16.5 12c-.3-3-1-5.5-1.8-7.8"/></g><g fill="currentColor"><circle cx="7.5" cy="16.5" r="3.6"/><circle cx="16.5" cy="15.5" r="3.6"/><path d="M17.5 3.5c1.5 1 2.2 2.4 2 3.8-1.6.2-3-.6-3.8-2z"/></g></symbol>
+  <symbol id="i-bj" viewBox="0 0 24 24"><rect x="3" y="5.5" width="11" height="15" rx="2" transform="rotate(-12 8.5 13)" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="9.5" y="3.5" width="11" height="15" rx="2" transform="rotate(8 15 11)" fill="currentColor"/><path d="M15.4 7.6c1.2 1.6 2.9 2.5 2.9 3.9a1.6 1.6 0 0 1-2.5 1.3l.3 1.9h-1.3l.3-1.9a1.6 1.6 0 0 1-2.5-1.3c0-1.4 1.6-2.3 2.8-3.9z" transform="rotate(8 15 11)" fill="var(--superficie)"/></symbol>
+  <symbol id="i-poker" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.5c3.2 4.2 7.5 6.7 7.5 10.4a4.3 4.3 0 0 1-6.6 3.6l.8 5h-3.4l.8-5a4.3 4.3 0 0 1-6.6-3.6c0-3.7 4.3-6.2 7.5-10.4z"/></symbol>
+  <symbol id="i-ruleta" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="6"/><path d="M12 2.5v3.5M12 18v3.5M2.5 12H6M18 12h3.5M5.3 5.3l2.5 2.5M16.2 16.2l2.5 2.5M5.3 18.7l2.5-2.5M16.2 7.8l2.5-2.5"/></g><circle cx="12" cy="12" r="1.8" fill="currentColor"/></symbol>
+  <symbol id="i-fantan" viewBox="0 0 24 24"><path fill="currentColor" d="M3 10.5h18a9 9 0 0 1-18 0z"/><path d="M10 7.5h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><g fill="currentColor"><ellipse cx="4" cy="21" rx="1.6" ry="1.1"/><ellipse cx="8" cy="21.4" rx="1.6" ry="1.1"/><ellipse cx="16" cy="21.4" rx="1.6" ry="1.1"/><ellipse cx="20" cy="21" rx="1.6" ry="1.1"/></g></symbol>
+  <symbol id="i-amigos" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="8.5" cy="8" r="3.3"/><path d="M2 19.5c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6z"/><circle cx="16.8" cy="9" r="2.6" opacity=".75"/><path d="M15.2 13.9c3.5-.6 6.8 1.5 6.8 5.6h-5.5c0-2.3-.5-4.1-1.3-5.6z" opacity=".75"/></g></symbol>
+  <symbol id="i-sonido" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h3.5L12 5v14l-4.5-4H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-mudo" viewBox="0 0 24 24"><path fill="currentColor" d="M4 9h3.5L12 5v14l-4.5-4H4z"/><path d="m15.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-reglas" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4.5" y="3" width="15" height="18" rx="2.5"/><path d="M8.5 8h7M8.5 12h7M8.5 16h4"/></g></symbol>
+  <symbol id="i-cerrar" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-atras" viewBox="0 0 24 24"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- Pantalla de carga -->
+<div class="carga" id="carga" aria-hidden="true">
+  <svg class="carga-logo"><use href="#i-logo"/></svg>
+  <div class="carga-nombre">Casino<span>Nico</span></div>
+  <div class="carga-barra"><i></i></div>
+  <p>Fichas de práctica · sin dinero real</p>
+</div>
+
 <div class="app">
   <aside class="lateral">
-    <div class="logo">Casino<span>Nico</span></div>
-    <nav role="tablist" aria-label="Juegos">
-      <button role="tab" data-juego="avion" aria-selected="false"><span class="ico">✈️</span>Avión</button>
-      <button role="tab" data-juego="pollo" aria-selected="false"><span class="ico">🐔</span>Pollo</button>
-      <button role="tab" data-juego="plinko" aria-selected="false"><span class="ico">🔴</span>Plinko</button>
-      <button role="tab" data-juego="slots" aria-selected="true"><span class="ico">🎰</span>Tragamonedas</button>
-      <button role="tab" data-juego="bj" aria-selected="false"><span class="ico">🃏</span>Blackjack</button>
-      <button role="tab" data-juego="poker" aria-selected="false"><span class="ico">♠️</span>Texas Hold'em</button>
-      <button role="tab" data-juego="ruleta" aria-selected="false"><span class="ico">🎡</span>Ruleta</button>
-      <button role="tab" data-juego="fantan" aria-selected="false"><span class="ico">🀄</span>Fan-Tan</button>
+    <a class="logo" href="#inicio" data-ir="inicio"><svg><use href="#i-logo"/></svg><b>Casino<span>Nico</span></b></a>
+    <nav aria-label="Secciones">
+      <button data-juego="inicio" aria-current="page"><svg class="ico"><use href="#i-inicio"/></svg>Inicio</button>
+      <span class="nav-titulo">Juegos</span>
+      <button data-juego="avion"><svg class="ico"><use href="#i-avion"/></svg>Avión</button>
+      <button data-juego="pollo"><svg class="ico"><use href="#i-pollo"/></svg>Pollo</button>
+      <button data-juego="plinko"><svg class="ico"><use href="#i-plinko"/></svg>Plinko</button>
+      <button data-juego="slots"><svg class="ico"><use href="#i-slots"/></svg>Tragamonedas</button>
+      <button data-juego="bj"><svg class="ico"><use href="#i-bj"/></svg>Blackjack</button>
+      <button data-juego="poker"><svg class="ico"><use href="#i-poker"/></svg>Texas Hold'em</button>
+      <button data-juego="ruleta"><svg class="ico"><use href="#i-ruleta"/></svg>Ruleta</button>
+      <button data-juego="fantan"><svg class="ico"><use href="#i-fantan"/></svg>Fan-Tan</button>
     </nav>
-    <div class="aviso">Juego de práctica: las fichas no valen dinero real.<button id="reiniciar">Empezar de nuevo con 1.000</button></div>
+    <div class="aviso"><b>Solo fichas de práctica.</b> No valen dinero real y no se pueden comprar ni vender.<button id="reiniciar">Empezar de nuevo con 1.000</button></div>
   </aside>
 
   <div class="principal">
     <header class="barra">
-      <div class="logo">Casino<span>Nico</span></div>
-      <div class="saldo" aria-live="polite"><span id="saldo">1.000</span><span class="moneda" aria-hidden="true"></span></div>
-      <button class="btn-azul" id="recargar">Recargar</button>
+      <a class="logo logo-movil" href="#inicio" data-ir="inicio"><svg><use href="#i-logo"/></svg><b>Casino<span>Nico</span></b></a>
+      <div class="saldo" id="saldo-caja" aria-live="polite" aria-label="Saldo"><span class="moneda" aria-hidden="true"></span><span id="saldo">1.000</span></div>
+      <div class="sonido">
+        <button class="btn-icono" id="sonido-btn" aria-label="Sonido" aria-expanded="false" aria-controls="sonido-panel"><svg><use href="#i-sonido"/></svg></button>
+        <div class="sonido-panel" id="sonido-panel" hidden>
+          <label class="interruptor"><input type="checkbox" id="sonido-on" checked><span></span>Sonido</label>
+          <label class="volumen">Volumen <input type="range" id="sonido-vol" min="0" max="100" value="70"></label>
+        </div>
+      </div>
+      <button class="btn btn-chico" id="recargar">Recargar</button>
     </header>
 
-    <main class="juego">
-      <div class="panel-apuesta">
-        <label for="monto">Monto de la apuesta <small id="monto-info">fichas</small></label>
-        <div class="monto">
-          <input id="monto" type="number" inputmode="numeric" min="1" step="1" value="50">
-          <button data-f="0.5" aria-label="Mitad de la apuesta">½</button>
-          <button data-f="2" aria-label="Doblar la apuesta">2×</button>
-        </div>
-        <div class="rapidas">
-          <button data-v="10">10</button><button data-v="50">50</button><button data-v="100">100</button><button data-v="500">500</button>
-        </div>
-        <p class="info">El monto se usa en cada jugada. En Texas Hold'em es la ciega grande.</p>
-      </div>
-      <div class="lienzo">
-
-    <!-- AVIÓN -->
-    <section class="game" id="g-avion">
-      <h2>Avión</h2>
-      <p class="reglas">El avión vuela sobre el mar y recoge premios que suben tu multiplicador (+0.5, ×2…). Los cohetes lo parten a la mitad. Si al final aterriza en el portaaviones, cobras; si cae al agua, pierdes.</p>
-      <div class="historial" id="av-hist" aria-label="Últimos vuelos"></div>
-      <div class="av-cielo"><canvas id="av-canvas" aria-hidden="true"></canvas><div class="av-mult" id="av-mult" aria-live="polite"></div></div>
-      <div class="av-controles">
-        <div class="dificultad" id="av-vel" role="group" aria-label="Velocidad">
-          <button data-k="0" aria-pressed="false" title="Lento">🐢 Lento</button>
-          <button data-k="1" aria-pressed="true" title="Normal">🚶 Normal</button>
-          <button data-k="2" aria-pressed="false" title="Rápido">🐇 Rápido</button>
-          <button data-k="3" aria-pressed="false" title="Turbo">⚡ Turbo</button>
-        </div>
-        <button class="btn" id="av-btn">Despegar</button>
-      </div>
-      <p class="av-nota" id="av-nota"></p>
-      <div class="msg" id="av-msg" aria-live="polite"></div>
-    </section>
-
-    <!-- POLLO -->
-    <section class="game" id="g-pollo">
-      <h2>Pollo</h2>
-      <p class="reglas">Ayuda al pollo a cruzar la carretera carril por carril. Cada carril sube el multiplicador, pero en cualquiera puede pasar un carro. Cobra cuando quieras.</p>
-      <div class="dificultad" id="po-dif" role="group" aria-label="Dificultad">
-        <button data-p="0.1" aria-pressed="false">Fácil</button><button data-p="0.2" aria-pressed="true">Medio</button>
-        <button data-p="0.3" aria-pressed="false">Difícil</button><button data-p="0.45" aria-pressed="false">Extremo</button>
-      </div>
-      <div class="po-escena"><canvas id="po-canvas" aria-hidden="true"></canvas></div>
-      <div class="acciones">
-        <button class="btn" id="po-jugar">Empezar</button>
-        <button class="btn sec" id="po-avanzar" disabled>Avanzar</button>
-        <button class="btn sec" id="po-cobrar" disabled>Cobrar</button>
-      </div>
-      <div class="msg" id="po-msg" aria-live="polite"></div>
-    </section>
-
-    <!-- PLINKO -->
-    <section class="game" id="g-plinko">
-      <h2>Plinko</h2>
-      <p class="reglas">Suelta la bola y mira dónde cae. Los bordes pagan mucho, pero casi nunca llega ahí. Puedes soltar varias bolas seguidas.</p>
-      <div class="dificultad" id="pl-riesgo" role="group" aria-label="Riesgo">
-        <button data-r="bajo" aria-pressed="false">Riesgo bajo</button><button data-r="medio" aria-pressed="true">Riesgo medio</button><button data-r="alto" aria-pressed="false">Riesgo alto</button>
-      </div>
-      <div class="pl-zona"><div class="pl-caja"><canvas id="pl-canvas" aria-hidden="true"></canvas></div><div class="pl-hist" id="pl-hist" aria-label="Últimos resultados"></div></div>
-      <div class="acciones"><button class="btn" id="pl-soltar">Soltar bola</button></div>
-      <div class="msg" id="pl-msg" aria-live="polite"></div>
-    </section>
-
-    <!-- TRAGAMONEDAS -->
-    <section class="game activo" id="g-slots">
-      <h2>Tragamonedas</h2>
-      <p class="reglas">Tres símbolos iguales en la línea roja pagan según la tabla. Dos cerezas devuelven el doble de tu apuesta.</p>
-      <div class="gabinete">
-        <div class="luces" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="marquesina">Frutas de Oro</div>
-        <div class="jackpot">PREMIO MAYOR <b id="s-jack">×100</b></div>
-        <div class="ventana" id="s-ventana">
-          <div class="rodillo"><div class="tira"></div></div>
-          <div class="rodillo"><div class="tira"></div></div>
-          <div class="rodillo"><div class="tira"></div></div>
-          <div class="linea-pago" aria-hidden="true"></div>
-        </div>
-        <div class="luces" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      </div>
-      <div class="acciones"><button class="btn" id="s-girar">Girar</button></div>
-      <div class="msg" id="s-msg" aria-live="polite"></div>
-      <div class="tabla-pagos">
-        <div>💎💎💎 <b>x100</b></div><div>⭐⭐⭐ <b>x50</b></div><div>🔔🔔🔔 <b>x20</b></div>
-        <div>🍇🍇🍇 <b>x10</b></div><div>🍋🍋🍋 <b>x8</b></div><div>🍒🍒🍒 <b>x5</b></div><div>🍒🍒 <b>x2</b></div>
-      </div>
-    </section>
-
-    <!-- BLACKJACK -->
-    <section class="game" id="g-bj">
-      <h2>Blackjack</h2>
-      <p class="reglas">Acércate a 21 sin pasarte. El crupier pide carta hasta llegar a 17. Un blackjack natural paga 3 a 2.</p>
-      <div class="felt felt-bj">
-        <svg class="felt-arco" viewBox="0 0 600 120" aria-hidden="true"><path id="arco-bj" d="M40,20 Q300,130 560,20" fill="none"/><text><textPath href="#arco-bj" startOffset="50%" text-anchor="middle">BLACKJACK PAGA 3 A 2 · EL CRUPIER SE PLANTA EN 17</textPath></text></svg>
-        <div class="lado"><h3>Crupier <b id="bj-dv"></b></h3><div class="fila-cartas" id="bj-d"></div></div>
-        <div class="lado" style="margin-top:70px"><div class="fila-cartas" id="bj-p"></div><h3 style="margin-top:10px">Tú <b id="bj-pv"></b></h3><div id="bj-fichas"></div></div>
-      </div>
-      <div class="acciones">
-        <button class="btn" id="bj-repartir">Repartir</button>
-        <button class="btn sec" id="bj-pedir" disabled>Pedir carta</button>
-        <button class="btn sec" id="bj-plantarse" disabled>Plantarse</button>
-        <button class="btn sec" id="bj-doblar" disabled>Doblar</button>
-      </div>
-      <div class="msg" id="bj-msg" aria-live="polite"></div>
-    </section>
-
-    <!-- TEXAS HOLD'EM -->
-    <section class="game" id="g-poker">
-      <h2>Texas Hold'em</h2>
-      <p class="reglas">Juegas contra Valentina y Mateo. Cada uno recibe dos cartas y en la mesa salen cinco comunitarias en tres rondas. Gana la mejor mano de cinco cartas. El monto de la apuesta es la ciega grande.</p>
-      <div class="felt felt-th">
-      <div class="th-rivales" id="th-rivales"></div>
-      <div class="th-centro">
-        <div class="fila-cartas" id="th-board"></div>
-        <div class="bote">Bote: <b id="th-bote">0</b></div>
-      </div>
-      <div id="th-yo"></div>
-      </div>
-      <div class="acciones">
-        <button class="btn" id="th-nueva">Repartir mano</button>
-        <button class="btn sec" id="th-fold" disabled>Retirarse</button>
-        <button class="btn sec" id="th-call" disabled>Pasar</button>
-        <button class="btn sec" id="th-raise" disabled>Subir</button>
-      </div>
-      <div class="msg" id="th-msg" aria-live="polite"></div>
-    </section>
-
-    <!-- RULETA -->
-    <section class="game" id="g-ruleta">
-      <h2>Ruleta europea</h2>
-      <p class="reglas">Toca un número del paño (paga 35 a 1) o una apuesta exterior (paga 1 a 1). Si sale el cero, las apuestas exteriores pierden.</p>
-      <div class="ruleta-zona">
-        <div class="rueda-caja">
-          <svg id="rueda" viewBox="0 0 300 300" aria-hidden="true"></svg>
-          <div class="bola-orbita" id="ru-orbita"><div class="bola" id="ru-bola"></div></div>
-        </div>
-        <div class="ru-ultimos" id="ru-ult" aria-label="Últimos números"></div>
-      </div>
-      <div class="pano-scroll">
-        <div class="pano">
-          <div class="pano-grid" id="ru-nums"></div>
-          <div class="pano-ext">
-            <span class="vacio"></span>
-            <button class="ext" data-t="b">1 a 18</button><button class="ext" data-t="p">Par</button>
-            <button class="ext" data-t="r" aria-label="Rojo"><span class="rombo" style="background:var(--rojo)"></span></button>
-            <button class="ext" data-t="n" aria-label="Negro"><span class="rombo" style="background:#10141c"></span></button>
-            <button class="ext" data-t="i">Impar</button><button class="ext" data-t="a">19 a 36</button>
+    <main>
+      <!-- INICIO -->
+      <section class="vista vista-inicio activa" id="v-inicio" aria-label="Inicio">
+        <div class="hero">
+          <div class="hero-texto">
+            <span class="sobretitulo">Bienvenido al club</span>
+            <h1>Tu casino de práctica, <em>con probabilidades honestas.</em></h1>
+            <p>Ocho juegos con sus reglas y probabilidades a la vista. Todo con fichas de mentira: aquí se juega por diversión.</p>
+          </div>
+          <div class="amigos">
+            <span class="chip-nuevo"><svg><use href="#i-amigos"/></svg>Muy pronto · En línea</span>
+            <h2>Jugar con amigos</h2>
+            <p>Crea una sala privada de Texas Hold'em, comparte el código y jueguen todos con las mismas fichas de práctica.</p>
+            <div class="avatares" aria-hidden="true"><span>🦊</span><span>🐼</span><span>🦁</span><span>🐸</span><span class="mas">+2</span></div>
+            <button class="btn" disabled>Próximamente</button>
           </div>
         </div>
-      </div>
-      <p class="seleccion" id="ru-sel">Elige dónde apostar.</p>
-      <div class="acciones"><button class="btn" id="ru-girar" disabled>Girar la ruleta</button></div>
-      <div class="msg" id="ru-msg" aria-live="polite"></div>
-    </section>
+        <h2 class="seccion-titulo">Juegos</h2>
+        <div class="tarjetas" id="tarjetas"></div>
+      </section>
 
-    <!-- FAN-TAN -->
-    <section class="game" id="g-fantan">
-      <h2>Fan-Tan</h2>
-      <p class="reglas">Un juego chino antiguo. Toca un lado del tapete para elegir tu número. El crupier tapa un montón de fichas con el cuenco y luego las retira de cuatro en cuatro. Si al final quedan tantas como tu número, ganas 3 a 1 (menos 5% de comisión).</p>
-      <div class="ft-mesa" role="group" aria-label="Tu número">
-        <div class="ft-cuadro" aria-hidden="true"></div>
-        <button class="ft-lado" data-n="1" aria-pressed="false"><span>一<br><small>1</small></span></button>
-        <button class="ft-lado" data-n="2" aria-pressed="false"><span>二<br><small>2</small></span></button>
-        <button class="ft-lado" data-n="3" aria-pressed="false"><span>三<br><small>3</small></span></button>
-        <button class="ft-lado" data-n="4" aria-pressed="false"><span>四<br><small>4</small></span></button>
-        <div class="ft-centro" id="ft-monton"></div>
-        <div class="ft-palo" id="ft-palo" aria-hidden="true"></div>
-        <div class="ft-cuenco arriba" id="ft-cuenco" aria-hidden="true"></div>
-        <div class="ft-grande" id="ft-grande"></div>
-      </div>
-      <div class="acciones"><button class="btn" id="ft-jugar" disabled>Jugar</button></div>
-      <div class="msg" id="ft-msg" aria-live="polite"></div>
-    </section>
-      </div>
+      <!-- ZONA DE JUEGO -->
+      <section class="vista vista-juego" id="v-juego" aria-label="Juego">
+        <div class="panel-apuesta">
+          <button class="volver" data-ir="inicio"><svg><use href="#i-atras"/></svg>Todos los juegos</button>
+          <label for="monto">Monto de la apuesta <small>fichas</small></label>
+          <div class="monto">
+            <input id="monto" type="number" inputmode="numeric" min="1" step="1" value="50">
+            <button data-f="0.5" aria-label="Mitad de la apuesta">½</button>
+            <button data-f="2" aria-label="Doblar la apuesta">2×</button>
+          </div>
+          <div class="rapidas">
+            <button data-v="10">10</button><button data-v="50">50</button><button data-v="100">100</button><button data-v="500">500</button>
+          </div>
+          <p class="info">El monto se usa en cada jugada. En Texas Hold'em es la ciega grande.</p>
+        </div>
+        <div class="lienzo">
+
+      <!-- AVIÓN -->
+      <section class="game" id="g-avion">
+        <h2>Avión</h2>
+        <p class="reglas">El avión vuela sobre el mar y recoge premios que suben tu multiplicador (+0.5, ×2…). Los cohetes lo parten a la mitad. Si al final aterriza en el portaaviones, cobras; si cae al agua, pierdes.</p>
+        <div class="historial" id="av-hist" aria-label="Últimos vuelos"></div>
+        <div class="av-cielo"><canvas id="av-canvas" aria-hidden="true"></canvas><div class="av-mult" id="av-mult" aria-live="polite"></div></div>
+        <div class="av-controles">
+          <div class="dificultad" id="av-vel" role="group" aria-label="Velocidad">
+            <button data-k="0" aria-pressed="false" title="Lento">🐢 Lento</button>
+            <button data-k="1" aria-pressed="true" title="Normal">🚶 Normal</button>
+            <button data-k="2" aria-pressed="false" title="Rápido">🐇 Rápido</button>
+            <button data-k="3" aria-pressed="false" title="Turbo">⚡ Turbo</button>
+          </div>
+          <button class="btn" id="av-btn">Despegar</button>
+        </div>
+        <p class="av-nota" id="av-nota"></p>
+        <div class="msg" id="av-msg" aria-live="polite"></div>
+      </section>
+  
+      <!-- POLLO -->
+      <section class="game" id="g-pollo">
+        <h2>Pollo</h2>
+        <p class="reglas">Ayuda al pollo a cruzar la carretera carril por carril. Cada carril sube el multiplicador, pero en cualquiera puede pasar un carro. Cobra cuando quieras.</p>
+        <div class="dificultad" id="po-dif" role="group" aria-label="Dificultad">
+          <button data-p="0.1" aria-pressed="false">Fácil</button><button data-p="0.2" aria-pressed="true">Medio</button>
+          <button data-p="0.3" aria-pressed="false">Difícil</button><button data-p="0.45" aria-pressed="false">Extremo</button>
+        </div>
+        <div class="po-escena"><canvas id="po-canvas" aria-hidden="true"></canvas></div>
+        <div class="acciones">
+          <button class="btn" id="po-jugar">Empezar</button>
+          <button class="btn sec" id="po-avanzar" disabled>Avanzar</button>
+          <button class="btn sec" id="po-cobrar" disabled>Cobrar</button>
+        </div>
+        <div class="msg" id="po-msg" aria-live="polite"></div>
+      </section>
+  
+      <!-- PLINKO -->
+      <section class="game" id="g-plinko">
+        <h2>Plinko</h2>
+        <p class="reglas">Suelta la bola y mira dónde cae. Los bordes pagan mucho, pero casi nunca llega ahí. Puedes soltar varias bolas seguidas.</p>
+        <div class="dificultad" id="pl-riesgo" role="group" aria-label="Riesgo">
+          <button data-r="bajo" aria-pressed="false">Riesgo bajo</button><button data-r="medio" aria-pressed="true">Riesgo medio</button><button data-r="alto" aria-pressed="false">Riesgo alto</button>
+        </div>
+        <div class="pl-zona"><div class="pl-caja"><canvas id="pl-canvas" aria-hidden="true"></canvas></div><div class="pl-hist" id="pl-hist" aria-label="Últimos resultados"></div></div>
+        <div class="acciones"><button class="btn" id="pl-soltar">Soltar bola</button></div>
+        <div class="msg" id="pl-msg" aria-live="polite"></div>
+      </section>
+  
+      <!-- TRAGAMONEDAS -->
+      <section class="game" id="g-slots">
+        <h2>Tragamonedas</h2>
+        <p class="reglas">Tres símbolos iguales en la línea roja pagan según la tabla. Dos cerezas devuelven el doble de tu apuesta.</p>
+        <div class="gabinete">
+          <div class="luces" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="marquesina">Frutas de Oro</div>
+          <div class="jackpot">PREMIO MAYOR <b id="s-jack">×100</b></div>
+          <div class="ventana" id="s-ventana">
+            <div class="rodillo"><div class="tira"></div></div>
+            <div class="rodillo"><div class="tira"></div></div>
+            <div class="rodillo"><div class="tira"></div></div>
+            <div class="linea-pago" aria-hidden="true"></div>
+          </div>
+          <div class="luces" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="acciones"><button class="btn" id="s-girar">Girar</button></div>
+        <div class="msg" id="s-msg" aria-live="polite"></div>
+        <div class="tabla-pagos">
+          <div>💎💎💎 <b>x100</b></div><div>⭐⭐⭐ <b>x50</b></div><div>🔔🔔🔔 <b>x20</b></div>
+          <div>🍇🍇🍇 <b>x10</b></div><div>🍋🍋🍋 <b>x8</b></div><div>🍒🍒🍒 <b>x5</b></div><div>🍒🍒 <b>x2</b></div>
+        </div>
+      </section>
+  
+      <!-- BLACKJACK -->
+      <section class="game" id="g-bj">
+        <h2>Blackjack</h2>
+        <p class="reglas">Acércate a 21 sin pasarte. El crupier pide carta hasta llegar a 17. Un blackjack natural paga 3 a 2.</p>
+        <div class="felt felt-bj">
+          <svg class="felt-arco" viewBox="0 0 600 120" aria-hidden="true"><path id="arco-bj" d="M40,20 Q300,130 560,20" fill="none"/><text><textPath href="#arco-bj" startOffset="50%" text-anchor="middle">BLACKJACK PAGA 3 A 2 · EL CRUPIER SE PLANTA EN 17</textPath></text></svg>
+          <div class="lado"><h3>Crupier <b id="bj-dv"></b></h3><div class="fila-cartas" id="bj-d"></div></div>
+          <div class="lado" style="margin-top:70px"><div class="fila-cartas" id="bj-p"></div><h3 style="margin-top:10px">Tú <b id="bj-pv"></b></h3><div id="bj-fichas"></div></div>
+        </div>
+        <div class="acciones">
+          <button class="btn" id="bj-repartir">Repartir</button>
+          <button class="btn sec" id="bj-pedir" disabled>Pedir carta</button>
+          <button class="btn sec" id="bj-plantarse" disabled>Plantarse</button>
+          <button class="btn sec" id="bj-doblar" disabled>Doblar</button>
+        </div>
+        <div class="msg" id="bj-msg" aria-live="polite"></div>
+      </section>
+  
+      <!-- TEXAS HOLD'EM -->
+      <section class="game" id="g-poker">
+        <h2>Texas Hold'em</h2>
+        <p class="reglas">Juegas contra Valentina y Mateo. Cada uno recibe dos cartas y en la mesa salen cinco comunitarias en tres rondas. Gana la mejor mano de cinco cartas. El monto de la apuesta es la ciega grande.</p>
+        <div class="felt felt-th">
+        <div class="th-rivales" id="th-rivales"></div>
+        <div class="th-centro">
+          <div class="fila-cartas" id="th-board"></div>
+          <div class="bote">Bote: <b id="th-bote">0</b></div>
+        </div>
+        <div id="th-yo"></div>
+        </div>
+        <div class="acciones">
+          <button class="btn" id="th-nueva">Repartir mano</button>
+          <button class="btn sec" id="th-fold" disabled>Retirarse</button>
+          <button class="btn sec" id="th-call" disabled>Pasar</button>
+          <button class="btn sec" id="th-raise" disabled>Subir</button>
+        </div>
+        <div class="msg" id="th-msg" aria-live="polite"></div>
+      </section>
+  
+      <!-- RULETA -->
+      <section class="game" id="g-ruleta">
+        <h2>Ruleta europea</h2>
+        <p class="reglas">Toca un número del paño (paga 35 a 1) o una apuesta exterior (paga 1 a 1). Si sale el cero, las apuestas exteriores pierden.</p>
+        <div class="ruleta-zona">
+          <div class="rueda-caja">
+            <svg id="rueda" viewBox="0 0 300 300" aria-hidden="true"></svg>
+            <div class="bola-orbita" id="ru-orbita"><div class="bola" id="ru-bola"></div></div>
+          </div>
+          <div class="ru-ultimos" id="ru-ult" aria-label="Últimos números"></div>
+        </div>
+        <div class="pano-scroll">
+          <div class="pano">
+            <div class="pano-grid" id="ru-nums"></div>
+            <div class="pano-ext">
+              <span class="vacio"></span>
+              <button class="ext" data-t="b">1 a 18</button><button class="ext" data-t="p">Par</button>
+              <button class="ext" data-t="r" aria-label="Rojo"><span class="rombo" style="background:var(--rojo)"></span></button>
+              <button class="ext" data-t="n" aria-label="Negro"><span class="rombo" style="background:#10141c"></span></button>
+              <button class="ext" data-t="i">Impar</button><button class="ext" data-t="a">19 a 36</button>
+            </div>
+          </div>
+        </div>
+        <p class="seleccion" id="ru-sel">Elige dónde apostar.</p>
+        <div class="acciones"><button class="btn" id="ru-girar" disabled>Girar la ruleta</button></div>
+        <div class="msg" id="ru-msg" aria-live="polite"></div>
+      </section>
+  
+      <!-- FAN-TAN -->
+      <section class="game" id="g-fantan">
+        <h2>Fan-Tan</h2>
+        <p class="reglas">Un juego chino antiguo. Toca un lado del tapete para elegir tu número. El crupier tapa un montón de fichas con el cuenco y luego las retira de cuatro en cuatro. Si al final quedan tantas como tu número, ganas 3 a 1 (menos 5% de comisión).</p>
+        <div class="ft-mesa" role="group" aria-label="Tu número">
+          <div class="ft-cuadro" aria-hidden="true"></div>
+          <button class="ft-lado" data-n="1" aria-pressed="false"><span>一<br><small>1</small></span></button>
+          <button class="ft-lado" data-n="2" aria-pressed="false"><span>二<br><small>2</small></span></button>
+          <button class="ft-lado" data-n="3" aria-pressed="false"><span>三<br><small>3</small></span></button>
+          <button class="ft-lado" data-n="4" aria-pressed="false"><span>四<br><small>4</small></span></button>
+          <div class="ft-centro" id="ft-monton"></div>
+          <div class="ft-palo" id="ft-palo" aria-hidden="true"></div>
+          <div class="ft-cuenco arriba" id="ft-cuenco" aria-hidden="true"></div>
+          <div class="ft-grande" id="ft-grande"></div>
+        </div>
+        <div class="acciones"><button class="btn" id="ft-jugar" disabled>Jugar</button></div>
+        <div class="msg" id="ft-msg" aria-live="polite"></div>
+      </section>
+        </div>
+      </section>
     </main>
   </div>
 </div>
 
+<!-- Ventana de reglas (se llena desde js/reglas.js) -->
+<dialog class="dialogo" id="reglas-dialogo" aria-labelledby="reglas-titulo">
+  <div class="dialogo-cab"><h2 id="reglas-titulo">Reglas</h2><button class="btn-icono" id="reglas-cerrar" aria-label="Cerrar"><svg><use href="#i-cerrar"/></svg></button></div>
+  <div class="dialogo-cuerpo" id="reglas-cuerpo"></div>
+</dialog>
+
+<!-- Celebraciones (confeti, monedas y «Gran premio») -->
+<div class="capa-fiesta" id="fiesta" aria-hidden="true"></div>
+<div class="gran-premio" id="gran-premio" role="status" hidden>
+  <div class="gp-caja"><span class="gp-titulo" id="gp-titulo">Gran premio</span><b id="gp-monto">0</b><small id="gp-detalle"></small><span class="gp-nota">Toca para continuar</span></div>
+</div>
+<div class="aviso-toast" id="toast" role="status" aria-live="polite"></div>
+
 <!-- Scripts normales (no módulos) para que funcione con doble clic, sin servidor. El orden importa. -->
 <script src="js/nucleo.js"></script>
+<script src="js/sonido.js"></script>
+<script src="js/fiesta.js"></script>
 <script src="js/cartas.js"></script>
 <script src="js/juegos/avion.js"></script>
 <script src="js/juegos/pollo.js"></script>
@@ -223,5 +306,7 @@
 <script src="js/juegos/poker.js"></script>
 <script src="js/juegos/ruleta.js"></script>
 <script src="js/juegos/fantan.js"></script>
+<script src="js/reglas.js"></script>
+<script src="js/interfaz.js"></script>
 </body>
 </html>

@@ -14,7 +14,7 @@ function slotsPremio(final, bet){
 const rodEstado = [0, 1, 2].map(() => [simboloAzar(), simboloAzar(), simboloAzar()]);
 const tiraHTML = sims => sims.map(s => `<div class="sim">${s}</div>`).join("");
 $$(".gabinete .tira").forEach((t, i) => t.innerHTML = tiraHTML(rodEstado[i]));
-function lluviaMonedas(n){
+function slotsMonedas(n){
   const g = $(".gabinete");
   for (let i = 0; i < n; i++){
     const m = document.createElement("span");
@@ -35,17 +35,17 @@ $("#s-girar").onclick = async () => {
     t.style.transition = "none"; t.style.transform = "translateY(0)"; t.innerHTML = tiraHTML(sims);
     void t.offsetHeight;
     const dur = 1.3 + i * 0.45;
-    t.classList.add("gira");
+    t.classList.add("gira"); if (i === 0) sonido.rodillo(dur * 1000 + 900);
     t.style.transition = `transform ${dur}s cubic-bezier(.25,.1,.3,1.06)`;
     t.style.transform = `translateY(${-(sims.length - 3) * alto}px)`;
     setTimeout(() => t.classList.remove("gira"), dur * 700);
     setTimeout(() => {
-      rodEstado[i] = nuevo; t.style.transition = "none"; t.style.transform = "translateY(0)"; t.innerHTML = tiraHTML(nuevo); res();
+      sonido.tope(); rodEstado[i] = nuevo; t.style.transition = "none"; t.style.transform = "translateY(0)"; t.innerHTML = tiraHTML(nuevo); res();
     }, dur * 1000 + 60);
   }));
   await Promise.all(promesas);
   const premio = slotsPremio(final, bet);
-  if (premio){ $("#s-ventana").classList.add("gana"); lluviaMonedas(premio >= bet * 20 ? 40 : premio > bet ? 16 : 6); }
+  if (premio){ $("#s-ventana").classList.add("gana"); slotsMonedas(premio >= bet * 20 ? 40 : premio > bet ? 16 : 6); }
   liquidar("#s-msg", premio, bet, premio >= bet * 20 ? "💰 ¡PREMIO MAYOR! " : "");
   ocupado = false; $("#s-girar").disabled = false;
 };

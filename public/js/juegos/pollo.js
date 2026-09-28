@@ -3,7 +3,9 @@
    El multiplicador del carril i es 0,97 / (1-p)^i: así el pago esperado es siempre el 97 %. */
 const PO_N = 10;
 const po = { activo: false, paso: 0, bet: 0, p: 0.2, muerto: -1 };
-const poMult = i => Math.floor(0.97 / Math.pow(1 - po.p, i) * 100) / 100;
+// Multiplicador del carril i con probabilidad p de choque (se redondea hacia abajo a 2 decimales).
+const poMultCon = (p, i) => Math.floor(0.97 / Math.pow(1 - p, i) * 100) / 100;
+const poMult = i => poMultCon(po.p, i);
 const poCanvas = $("#po-canvas"), poCtx = poCanvas.getContext("2d");
 const COLORES_AUTO = ["#e63946", "#1d9bf0", "#ffb703", "#2a9d8f", "#f4f1de", "#8338ec", "#fb5607", "#adb5bd"];
 const poVis = { carril: 0, desde: 0, t0: 0, cam: 0, carros: [], golpe: false, corriendo: false, last: 0 };
@@ -85,7 +87,7 @@ function poDibujar(t, dt){
     c.strokeStyle = "rgba(0,0,0,.35)"; c.lineWidth = 1.5;
     for (let k = -2; k <= 2; k++){ c.beginPath(); c.moveTo(cx - LW * 0.24, PO.fila * H + k * LW * 0.1); c.lineTo(cx + LW * 0.24, PO.fila * H + k * LW * 0.1); c.stroke(); }
     if (!(i === poVis.carril && !muerte)){
-      c.fillStyle = pasado ? "#7dff7a" : "#fff"; c.font = `800 ${LW * 0.2}px Figtree, sans-serif`;
+      c.fillStyle = pasado ? "#7dff7a" : "#fff"; c.font = `800 ${LW * 0.2}px Manrope, sans-serif`;
       c.fillText(poMult(i).toFixed(2) + "×", cx, PO.fila * H);
     }
     if (pasado){
@@ -109,7 +111,7 @@ function poDibujar(t, dt){
     c.save(); c.translate(X(gx), gy); if (hop < 1) c.rotate(Math.sin(Math.PI * hop) * 0.25); c.scale(-1, 1);
     c.font = `${LW * 0.62}px sans-serif`; c.fillText("🐔", 0, 0); c.restore();
     if (po.paso > 0 && po.muerto < 0){
-      const txt = poMult(po.paso).toFixed(2) + "×"; c.font = `800 ${LW * 0.19}px Figtree, sans-serif`;
+      const txt = poMult(po.paso).toFixed(2) + "×"; c.font = `800 ${LW * 0.19}px Manrope, sans-serif`;
       const w = c.measureText(txt).width + 16;
       c.fillStyle = "#00e701"; c.beginPath(); c.roundRect(X(gx) - w / 2, gy - LW * 0.62, w, LW * 0.26, LW * 0.13); c.fill();
       c.fillStyle = "#05121b"; c.fillText(txt, X(gx), gy - LW * 0.49);
@@ -140,7 +142,7 @@ $("#po-avanzar").onclick = async () => {
     liquidar("#po-msg", 0, po.bet, `¡Lo atropellaron en el carril ${sig}! `);
     return;
   }
-  po.paso = sig;
+  po.paso = sig; sonido.salto();
   await espera(320);
   if (po.paso === PO_N){ poCobrar(); return; }
   msg("#po-msg", `Carril ${po.paso} superado. Multiplicador ${poMult(po.paso).toFixed(2)}×.`);

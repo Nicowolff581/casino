@@ -26,7 +26,7 @@ const ruUlt = [];
     s += arco(112, 136, a0, a1, colorN(n));
     s += arco(96, 112, a0, a1, colorN(n), 'opacity=".75"');
     const [tx, ty] = pt(i * seg, 124);
-    s += `<text x="${tx}" y="${ty}" fill="#fff" font-family="Figtree, sans-serif" font-weight="800" font-size="10.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(${i * seg} ${tx} ${ty})">${n}</text>`;
+    s += `<text x="${tx}" y="${ty}" fill="#fff" font-family="Manrope, sans-serif" font-weight="800" font-size="10.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(${i * seg} ${tx} ${ty})">${n}</text>`;
     const [fx0, fy0] = pt(a0, 96), [fx1, fy1] = pt(a0, 136);
     s += `<line x1="${fx0}" y1="${fy0}" x2="${fx1}" y2="${fy1}" stroke="url(#oro)" stroke-width="1.2"/>`;
   });
@@ -76,6 +76,7 @@ $("#ru-girar").onclick = async () => {
   orb.style.transform = `rotate(${giroBola}deg)`; bola.style.top = "15.3%";
   $("#rueda").style.transition = "transform 5s cubic-bezier(.12,.7,.15,1)";
   $("#rueda").style.transform = `rotate(${giro}deg)`;
+  sonido.giro(4300); setTimeout(() => sonido.tope(), 4350);
   await espera(matchMedia("(prefers-reduced-motion: reduce)").matches ? 100 : 5200);
   ruUlt.unshift(n); ruUlt.splice(8);
   $("#ru-ult").innerHTML = ruUlt.map(x => `<span style="background:${colorN(x)}">${x}</span>`).join("");

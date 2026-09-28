@@ -47,7 +47,7 @@ function plDibujar(ahora){
     c.fillStyle = col; c.beginPath(); c.roundRect(x - w / 2, yc + salto, w, h, 5); c.fill();
     c.fillStyle = gr; c.fill();
     c.fillStyle = "rgba(255,255,255,.35)"; c.fillRect(x - w / 2 + 3, yc + salto + 2, w - 6, 2);
-    c.fillStyle = "#0f212e"; c.font = `800 ${Math.max(9, g.gap * 0.3)}px Figtree, sans-serif`;
+    c.fillStyle = "#0f212e"; c.font = `800 ${Math.max(9, g.gap * 0.3)}px Manrope, sans-serif`;
     c.textAlign = "center"; c.textBaseline = "middle";
     c.fillText(m + (m < 100 ? "×" : ""), x, yc + h / 2 + salto + 1);
   });
@@ -67,7 +67,7 @@ function plLoop(ahora){
     const s = Math.floor((ahora - b.t0) / SEG);
     if (s >= 1 && s <= PL_FILAS && b.ult !== s){
       b.ult = s; const fila = s - 1, k = b.dirs.slice(0, fila).reduce((a, x) => a + x, 0);
-      pl.flash[fila + "-" + (k + 1)] = ahora;
+      pl.flash[fila + "-" + (k + 1)] = ahora; sonido.clavo(fila);
     }
   });
   pl.bolas = pl.bolas.filter(b => {

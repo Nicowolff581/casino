@@ -33,12 +33,31 @@ const SALDO_INICIAL = 1000;
 let saldo = SALDO_INICIAL, apuesta = 50, ocupado = false;
 try { const g = localStorage.getItem("casino-nico-saldo"); if (g !== null && !isNaN(+g)) saldo = +g; } catch (e) {}
 
+// El número del saldo sube o baja con un contador animado; la cifra real cambia al instante.
+const saldoVista = { valor: saldo, anim: 0 };
+function pintarSaldo(v){ $("#saldo").textContent = fmt(Math.round(v)); }
 function setSaldo(v){
+  const antes = saldo;
   saldo = v;
-  $("#saldo").textContent = fmt(saldo);
   try { localStorage.setItem("casino-nico-saldo", saldo); } catch (e) {}
+  const caja = $("#saldo-caja"), dif = v - antes;
+  if (!dif) return;
+  caja.classList.remove("sube", "baja"); void caja.offsetWidth; caja.classList.add(dif > 0 ? "sube" : "baja");
+  if (dif > 0){
+    const f = document.createElement("span"); f.className = "flota mas"; f.textContent = "+" + fmt(dif);
+    caja.appendChild(f); setTimeout(() => f.remove(), 1300);
+  }
+  const desde = saldoVista.valor, t0 = performance.now(), dur = Math.min(900, 250 + Math.abs(dif) / Math.max(1, antes) * 600);
+  cancelAnimationFrame(saldoVista.anim);
+  const paso = t => {
+    const e = Math.min(1, (t - t0) / dur);
+    saldoVista.valor = desde + (saldo - desde) * (1 - Math.pow(1 - e, 3));
+    pintarSaldo(saldoVista.valor);
+    if (e < 1) saldoVista.anim = requestAnimationFrame(paso);
+  };
+  saldoVista.anim = requestAnimationFrame(paso);
 }
-setSaldo(saldo);
+pintarSaldo(saldo);
 
 function msg(id, texto, tipo = "neutral"){ const el = $(id); el.textContent = texto; el.className = "msg " + tipo; }
 
@@ -48,7 +67,7 @@ function apostar(id, cantidad = apuesta){
     msg(id, saldo === 0 ? "Te quedaste sin fichas. Usa «Recargar»." : "No tienes fichas suficientes. Elige una apuesta menor.", "lose");
     return false;
   }
-  setSaldo(saldo - cantidad); return true;
+  setSaldo(saldo - cantidad); sonido.ficha(); return true;
 }
 
 /* Paga y anuncia el resultado de una jugada.
@@ -67,6 +86,10 @@ function liquidar(id, pagado, apostado, extra = ""){
     tipo === "parcial" ? `Recuperas ${fmt(pagado)} de ${fmt(apostado)} fichas.` :
     `Perdiste ${fmt(apostado)} fichas.`;
   msg(id, extra + texto, apostado === 0 ? "neutral" : tipo);
+  // Sonido y celebración según el tamaño del premio (nunca si recibes menos de lo apostado).
+  if (apostado > 0){ if (tipo === "win") celebrar(pagado, apostado); else if (tipo === "lose") sonido.pierde(); }
+  // Aviso para el historial y las estadísticas.
+  document.dispatchEvent(new CustomEvent("jugada", { detail: { juego: juegoActivo, pagado, apostado, tipo } }));
   return tipo;
 }
 
@@ -77,7 +100,7 @@ monto.addEventListener("input", () => { const v = Math.floor(+monto.value); if (
 monto.addEventListener("change", () => setApuesta(+monto.value));
 $$(".monto button").forEach(b => b.onclick = () => setApuesta(apuesta * +b.dataset.f));
 $$(".rapidas button").forEach(b => b.onclick = () => setApuesta(+b.dataset.v));
-$("#reiniciar").onclick = $("#recargar").onclick = () => { if (!ocupado) setSaldo(SALDO_INICIAL); };
+$("#reiniciar").onclick = $("#recargar").onclick = () => { if (!ocupado){ setSaldo(SALDO_INICIAL); sonido.ficha(); } };
 
 /* ── utilidades de interfaz ── */
 // Grupo de botones donde solo uno queda marcado (dificultad, riesgo, número…).
@@ -100,15 +123,31 @@ function ajustarCanvas(canvas, ctx){
   return true;
 }
 
-/* ── registro de juegos y pestañas ── */
+/* ── registro de juegos y navegación ──
+   "inicio" es la pantalla principal; los demás ids son juegos (#g-<id>).
+   La dirección de la página (#ruleta, #bj…) recuerda dónde estás al recargar. */
 const JUEGOS = {};               // id → { alMostrar() } ; cada juego se registra solo
-let juegoActivo = $("nav button[aria-selected='true']").dataset.juego;
+let juegoActivo = "inicio";
 function registrarJuego(id, def){ JUEGOS[id] = def; }
 function mostrarJuego(id){
+  if (id !== "inicio" && !$("#g-" + id)) id = "inicio";
+  const cambiaVista = (juegoActivo === "inicio") !== (id === "inicio");
   juegoActivo = id;
-  $$("nav button").forEach(x => x.setAttribute("aria-selected", x.dataset.juego === id));
+  $$("nav button").forEach(x => x.dataset.juego === id ? x.setAttribute("aria-current", "page") : x.removeAttribute("aria-current"));
+  $("#v-inicio").classList.toggle("activa", id === "inicio");
+  $("#v-juego").classList.toggle("activa", id !== "inicio");
   $$(".game").forEach(g => g.classList.toggle("activo", g.id === "g-" + id));
+  if (cambiaVista || id !== "inicio") scrollTo({ top: 0, behavior: "instant" });
+  try { history.replaceState(null, "", "#" + id); } catch (e) {}
   JUEGOS[id]?.alMostrar?.();
 }
-$$("nav button").forEach(b => b.onclick = () => { if (!ocupado) mostrarJuego(b.dataset.juego); });
+function ir(id){ if (ocupado){ avisar("Termina la jugada en curso antes de cambiar."); return; } sonido.clic(); mostrarJuego(id); }
+$$("nav button").forEach(b => b.onclick = () => ir(b.dataset.juego));
+$$("[data-ir]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); ir(b.dataset.ir); }));
 addEventListener("resize", () => JUEGOS[juegoActivo]?.alMostrar?.());
+
+// Mensaje corto que aparece abajo unos segundos.
+function avisar(texto){
+  const t = $("#toast"); t.textContent = texto; t.classList.add("ver");
+  clearTimeout(avisar.t); avisar.t = setTimeout(() => t.classList.remove("ver"), 2400);
+}
