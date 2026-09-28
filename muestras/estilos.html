@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casino Nico · Estilos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Sora:wght@400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&family=Manrope:wght@500;700;800&family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═════════ Página de muestra: 3 estilos para elegir ═════════
+   Todos usan el mismo contenido; solo cambian colores, letras, formas y efectos.
+   Cada estilo define sus variables en su propia sección (.e1, .e2, .e3). */
+*,*::before,*::after{ box-sizing:border-box; }
+html{ background:#0d0f14; }
+body{ margin:0; font-family:system-ui, sans-serif; color:#eef0f6; background:#0d0f14; }
+button{ font:inherit; cursor:pointer; color:inherit; border:none; }
+.guia{ max-width:1100px; margin:0 auto; padding:28px 16px 8px; }
+.guia h1{ margin:0 0 6px; font-size:clamp(1.4rem, 4vw, 2rem); }
+.guia p{ margin:0; color:#a9afc2; line-height:1.55; max-width:70ch; }
+.saltos{ display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+.saltos a{ color:#eef0f6; text-decoration:none; background:#1b1f2b; padding:9px 14px; border-radius:999px; font-weight:700; font-size:.9rem; }
+.saltos a:hover{ background:#262c3d; }
+
+.estilo{ padding:36px 16px 44px; }
+.cabecera{ max-width:1100px; margin:0 auto 18px; }
+.cabecera .num{ display:inline-block; font-weight:800; font-size:.8rem; letter-spacing:.12em; text-transform:uppercase; padding:5px 10px; border-radius:999px; background:var(--acento); color:var(--sobre-acento); }
+.cabecera h2{ margin:10px 0 6px; font-family:var(--f-titulo); font-size:clamp(1.5rem, 4.5vw, 2.3rem); color:var(--texto); }
+.cabecera p{ margin:0; color:var(--suave); line-height:1.55; max-width:68ch; font-family:var(--f-texto); }
+
+/* ── maqueta de la app (misma estructura en los 3 estilos) ── */
+.app{ max-width:1100px; margin:0 auto; background:var(--fondo); color:var(--texto); font-family:var(--f-texto); border-radius:var(--radio-grande); overflow:hidden; position:relative;
+  box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 0 0 1px var(--linea); isolation:isolate; }
+.app::before{ content:""; position:absolute; inset:0; z-index:-1; background:var(--ambiente); pointer-events:none; }
+.barra{ display:flex; align-items:center; gap:12px; padding:14px 18px; border-bottom:1px solid var(--linea); background:var(--barra); backdrop-filter:blur(8px); }
+.logo{ display:flex; align-items:center; gap:10px; margin-right:auto; }
+.logo svg{ width:40px; height:40px; flex:none; filter:var(--logo-brillo); }
+.logo b{ font-family:var(--f-titulo); font-size:1.25rem; letter-spacing:var(--titulo-esp); line-height:1; }
+.logo b span{ color:var(--acento); }
+.saldo{ display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:999px; background:var(--superficie); box-shadow:inset 0 0 0 1px var(--linea); font-weight:800; font-variant-numeric:tabular-nums; position:relative; }
+.saldo .moneda{ width:18px; height:18px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff6c9 0 18%, var(--oro) 45%, #a8760a 100%); box-shadow:0 0 0 2px rgba(0,0,0,.25); }
+.saldo.sube{ animation:latido .5s ease-out; }
+@keyframes latido{ 40%{ transform:scale(1.08); box-shadow:inset 0 0 0 1px var(--linea), 0 0 24px var(--gana); } }
+.flota{ position:absolute; right:10px; top:100%; font-weight:800; color:var(--gana); pointer-events:none; animation:flota 1.1s ease-out forwards; }
+@keyframes flota{ from{ transform:translateY(0); opacity:1; } to{ transform:translateY(-34px); opacity:0; } }
+
+.btn{ font-weight:800; padding:12px 20px; border-radius:var(--radio-boton); background:var(--boton); color:var(--sobre-acento); box-shadow:var(--boton-sombra);
+  transition:transform .12s, filter .15s, box-shadow .15s; font-family:var(--f-boton); letter-spacing:var(--boton-esp); }
+.btn:hover{ filter:brightness(1.08); transform:translateY(-1px); }
+.btn:active{ transform:translateY(2px) scale(.98); box-shadow:var(--boton-sombra-press); }
+.btn.sec{ background:var(--superficie2); color:var(--texto); box-shadow:inset 0 0 0 1px var(--linea); }
+.btn.chico{ padding:9px 14px; font-size:.9rem; }
+
+.cuerpo{ padding:22px 18px 26px; display:grid; gap:18px; }
+.destacado{ position:relative; overflow:hidden; border-radius:var(--radio); padding:24px; background:var(--destacado); box-shadow:inset 0 0 0 1px var(--linea), var(--sombra-tarjeta);
+  display:grid; grid-template-columns:1.3fr 1fr; gap:18px; align-items:center; }
+.destacado .chip-nuevo{ display:inline-block; font-size:.72rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--acento2); margin-bottom:8px; }
+.destacado h3{ margin:0 0 8px; font-family:var(--f-titulo); font-size:clamp(1.35rem, 3.6vw, 2rem); line-height:1.1; letter-spacing:var(--titulo-esp); }
+.destacado p{ margin:0 0 16px; color:var(--suave); line-height:1.5; }
+.destacado .acciones{ display:flex; gap:8px; flex-wrap:wrap; }
+.avatares{ display:flex; justify-content:center; }
+.avatar{ width:62px; height:62px; border-radius:50%; display:grid; place-items:center; font-size:1.8rem; margin-left:-12px; background:var(--superficie2);
+  box-shadow:0 0 0 3px var(--fondo), 0 8px 18px rgba(0,0,0,.35); animation:flotar 3.2s ease-in-out infinite; }
+.avatar:nth-child(2){ animation-delay:.4s; } .avatar:nth-child(3){ animation-delay:.8s; } .avatar:nth-child(4){ animation-delay:1.2s; }
+.avatar.mas{ font-size:1rem; font-weight:800; background:var(--acento); color:var(--sobre-acento); }
+@keyframes flotar{ 50%{ transform:translateY(-6px); } }
+
+.juegos{ display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; }
+.tarjeta{ position:relative; overflow:hidden; border-radius:var(--radio); padding:16px; min-height:150px; display:flex; flex-direction:column; justify-content:flex-end; gap:4px; text-align:left;
+  background:var(--tarjeta); box-shadow:inset 0 0 0 1px var(--linea), var(--sombra-tarjeta); transition:transform .2s cubic-bezier(.2,.8,.3,1.2), box-shadow .2s; }
+.tarjeta:hover{ transform:translateY(-5px) rotate(-.4deg); box-shadow:inset 0 0 0 1px var(--acento), var(--sombra-hover); }
+.tarjeta svg{ position:absolute; right:12px; top:12px; width:54px; height:54px; color:var(--icono); filter:var(--icono-brillo); transition:transform .3s; }
+.tarjeta:hover svg{ transform:scale(1.12) rotate(-8deg); }
+.tarjeta b{ font-family:var(--f-titulo); font-size:1.05rem; letter-spacing:var(--titulo-esp); }
+.tarjeta small{ color:var(--suave); }
+.tarjeta .rtp{ position:absolute; left:14px; top:14px; font-size:.7rem; font-weight:800; padding:3px 8px; border-radius:999px; background:var(--superficie2); color:var(--suave); }
+
+.mesa-zona{ display:grid; grid-template-columns:1.4fr 1fr; gap:18px; align-items:stretch; }
+.mesa{ position:relative; border-radius:var(--radio-mesa); padding:26px 18px 22px; min-height:230px; background:var(--pano); box-shadow:var(--pano-borde);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; perspective:900px; overflow:hidden; }
+.mesa::before{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%, var(--luz-mesa), transparent 65%); pointer-events:none; }
+.mesa .leyenda{ font-family:var(--f-titulo); font-size:.72rem; letter-spacing:.2em; text-transform:uppercase; color:var(--leyenda); position:relative; }
+.fila{ display:flex; gap:10px; position:relative; }
+.carta{ width:70px; height:100px; position:relative; transform-style:preserve-3d; }
+.carta .cara, .carta .dorso{ position:absolute; inset:0; border-radius:9px; backface-visibility:hidden; }
+.carta .cara{ background:linear-gradient(160deg, #fff, #f1ede3); color:#1b1f2a; font-family:Georgia, serif; font-weight:700; box-shadow:0 8px 18px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0,0,0,.08); }
+.carta .cara.roja{ color:#d0133a; }
+.carta .cara i{ position:absolute; top:6px; left:8px; font-style:normal; line-height:.95; text-align:center; font-size:1rem; }
+.carta .cara em{ position:absolute; inset:0; display:grid; place-items:center; font-style:normal; font-size:2.2rem; }
+.carta .dorso{ transform:rotateY(180deg); background:var(--dorso); box-shadow:0 8px 18px rgba(0,0,0,.4), inset 0 0 0 4px #fff; }
+.carta.reparte{ animation:reparte .75s cubic-bezier(.2,.8,.25,1.1) both; }
+.carta.reparte:nth-child(2){ animation-delay:.18s; } .carta.reparte:nth-child(3){ animation-delay:.36s; }
+@keyframes reparte{ 0%{ transform:translate(180px,-120px) rotate(25deg) rotateY(180deg); opacity:0; } 35%{ opacity:1; } 60%{ transform:translate(0,0) rotate(0) rotateY(180deg); } 100%{ transform:none; } }
+.fichas{ display:flex; gap:6px; position:relative; }
+.ficha{ width:38px; height:38px; border-radius:50%; display:grid; place-items:center; font-size:.68rem; font-weight:900; color:#fff; position:relative;
+  background:repeating-conic-gradient(var(--c) 0 22.5deg, #fff 22.5deg 30deg, var(--c) 30deg 45deg);
+  box-shadow:inset 0 0 0 5px var(--c), inset 0 0 0 7px rgba(255,255,255,.8), 0 4px 0 rgba(0,0,0,.35), 0 8px 14px rgba(0,0,0,.4); }
+.ficha.vuela{ animation:vuela .55s cubic-bezier(.3,.7,.3,1.2) both; }
+.ficha.vuela:nth-child(2){ animation-delay:.08s; } .ficha.vuela:nth-child(3){ animation-delay:.16s; }
+.ficha::before{ content:""; position:absolute; inset:9px; border-radius:50%; background:var(--c); box-shadow:0 0 0 1px rgba(255,255,255,.5); }
+.ficha span{ position:relative; }
+@keyframes vuela{ from{ transform:translateY(90px) scale(1.25); opacity:0; } }
+.panel{ border-radius:var(--radio); padding:18px; background:var(--superficie); box-shadow:inset 0 0 0 1px var(--linea); display:flex; flex-direction:column; gap:12px; }
+.panel h4{ margin:0; font-family:var(--f-titulo); letter-spacing:var(--titulo-esp); }
+.panel .fila-btn{ display:flex; gap:8px; flex-wrap:wrap; }
+.panel .nota{ margin:0; color:var(--suave); font-size:.88rem; line-height:1.5; }
+.resultado{ font-weight:800; color:var(--gana); min-height:1.4em; }
+.confeti{ position:absolute; width:8px; height:12px; top:40%; left:50%; pointer-events:none; border-radius:2px; animation:confeti 1.2s ease-out forwards; }
+@keyframes confeti{ to{ transform:translate(var(--dx), var(--dy)) rotate(var(--r)); opacity:0; } }
+
+/* ═════ Estilo 1 · Neón nocturno ═════ */
+.e1{ --f-titulo:"Unbounded", system-ui, sans-serif; --f-texto:"Sora", system-ui, sans-serif; --f-boton:"Sora", system-ui, sans-serif;
+  --fondo:#0b0716; --superficie:#171030; --superficie2:#221847; --linea:rgba(190,170,255,.14); --barra:rgba(11,7,22,.7);
+  --texto:#f5f2ff; --suave:#a9a0cf; --acento:#ff3d9a; --acento2:#27e1ff; --sobre-acento:#12061f; --gana:#3dffa8; --oro:#ffd166;
+  --radio:16px; --radio-grande:22px; --radio-boton:12px; --radio-mesa:120px / 90px; --titulo-esp:-.01em; --boton-esp:.01em;
+  --boton:linear-gradient(135deg, #ff3d9a, #b44dff); --boton-sombra:0 0 0 1px rgba(255,255,255,.12) inset, 0 8px 24px rgba(255,61,154,.45); --boton-sombra-press:0 0 12px rgba(255,61,154,.5);
+  --ambiente:radial-gradient(60% 50% at 10% 0%, rgba(255,61,154,.22), transparent 70%), radial-gradient(50% 45% at 100% 30%, rgba(39,225,255,.16), transparent 70%);
+  --destacado:linear-gradient(120deg, rgba(255,61,154,.2), rgba(39,225,255,.12)), #150e2c;
+  --tarjeta:linear-gradient(160deg, #1d1440, #120c26); --sombra-tarjeta:0 10px 30px rgba(0,0,0,.35); --sombra-hover:0 0 28px rgba(255,61,154,.35), 0 16px 40px rgba(0,0,0,.5);
+  --icono:#27e1ff; --icono-brillo:drop-shadow(0 0 8px rgba(39,225,255,.8)); --logo-brillo:drop-shadow(0 0 10px rgba(255,61,154,.7));
+  --pano:radial-gradient(ellipse at 50% 40%, #2a1f72, #150f3d 70%, #0c0826); --pano-borde:inset 0 0 0 2px rgba(39,225,255,.55), 0 0 30px rgba(39,225,255,.25), inset 0 0 60px rgba(0,0,0,.6);
+  --luz-mesa:rgba(39,225,255,.18); --leyenda:rgba(39,225,255,.7); --dorso:repeating-linear-gradient(45deg, #ff3d9a 0 6px, #7a1fb8 6px 12px);
+  background:#07040f; }
+.e1 .tarjeta b, .e1 .destacado h3{ text-shadow:0 0 18px rgba(255,61,154,.35); }
+
+/* ═════ Estilo 2 · Club clásico (terciopelo y oro) ═════ */
+.e2{ --f-titulo:"Playfair Display", Georgia, serif; --f-texto:"Manrope", system-ui, sans-serif; --f-boton:"Manrope", system-ui, sans-serif;
+  --fondo:#0d1a14; --superficie:#132820; --superficie2:#1b362b; --linea:rgba(216,178,90,.22); --barra:rgba(9,20,15,.85);
+  --texto:#f7f0de; --suave:#bfb69c; --acento:#d8b25a; --acento2:#e7c77c; --sobre-acento:#1d1406; --gana:#9fe3a8; --oro:#e0b64f;
+  --radio:10px; --radio-grande:14px; --radio-boton:6px; --radio-mesa:200px / 120px; --titulo-esp:.01em; --boton-esp:.06em;
+  --boton:linear-gradient(180deg, #f1d48a, #c7983c 55%, #a97a25); --boton-sombra:inset 0 1px 0 rgba(255,255,255,.55), 0 6px 16px rgba(0,0,0,.4); --boton-sombra-press:inset 0 2px 4px rgba(0,0,0,.3);
+  --ambiente:radial-gradient(70% 55% at 50% -10%, rgba(216,178,90,.14), transparent 70%);
+  --destacado:linear-gradient(135deg, #5c1422, #3a0c16 60%, #2a0910);
+  --tarjeta:linear-gradient(180deg, #16301f, #0f2118); --sombra-tarjeta:0 8px 22px rgba(0,0,0,.35); --sombra-hover:0 14px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(216,178,90,.6);
+  --icono:#d8b25a; --icono-brillo:drop-shadow(0 2px 2px rgba(0,0,0,.5)); --logo-brillo:drop-shadow(0 2px 3px rgba(0,0,0,.5));
+  --pano:radial-gradient(ellipse at 50% 35%, #1f7a4d, #11573a 55%, #0a3a26); --pano-borde:inset 0 0 0 2px rgba(231,199,124,.55), inset 0 0 0 6px rgba(0,0,0,.25), inset 0 0 70px rgba(0,0,0,.55), 0 0 0 10px #3a2413, 0 0 0 12px #8a6232, 0 18px 34px rgba(0,0,0,.5);
+  --luz-mesa:rgba(255,236,190,.2); --leyenda:rgba(231,199,124,.75); --dorso:repeating-linear-gradient(45deg, #8e1f2f 0 5px, #5c1422 5px 10px);
+  background:#08120d; }
+.e2 .btn{ text-transform:uppercase; font-size:.85rem; }
+.e2 .btn.sec{ background:transparent; color:var(--acento2); box-shadow:inset 0 0 0 1px var(--acento); }
+.e2 .destacado{ box-shadow:inset 0 0 0 1px rgba(231,199,124,.5), inset 0 0 0 5px rgba(0,0,0,.2), inset 0 0 0 6px rgba(231,199,124,.3), var(--sombra-tarjeta); }
+.e2 .destacado h3, .e2 .cabecera h2{ font-style:italic; }
+.e2 .tarjeta::after{ content:""; position:absolute; inset:6px; border:1px solid rgba(216,178,90,.2); border-radius:6px; pointer-events:none; }
+
+/* ═════ Estilo 3 · Arcade atardecer (divertido y colorido) ═════ */
+.e3{ --f-titulo:"Fredoka", system-ui, sans-serif; --f-texto:"Nunito", system-ui, sans-serif; --f-boton:"Fredoka", system-ui, sans-serif;
+  --fondo:#151a3d; --superficie:#1f2656; --superficie2:#2a3270; --linea:rgba(255,255,255,.1); --barra:#1a2050;
+  --texto:#ffffff; --suave:#bcc3f0; --acento:#ff6b4a; --acento2:#ffb627; --sobre-acento:#2a0f05; --gana:#2ee6a6; --oro:#ffc93c;
+  --radio:22px; --radio-grande:28px; --radio-boton:16px; --radio-mesa:40px; --titulo-esp:0; --boton-esp:.02em;
+  --boton:linear-gradient(180deg, #ff8a5c, #ff5a3c); --boton-sombra:0 5px 0 #b53a1f, 0 10px 18px rgba(0,0,0,.35); --boton-sombra-press:0 1px 0 #b53a1f;
+  --ambiente:radial-gradient(80% 60% at 50% 110%, rgba(255,107,74,.28), transparent 70%), radial-gradient(40% 40% at 90% 0%, rgba(46,211,183,.18), transparent 70%);
+  --destacado:linear-gradient(120deg, #ff6b4a, #ffb627);
+  --tarjeta:#222a60; --sombra-tarjeta:0 6px 0 rgba(0,0,0,.25); --sombra-hover:0 10px 0 rgba(0,0,0,.25), 0 18px 30px rgba(0,0,0,.35);
+  --icono:#ffb627; --icono-brillo:none; --logo-brillo:none;
+  --pano:radial-gradient(ellipse at 50% 30%, #1db39d, #108673 60%, #0a5f53); --pano-borde:inset 0 0 0 4px rgba(255,255,255,.18), 0 8px 0 #06443b, 0 18px 30px rgba(0,0,0,.35);
+  --luz-mesa:rgba(255,255,255,.2); --leyenda:rgba(255,255,255,.75); --dorso:repeating-linear-gradient(45deg, #ff6b4a 0 7px, #ffb627 7px 14px);
+  background:#0e1230; }
+.e3 .destacado{ color:#2a0f05; }
+.e3 .destacado p, .e3 .destacado .chip-nuevo{ color:rgba(42,15,5,.8); }
+.e3 .destacado .btn{ background:#151a3d; color:#fff; box-shadow:0 5px 0 #070918, 0 10px 18px rgba(0,0,0,.3); }
+.e3 .destacado .btn.sec{ background:rgba(255,255,255,.35); color:#2a0f05; box-shadow:0 5px 0 rgba(0,0,0,.15); }
+.e3 .btn.sec{ box-shadow:0 5px 0 #141a45; }
+.e3 .tarjeta:nth-child(1){ background:linear-gradient(160deg, #6c4bff, #3d2bb3); } .e3 .tarjeta:nth-child(2){ background:linear-gradient(160deg, #ff4f7b, #b8244d); }
+.e3 .tarjeta:nth-child(3){ background:linear-gradient(160deg, #19c3a4, #0d7f6c); } .e3 .tarjeta:nth-child(4){ background:linear-gradient(160deg, #ff9f1c, #d06a00); }
+.e3 .tarjeta svg{ color:#fff; } .e3 .tarjeta small, .e3 .tarjeta .rtp{ color:rgba(255,255,255,.85); } .e3 .tarjeta .rtp{ background:rgba(0,0,0,.2); }
+.e3 .tarjeta:hover{ transform:translateY(-6px) rotate(-1.5deg); }
+
+/* ── celular ── */
+@media (max-width:820px){
+  .destacado, .mesa-zona{ grid-template-columns:1fr; }
+  .avatares{ justify-content:flex-start; padding-left:12px; }
+  .juegos{ grid-template-columns:repeat(2, 1fr); }
+}
+@media (max-width:460px){
+  .barra{ flex-wrap:wrap; } .logo b{ font-size:1.05rem; } .btn.recargar{ display:none; }
+  .carta{ width:60px; height:86px; }
+}
+@media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="guia">
+  <h1>Casino Nico · Elige tu estilo</h1>
+  <p>Las tres muestras tienen el mismo contenido: logo, saldo, la tarjeta de «Jugar con amigos», tarjetas de juegos y una mesa. Toca <b>Repartir</b> para ver las cartas volar y voltearse, y <b>Simular premio</b> para ver el saldo subir. Pasa el mouse (o el dedo) por las tarjetas. Después responde en el chat con 1, 2 o 3 (o una mezcla, por ejemplo «colores del 2 con botones del 3»).</p>
+  <nav class="saltos"><a href="#e1">1 · Neón nocturno</a><a href="#e2">2 · Club clásico</a><a href="#e3">3 · Arcade atardecer</a></nav>
+</div>
+
+<section class="estilo e1" id="e1" data-estilo>
+  <div class="cabecera"><span class="num">Estilo 1</span><h2>Neón nocturno</h2>
+    <p>Moderno y llamativo, como una ciudad de noche: fondo violeta casi negro, luces fucsia y turquesa que brillan, letras anchas y geométricas. Es el que más «llama la atención».</p></div>
+</section>
+<section class="estilo e2" id="e2" data-estilo>
+  <div class="cabecera"><span class="num">Estilo 2</span><h2>Club clásico</h2>
+    <p>Elegante y cálido, como un club privado: verde terciopelo, oro y borgoña, títulos con letra de revista y bordes finos dorados. Se siente premium y tranquilo.</p></div>
+</section>
+<section class="estilo e3" id="e3" data-estilo>
+  <div class="cabecera"><span class="num">Estilo 3</span><h2>Arcade atardecer</h2>
+    <p>Divertido y juvenil, como un videojuego: colores de atardecer (coral, naranja, turquesa), formas redondas y botones «de verdad» que se hunden al tocarlos. El más alegre para jugar con amigos.</p></div>
+</section>
+
+<template id="maqueta">
+  <div class="app">
+    <header class="barra">
+      <div class="logo">
+        <!-- Logo propio: una ficha con muescas y una «N» dibujada con una sola línea -->
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <circle cx="24" cy="24" r="21" fill="none" stroke="var(--acento)" stroke-width="3"/>
+          <circle cx="24" cy="24" r="21" fill="none" stroke="var(--acento2)" stroke-width="5" stroke-dasharray="5 11.5" transform="rotate(-12 24 24)"/>
+          <circle cx="24" cy="24" r="15" fill="var(--superficie2)"/>
+          <path d="M17.5 31V17l13 14V17" fill="none" stroke="var(--texto)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <b>Casino<span>Nico</span></b>
+      </div>
+      <div class="saldo"><span class="moneda"></span><span class="valor">1.000</span></div>
+      <button class="btn chico recargar">Recargar</button>
+    </header>
+    <div class="cuerpo">
+      <div class="destacado">
+        <div>
+          <span class="chip-nuevo">Nuevo · En línea</span>
+          <h3>Jugar con amigos</h3>
+          <p>Crea una sala privada de Texas Hold'em, comparte el código y jueguen todos con las mismas fichas de práctica.</p>
+          <div class="acciones"><button class="btn">Crear sala</button><button class="btn sec">Tengo un código</button></div>
+        </div>
+        <div class="avatares" aria-hidden="true"><span class="avatar">🦊</span><span class="avatar">🐼</span><span class="avatar">🦁</span><span class="avatar mas">+3</span></div>
+      </div>
+      <div class="juegos">
+        <button class="tarjeta"><span class="rtp">97 %</span>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5c3.2 4.2 7.5 6.7 7.5 10.4a4.3 4.3 0 0 1-6.6 3.6l.8 5h-3.4l.8-5a4.3 4.3 0 0 1-6.6-3.6c0-3.7 4.3-6.2 7.5-10.4z"/></svg>
+          <b>Texas Hold'em</b><small>Contra 2 rivales</small></button>
+        <button class="tarjeta"><span class="rtp">97,3 %</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M12 2.5v3.5M12 18v3.5M2.5 12H6M18 12h3.5M5.3 5.3l2.5 2.5M16.2 16.2l2.5 2.5M5.3 18.7l2.5-2.5M16.2 7.8l2.5-2.5"/></svg>
+          <b>Ruleta</b><small>Europea, un cero</small></button>
+        <button class="tarjeta"><span class="rtp">79 %</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="7.5" cy="16.5" r="3.6" fill="currentColor"/><circle cx="16.5" cy="15.5" r="3.6" fill="currentColor"/><path d="M7.5 13C8.5 8 12 4.5 17.5 3.5M16.5 12c-.3-3-1-5.5-1.8-7.8"/><path d="M17.5 3.5c1.5 1 2.2 2.4 2 3.8-1.6.2-3-.6-3.8-2" fill="currentColor"/></svg>
+          <b>Tragamonedas</b><small>Frutas de oro</small></button>
+        <button class="tarjeta"><span class="rtp">97 %</span>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-.9-.8-1.5-1.8-1.5H15L10 3H7.8l2.6 7.5H5.2L3.4 8H1.8l1.1 4-1.1 4h1.6l1.8-2.5h5.2L7.8 21H10l5-7.5h5.2c1 0 1.8-.6 1.8-1.5z"/></svg>
+          <b>Avión</b><small>Aterriza y cobra</small></button>
+      </div>
+      <div class="mesa-zona">
+        <div class="mesa">
+          <span class="leyenda">Blackjack paga 3 a 2</span>
+          <div class="fila cartas"></div>
+          <div class="fichas"></div>
+        </div>
+        <div class="panel">
+          <h4>Botones y saldo</h4>
+          <div class="fila-btn"><button class="btn repartir">Repartir</button><button class="btn sec premio">Simular premio</button></div>
+          <div class="resultado" aria-live="polite"></div>
+          <p class="nota">Así se verían los botones principales y secundarios, el saldo subiendo con un contador y una pequeña celebración.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+/* Inserta la misma maqueta en los 3 estilos y le da vida a los botones de prueba. */
+const maqueta = document.getElementById("maqueta");
+const CARTAS = [["A", "♠", false], ["K", "♥", true], ["7", "♦", true]];
+const COLORES_FICHA = ["#c8102e", "#1b5fd1", "#1a1a1a"];
+function repartir(app){
+  const fila = app.querySelector(".cartas"), fichas = app.querySelector(".fichas");
+  fila.innerHTML = CARTAS.slice(0, 2).map(([v, p, r]) =>
+    `<div class="carta reparte"><div class="cara${r ? " roja" : ""}"><i>${v}<br>${p}</i><em>${p}</em></div><div class="dorso"></div></div>`).join("");
+  fichas.innerHTML = COLORES_FICHA.map((c, i) => `<span class="ficha vuela" style="--c:${c}"><span>${[25, 50, 100][i]}</span></span>`).join("");
+}
+function premio(app){
+  const saldo = app.querySelector(".saldo"), valor = saldo.querySelector(".valor"), res = app.querySelector(".resultado");
+  const desde = parseInt(valor.textContent.replace(/\D/g, ""), 10), hasta = desde + 250, t0 = performance.now();
+  (function paso(t){
+    const e = Math.min(1, (t - t0) / 900), v = Math.round(desde + (hasta - desde) * (1 - Math.pow(1 - e, 3)));
+    valor.textContent = v.toLocaleString("es-CO");
+    if (e < 1) requestAnimationFrame(paso);
+  })(t0);
+  saldo.classList.remove("sube"); void saldo.offsetWidth; saldo.classList.add("sube");
+  const f = document.createElement("span"); f.className = "flota"; f.textContent = "+250"; saldo.appendChild(f); setTimeout(() => f.remove(), 1200);
+  res.textContent = "¡Ganaste 250 fichas!";
+  const mesa = app.querySelector(".mesa");
+  for (let i = 0; i < 26; i++){
+    const c = document.createElement("span"); c.className = "confeti";
+    const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 90;
+    c.style.cssText = `--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d - 30}px;--r:${Math.random() * 720}deg;background:${["var(--acento)", "var(--acento2)", "var(--oro)", "var(--gana)"][i % 4]}`;
+    mesa.appendChild(c); setTimeout(() => c.remove(), 1300);
+  }
+}
+document.querySelectorAll("[data-estilo]").forEach(sec => {
+  sec.appendChild(maqueta.content.cloneNode(true));
+  const app = sec.querySelector(".app");
+  repartir(app);
+  app.querySelector(".repartir").onclick = () => repartir(app);
+  app.querySelector(".premio").onclick = () => premio(app);
+});
+</script>
+</body>
+</html>
