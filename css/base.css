@@ -1,0 +1,101 @@
+/* ═════════ Casino Nico · estilos base: colores, estructura, botones ═════════ */
+:root{
+  --bg:#0f212e; --panel:#1a2c38; --panel2:#213743; --line:#2f4553; --hover:#2a4150;
+  --text:#ffffff; --muted:#b1bad3; --verde:#00e701; --verde2:#1fff20; --azul:#1475e1; --azul2:#1a86ff;
+  --rojo:#e9113c; --negro:#071824; --win:#00e701; --lose:#ff4e6a; --parcial:#f3b35b; --oro:#ffc800;
+  --font:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#0f212e; --panel:#1a2c38; } }
+:root[data-theme="dark"]{ --bg:#0f212e; --panel:#1a2c38; }
+
+:root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+*,*::before,*::after{ box-sizing:inherit; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); background:var(--bg); height:100%; }
+body{ margin:0; height:100%; font-family:var(--font); color:var(--text); background:var(--bg); font-weight:500; }
+button{ font:inherit; cursor:pointer; color:inherit; }
+button:focus-visible, input:focus-visible{ outline:2px solid var(--azul2); outline-offset:2px; }
+
+/* ── estructura ── */
+.app{ display:grid; grid-template-columns:240px 1fr; min-height:100%; }
+.lateral{ background:var(--panel); padding:18px 12px; display:flex; flex-direction:column; gap:18px; box-shadow:2px 0 12px rgba(0,0,0,.25); position:sticky; top:0; height:100vh; }
+.logo{ font-weight:800; font-size:1.5rem; letter-spacing:-.02em; padding:4px 10px; font-style:italic; }
+.logo span{ color:var(--verde); }
+.lateral nav{ display:flex; flex-direction:column; gap:4px; }
+.lateral nav button{ display:flex; align-items:center; gap:12px; background:transparent; border:none; border-radius:8px;
+  padding:11px 12px; color:var(--muted); font-weight:700; text-align:left; white-space:nowrap; transition:background .15s, color .15s; }
+.lateral nav button:hover{ background:var(--panel2); color:var(--text); }
+.lateral nav button[aria-selected="true"]{ background:var(--line); color:var(--text); }
+.ico{ width:22px; text-align:center; font-size:1.05rem; }
+.aviso{ margin-top:auto; color:var(--muted); font-size:.8rem; line-height:1.5; padding:12px; background:var(--bg); border-radius:8px; }
+.aviso button{ display:block; text-align:left; margin-top:6px; background:none; border:none; padding:0; color:var(--azul2); font-weight:700; }
+
+.principal{ display:flex; flex-direction:column; min-width:0; }
+.barra{ height:64px; display:flex; align-items:center; justify-content:center; background:var(--panel); box-shadow:0 4px 10px rgba(0,0,0,.2); position:sticky; top:0; z-index:5; padding:0 16px; }
+.barra .logo{ display:none; position:absolute; left:16px; }
+.saldo{ display:flex; align-items:center; gap:8px; background:var(--bg); border-radius:8px 0 0 8px; padding:0 14px; height:44px; font-weight:800; font-variant-numeric:tabular-nums; }
+.saldo .moneda{ width:18px; height:18px; border-radius:50%; background:var(--oro); box-shadow:inset 0 0 0 3px #e0a800; flex:none; }
+.btn-azul{ height:44px; border:none; border-radius:0 8px 8px 0; background:var(--azul); color:#fff; font-weight:700; padding:0 18px; }
+.btn-azul:hover{ background:var(--azul2); }
+
+.juego{ display:grid; grid-template-columns:300px 1fr; margin:24px; border-radius:10px; overflow:hidden; background:var(--panel2); max-width:1200px; width:calc(100% - 48px); align-self:center; }
+.panel-apuesta{ background:var(--panel2); padding:16px; display:flex; flex-direction:column; gap:10px; }
+.panel-apuesta label{ color:var(--muted); font-weight:700; font-size:.85rem; display:flex; justify-content:space-between; }
+.monto{ display:flex; background:var(--line); border-radius:6px; padding:2px; gap:2px; }
+.monto input{ flex:1; min-width:0; background:var(--bg); border:2px solid var(--line); border-radius:4px; color:var(--text);
+  font:inherit; font-weight:700; padding:9px 10px; font-variant-numeric:tabular-nums; }
+.monto input:hover{ border-color:#557086; }
+.monto button{ background:transparent; border:none; width:46px; font-weight:800; color:var(--text); border-radius:4px; }
+.monto button:hover{ background:#557086; }
+.rapidas{ display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; }
+.rapidas button{ background:var(--line); border:none; border-radius:6px; padding:8px 0; font-weight:700; }
+.rapidas button:hover{ background:#557086; }
+.panel-apuesta .info{ color:var(--muted); font-size:.85rem; line-height:1.5; margin:8px 0 0; }
+
+.lienzo{ background:var(--bg); padding:28px; min-height:520px; }
+.game{ display:none; }
+.game.activo{ display:block; }
+.game h2{ font-weight:800; font-size:1.25rem; margin:0 0 4px; }
+.reglas{ color:var(--muted); margin:0 0 22px; max-width:62ch; line-height:1.5; font-size:.95rem; }
+
+/* ── botones y mensajes ── */
+.acciones{ display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; }
+.btn{ background:var(--verde); color:#05121b; border:none; border-radius:8px; padding:13px 26px; font-weight:800;
+  box-shadow:0 4px 12px rgba(0,231,1,.18); transition:background .15s, transform .08s; }
+.btn:hover:not(:disabled){ background:var(--verde2); }
+.btn:active:not(:disabled){ transform:scale(.97); }
+.btn.sec{ background:var(--line); color:var(--text); box-shadow:none; }
+.btn.sec:hover:not(:disabled){ background:#557086; }
+.btn:disabled{ opacity:.4; cursor:not-allowed; }
+.msg{ min-height:1.6em; margin-top:16px; font-size:1.05rem; font-weight:800; }
+.msg.win{ color:var(--win); } .msg.lose{ color:var(--lose); } .msg.parcial{ color:var(--parcial); } .msg.neutral{ color:var(--muted); }
+
+/* ── selector de opciones (dificultad, riesgo, velocidad) ── */
+.dificultad{ display:flex; gap:4px; background:var(--panel); padding:4px; border-radius:8px; width:fit-content; max-width:100%; margin-bottom:16px; flex-wrap:wrap; }
+.dificultad button{ background:transparent; border:none; border-radius:6px; padding:8px 14px; font-weight:700; color:var(--muted); }
+.dificultad button[aria-pressed="true"]{ background:var(--line); color:var(--text); }
+.dificultad button:disabled{ cursor:not-allowed; opacity:.55; }
+
+/* ── historial en píldoras ── */
+.historial{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; min-height:28px; }
+.historial span{ padding:4px 10px; border-radius:999px; font-weight:800; font-size:.8rem; background:var(--panel2); font-variant-numeric:tabular-nums; }
+.historial .si{ color:var(--verde); } .historial .no{ color:var(--lose); } .historial .med{ color:var(--parcial); }
+
+/* ── móvil ── */
+@media (max-width:900px){
+  .app{ display:flex; flex-direction:column; }
+  .principal{ display:contents; }
+  .barra{ order:1; justify-content:flex-end; }
+  .barra .logo{ display:block; font-size:1.2rem; }
+  .lateral{ order:2; position:sticky; top:64px; z-index:4; height:auto; padding:8px; flex-direction:row; box-shadow:0 4px 10px rgba(0,0,0,.2); }
+  .lateral > .logo, .lateral .aviso{ display:none; }
+  .lateral nav{ flex-direction:row; overflow-x:auto; }
+  .juego{ order:3; grid-template-columns:1fr; margin:12px; width:calc(100% - 24px); }
+  .panel-apuesta .info{ display:none; }
+  .lienzo{ padding:18px 14px; min-height:0; }
+}
+@media (max-width:520px){
+  .saldo{ padding:0 10px; } .btn-azul{ padding:0 12px; }
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; }
+}
