@@ -1,5 +1,6 @@
 /* ═════════ POLLO ═════════
-   El pollo cruza 10 carriles. En cada carril hay una probabilidad fija p de que lo atropellen.
+   El pollo cruza 10 carriles. En cada carril hay una probabilidad fija p de perder
+   (con una muerte de caricatura elegida al azar, ver pollo-muertes.js).
    El multiplicador del carril i es 0,97 / (1-p)^i: así el pago esperado es siempre el 97 %. */
 const PO_N = 10;
 const po = { activo: false, paso: 0, bet: 0, p: 0.2, muerto: -1 };
@@ -8,9 +9,9 @@ const poMultCon = (p, i) => Math.floor(0.97 / Math.pow(1 - p, i) * 100) / 100;
 const poMult = i => poMultCon(po.p, i);
 const poCanvas = $("#po-canvas"), poCtx = poCanvas.getContext("2d");
 const COLORES_AUTO = ["#e63946", "#1d9bf0", "#ffb703", "#2a9d8f", "#f4f1de", "#8338ec", "#fb5607", "#adb5bd"];
-const poVis = { carril: 0, desde: 0, t0: 0, cam: 0, carros: [], golpe: false, corriendo: false, last: 0 };
+const poVis = { carril: 0, desde: 0, t0: 0, cam: 0, carros: [], muerte: null, corriendo: false, last: 0 };
 const PO = { fila: 0.54, lw: 0.2, largo: 0.19, barrera: 0.31 };
-function poNuevoAuto(i, y){ return { i, y, v: 0.3 + azar() * 0.45, color: COLORES_AUTO[azarEntero(COLORES_AUTO.length)], asesino: false }; }
+function poNuevoAuto(i, y){ return { i, y, v: 0.3 + azar() * 0.45, color: COLORES_AUTO[azarEntero(COLORES_AUTO.length)] }; }
 for (let i = 1; i <= PO_N; i++){ poVis.carros.push(poNuevoAuto(i, azar() * 1.2 - 0.3), poNuevoAuto(i, azar() * 1.2 - 1.2)); }
 function poTam(){
   if (!ajustarCanvas(poCanvas, poCtx)) return;
@@ -24,23 +25,19 @@ function poLoop(t){
   if (carril !== poVis.carril){
     if (carril < poVis.carril && po.muerto < 0){ poVis.desde = carril; poVis.t0 = 0; }
     else { poVis.desde = poVis.carril; poVis.t0 = t; }
-    poVis.carril = carril; poVis.golpe = false;
-    if (po.muerto > 0){
-      poVis.carros = poVis.carros.filter(a => a.i !== carril || a.y > PO.fila + 0.1);
-      const k = poNuevoAuto(carril, -PO.largo - 0.35); k.v = 2.3; k.asesino = true; poVis.carros.push(k);
-    } else if (carril > 0){
+    poVis.carril = carril;
+    if (carril > 0){
       poVis.carros.forEach(a => { if (a.i === carril && a.y + PO.largo > PO.barrera - 0.02 && a.y < PO.fila + 0.12) a.y = -PO.largo - 0.1 - azar() * 0.3; });
     }
   }
   for (let i = 1; i <= PO_N; i++){
-    const detenido = i <= po.paso && i !== po.muerto;
+    const detenido = i <= po.paso || i === po.muerto;           // en el carril de la muerte los autos esperan
     const autos = poVis.carros.filter(a => a.i === i).sort((a, b) => b.y - a.y);
     let limite = PO.barrera - 0.01;
     autos.forEach(a => {
       a.y += a.v * dt;
       if (detenido && a.y < PO.barrera){ a.y = Math.min(a.y, limite - PO.largo); limite = a.y - 0.03; }
-      if (a.asesino && !poVis.golpe && a.y + PO.largo >= PO.fila - 0.02) poVis.golpe = true;
-      if (a.y > 1.15){ if (a.asesino) a.asesino = false; a.v = 0.3 + azar() * 0.45; a.y = -PO.largo - azar() * 0.6; }
+      if (a.y > 1.15){ a.v = 0.3 + azar() * 0.45; a.y = -PO.largo - azar() * 0.6; }
     });
   }
   poDibujar(t, dt);
@@ -86,7 +83,7 @@ function poDibujar(t, dt){
     c.fillStyle = muerte ? "#7a1f2b" : pasado ? "#1f5a3a" : "#505865"; c.beginPath(); c.arc(cx, PO.fila * H, LW * 0.31, 0, Math.PI * 2); c.fill();
     c.strokeStyle = "rgba(0,0,0,.35)"; c.lineWidth = 1.5;
     for (let k = -2; k <= 2; k++){ c.beginPath(); c.moveTo(cx - LW * 0.24, PO.fila * H + k * LW * 0.1); c.lineTo(cx + LW * 0.24, PO.fila * H + k * LW * 0.1); c.stroke(); }
-    if (!(i === poVis.carril && !muerte)){
+    if (i !== poVis.carril){
       c.fillStyle = pasado ? "#7dff7a" : "#fff"; c.font = `800 ${LW * 0.2}px Manrope, sans-serif`;
       c.fillText(poMult(i).toFixed(2) + "×", cx, PO.fila * H);
     }
@@ -104,8 +101,9 @@ function poDibujar(t, dt){
     dibujarAuto(c, cx, a.y * H, LW * 0.56, PO.largo * H, a.color);
   });
   c.textAlign = "center"; c.textBaseline = "middle";
-  if (poVis.golpe){
-    c.font = `${LW * 0.7}px sans-serif`; c.fillText("💥", X(gx), gy);
+  const m = poVis.muerte, em = m ? (t - m.t0) / 1000 : -1;
+  if (m && em >= 0){
+    m.m.dibujar(c, X(gx), PO.fila * H, LW * 0.62, em);
   } else {
     c.fillStyle = "rgba(0,0,0,.35)"; c.beginPath(); c.ellipse(X(gx), PO.fila * H + LW * 0.25, LW * 0.22, LW * 0.07, 0, 0, Math.PI * 2); c.fill();
     c.save(); c.translate(X(gx), gy); if (hop < 1) c.rotate(Math.sin(Math.PI * hop) * 0.25); c.scale(-1, 1);
@@ -113,8 +111,8 @@ function poDibujar(t, dt){
     if (po.paso > 0 && po.muerto < 0){
       const txt = poMult(po.paso).toFixed(2) + "×"; c.font = `800 ${LW * 0.19}px Manrope, sans-serif`;
       const w = c.measureText(txt).width + 16;
-      c.fillStyle = "#00e701"; c.beginPath(); c.roundRect(X(gx) - w / 2, gy - LW * 0.62, w, LW * 0.26, LW * 0.13); c.fill();
-      c.fillStyle = "#05121b"; c.fillText(txt, X(gx), gy - LW * 0.49);
+      c.fillStyle = "#7ee29a"; c.beginPath(); c.roundRect(X(gx) - w / 2, gy - LW * 0.62, w, LW * 0.26, LW * 0.13); c.fill();
+      c.fillStyle = "#0b1712"; c.fillText(txt, X(gx), gy - LW * 0.49);
     }
   }
 }
@@ -129,7 +127,7 @@ function poBotones(){
 grupoOpciones("#po-dif button", b => { po.p = +b.dataset.p; po.paso = 0; po.muerto = -1; }, () => !po.activo);
 $("#po-jugar").onclick = () => {
   if (ocupado || !apostar("#po-msg")) return;
-  Object.assign(po, { activo: true, paso: 0, muerto: -1, bet: apuesta });
+  Object.assign(po, { activo: true, paso: 0, muerto: -1, bet: apuesta }); poVis.muerte = null;
   msg("#po-msg", "Toca «Avanzar» para cruzar el primer carril.");
   poBotones();
 };
@@ -137,9 +135,14 @@ $("#po-avanzar").onclick = async () => {
   $("#po-avanzar").disabled = true; $("#po-cobrar").disabled = true;
   const sig = po.paso + 1;
   if (azar() < po.p){
-    po.muerto = sig; po.activo = false; poBotones();
-    await espera(650);
-    liquidar("#po-msg", 0, po.bet, `¡Lo atropellaron en el carril ${sig}! `);
+    // Perdió: se elige una muerte de caricatura al azar (solo cambia el dibujo, no el resultado).
+    const m = MUERTES[azarEntero(MUERTES.length)];
+    po.muerto = sig; po.activo = false; poBotones(); ocupado = true;
+    poVis.muerte = { m, t0: performance.now() + 320 };
+    setTimeout(() => m.sonar(), 320);
+    await espera(2000);
+    liquidar("#po-msg", 0, po.bet, `${m.frase} en el carril ${sig}! `);
+    ocupado = false;
     return;
   }
   po.paso = sig; sonido.salto();

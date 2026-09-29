@@ -47,7 +47,8 @@ const REGLAS = {
     return devuelve("≈ " + pct(0.97, 0), "devuelve a largo plazo, cobres en el carril que cobres") +
     `<h3>Cómo se juega</h3><ul>
       <li>Apuestas y el pollo cruza la carretera carril por carril. Tras cada carril puedes <strong>cobrar</strong> o <strong>avanzar</strong>.</li>
-      <li>En cada carril hay una probabilidad fija de que pase un carro: ${difs.map(([n, p]) => `${n} ${pct(p, 0)}`).join(", ")}.</li>
+      <li>En cada carril hay una probabilidad fija de perder: ${difs.map(([n, p]) => `${n} ${pct(p, 0)}`).join(", ")}.</li>
+      <li>Si pierdes, se elige al azar una de 10 escenas de caricatura (elefante, piano, yunque, ovni…). Es solo el dibujo: no cambia nada del resultado.</li>
       <li>El multiplicador se calcula para que el pago esperado sea el 97 % (se redondea hacia abajo, por eso puede quedar un poco menos).</li></ul>
     <h3>Multiplicador y probabilidad de llegar a cada carril</h3>` +
     tabla(["Carril", ...difs.map(d => d[0])], Array.from({ length: PO_N }, (_, i) => [i + 1, ...difs.map(([, p]) => `×${num(poMultCon(p, i + 1))} · ${pct(Math.pow(1 - p, i + 1), 1)}`)])) + NO_CELEBRA;

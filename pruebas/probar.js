@@ -209,6 +209,14 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     ok(n[0] === 20 && n[1] === 20, `Avión: el historial guarda los últimos 20 vuelos (${n[1]} botones)`);
     await pagina.evaluate(() => { av.hist = av.hist.filter(h => h.num < 900); avPintarHistorial(); });
   }
+  {
+    const r = await pagina.evaluate(() => {
+      const lz = document.createElement("canvas"); lz.width = 600; lz.height = 400; const c = lz.getContext("2d"); const errores = [];
+      MUERTES.forEach(m => { for (let e = 0; e <= 2.2; e += 0.05){ try { m.dibujar(c, 300, 250, 70, e); } catch (x){ errores.push(m.id + ": " + x.message); } } });
+      return { n: new Set(MUERTES.map(m => m.id)).size, ids: MUERTES.map(m => m.id).join(", "), errores, sonidos: MUERTES.every(m => typeof m.sonar === "function") };
+    });
+    ok(r.n >= 8 && !r.errores.length && r.sonidos, `Pollo: ${r.n} muertes distintas con animación y sonido (${r.ids})${r.errores.length ? " · errores: " + r.errores.join("; ") : ""}`);
+  }
   await jugar("pollo", "#po-msg", async () => {
     await pagina.click("#po-jugar");
     for (let i = 0; i < 2; i++){ if (await pagina.isEnabled("#po-avanzar")){ await pagina.click("#po-avanzar"); await pagina.waitForTimeout(800); } }

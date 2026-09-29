@@ -70,6 +70,18 @@ const sonido = (() => {
     monedas(n = 8, t = 0){ for (let i = 0; i < n; i++) tono({ t: t + i * 0.06 + Math.random() * 0.03, f: 2200 + Math.random() * 1400, tipo: "sine", dur: 0.07, vol: 0.06 }); },
     cuenta(){ tono({ f: 1500, tipo: "square", dur: 0.02, vol: 0.025 }); },
     pierde(){ tono({ f: 330, f2: 250, tipo: "triangle", dur: 0.22, vol: 0.1 }); tono({ t: 0.16, f: 250, f2: 190, tipo: "triangle", dur: 0.3, vol: 0.09 }); },
+    // efectos de caricatura (muertes del Pollo)
+    golpe(t = 0){ tono({ t, f: 130, f2: 40, tipo: "square", dur: 0.28, vol: 0.18 }); soplo({ t, filtro: "lowpass", f: 700, f2: 120, dur: 0.35, vol: 0.45 }); },
+    clang(t = 0){ this.golpe(t); [1250, 1870, 2630].forEach((f, i) => tono({ t, f, tipo: i ? "triangle" : "square", dur: 0.9 - i * 0.15, vol: 0.05 })); },
+    boom(t = 0){ soplo({ t, filtro: "lowpass", f: 1400, f2: 60, dur: 1.2, vol: 0.6, q: 0.5 }); tono({ t, f: 80, f2: 28, tipo: "sine", dur: 1, vol: 0.35 }); },
+    ovni(t = 0){ for (let i = 0; i < 14; i++) tono({ t: t + i * 0.09, f: 420 + (i % 2) * 260 + i * 25, tipo: "sine", dur: 0.12, vol: 0.07 }); },
+    silbido(t = 0){ soplo({ t, f: 300, f2: 4000, q: 4, dur: 1.2, vol: 0.3 }); tono({ t, f: 300, f2: 1600, tipo: "triangle", dur: 1.1, vol: 0.06 }); },
+    zap(t = 0){ tono({ t, f: 95, tipo: "sawtooth", dur: 0.55, vol: 0.12 }); soplo({ t, filtro: "highpass", f: 2500, dur: 0.45, vol: 0.35 }); for (let i = 0; i < 6; i++) tono({ t: t + i * 0.05, f: 1800 + Math.random() * 1500, tipo: "square", dur: 0.03, vol: 0.04 }); },
+    fuego(t = 0){ soplo({ t, f: 1800, q: 0.6, dur: 1.4, vol: 0.18 }); for (let i = 0; i < 14; i++) soplo({ t: t + Math.random() * 1.2, filtro: "highpass", f: 3500, dur: 0.02, vol: 0.25 }); },
+    boing(t = 0){ tono({ t, f: 160, f2: 640, tipo: "triangle", dur: 0.3, vol: 0.2 }); tono({ t: t + 0.25, f: 640, f2: 300, tipo: "triangle", dur: 0.35, vol: 0.12 }); },
+    piano(t = 0){ this.golpe(t); [98, 139, 185, 233, 311, 415].forEach(f => tono({ t, f, tipo: "triangle", dur: 1.6, vol: 0.06 })); },
+    globos(t = 0){ [523, 659, 784, 988, 1175].forEach((f, i) => tono({ t: t + i * 0.12, f, tipo: "sine", dur: 0.18, vol: 0.08 })); },
+    brillo(t = 0){ [2093, 2637, 3136].forEach((f, i) => tono({ t: t + i * 0.07, f, tipo: "sine", dur: 0.2, vol: 0.05 })); },
     // ajustes
     get activo(){ return conf.on; }, get volumen(){ return conf.vol; },
     setActivo(on){ conf.on = on; guardar(); if (master) master.gain.value = nivel(); },
