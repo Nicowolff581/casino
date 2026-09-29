@@ -55,6 +55,14 @@
       if (capa) botes.push({ monto: capa, ganadores: ganan });
       previo = nivel;
     }
+    // Fichas de quien se retiró habiendo puesto más que todos los que siguen (p. ej. se fue de la mesa
+    // tras subir): se quedan en el bote y van a los ganadores del último bote.
+    const sobra = js.reduce((s, p) => s + p.total, 0) - botes.reduce((s, b) => s + b.monto, 0);
+    if (sobra > 0 && botes.length){
+      const ult = botes[botes.length - 1], parte = Math.floor(sobra / ult.ganadores.length); let resto = sobra - parte * ult.ganadores.length;
+      ult.ganadores.forEach(i => { cobros[i] += parte + (resto > 0 ? 1 : 0); if (resto > 0) resto--; });
+      ult.monto += sobra;
+    }
     return { cobros, botes };
   }
   Object.assign(globalThis, { ORD, NOMBRES_MANO, eval5, cmpMano, combinaciones, mejorMano, nombreMano, repartirBotes });

@@ -6,6 +6,23 @@ Casino de práctica con **fichas de mentira**: sin dinero real, pagos, depósito
 Haz doble clic en `index.html` (te lleva a `public/index.html`, que es el casino). No hay que instalar nada.
 En internet se publica con Cloudflare (gratis): ver `wrangler.jsonc`.
 
+Para probarlo con el servidor (necesario para «Jugar con amigos»), en una terminal con Node:
+
+```
+npm install
+npm run dev -- --ip 0.0.0.0
+```
+
+y abre `http://localhost:8787`.
+
+## Jugar con amigos (Texas Hold'em en línea)
+- Salas privadas de 2 a 6 jugadores con un código de 6 letras o un enlace `…/#sala=CÓDIGO`.
+- Cada jugador entra solo con apodo y avatar: no se pide ningún dato personal.
+- El servidor (un «Durable Object» de Cloudflare por sala) baraja y reparte; a cada jugador le manda solo sus cartas.
+- Todos empiezan con las mismas fichas de la sala, separadas del saldo personal; no se pueden pasar entre jugadores.
+- Si alguien recarga o pierde la conexión, vuelve a su asiento (el navegador guarda un «pase» de la sala).
+- Tiempo límite por turno (15, 30 o 60 s); con 2 turnos vencidos seguidos el jugador queda «ausente».
+
 ## Cómo está organizado
 - `public/`: todo lo que se publica en internet.
 - `public/index.html`: la página.
@@ -17,7 +34,12 @@ En internet se publica con Cloudflare (gratis): ver `wrangler.jsonc`.
 - `public/js/cartas.js`: baraja y dibujo de cartas.
 - `public/js/juegos/`: un archivo por juego (el tragamonedas separa su motor de resultados en `tragamonedas-motor.js`).
 - `public/muestras/estilos.html`: muestra de los 3 estilos visuales.
+- `public/js/manos.js`: valor de las manos de póker y botes laterales (lo usan la página y el servidor).
+- `public/js/amigos.js`: pantalla de «Jugar con amigos» (entrada, mesa, botones y reacciones).
 - `servidor/worker.js`: el servidor en Cloudflare (salas para jugar con amigos).
+- `servidor/poker.js`: el crupier del póker en línea (reglas, turnos, ciegas y botes laterales).
 - `casino-nico-original.html`: copia intacta de la versión original.
 - `pruebas/probar.js`: prueba automática de reglas, pagos y consola (solo para desarrollo).
 - `pruebas/simular-tragamonedas.js`: simula millones de jugadas del tragamonedas para medir cuánto devuelve.
+- `pruebas/probar-poker-en-linea.mjs`: miles de manos del crupier en línea (fichas, turnos, privacidad, botes laterales).
+- `pruebas/probar-en-linea.js`: 4 jugadores en 4 ventanas contra el servidor local (`npx wrangler dev --port 8790`).

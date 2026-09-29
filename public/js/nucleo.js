@@ -172,14 +172,16 @@ const JUEGOS = {};               // id → { alMostrar() } ; cada juego se regis
 let juegoActivo = "inicio";
 function registrarJuego(id, def){ JUEGOS[id] = def; }
 function mostrarJuego(id){
-  if (id !== "inicio" && !$("#g-" + id)) id = "inicio";
-  const cambiaVista = (juegoActivo === "inicio") !== (id === "inicio");
+  const especial = id === "inicio" || id === "amigos";
+  if (!especial && !$("#g-" + id)) id = "inicio";
+  const cambiaVista = true;
   juegoActivo = id;
   $$("nav button").forEach(x => x.dataset.juego === id ? x.setAttribute("aria-current", "page") : x.removeAttribute("aria-current"));
   $("#v-inicio").classList.toggle("activa", id === "inicio");
-  $("#v-juego").classList.toggle("activa", id !== "inicio");
+  $("#v-amigos").classList.toggle("activa", id === "amigos");
+  $("#v-juego").classList.toggle("activa", !especial);
   $$(".game").forEach(g => g.classList.toggle("activo", g.id === "g-" + id));
-  if (cambiaVista || id !== "inicio") scrollTo({ top: 0, behavior: "instant" });
+  if (cambiaVista) scrollTo({ top: 0, behavior: "instant" });
   try { history.replaceState(null, "", "#" + id); } catch (e) {}
   JUEGOS[id]?.alMostrar?.();
 }

@@ -53,6 +53,7 @@
     <a class="logo" href="#inicio" data-ir="inicio"><svg><use href="#i-logo"/></svg><b>Casino<span>Nico</span></b></a>
     <nav aria-label="Secciones">
       <button data-juego="inicio" aria-current="page"><svg class="ico"><use href="#i-inicio"/></svg>Inicio</button>
+      <button data-juego="amigos"><svg class="ico"><use href="#i-amigos"/></svg>Con amigos</button>
       <span class="nav-titulo">Juegos</span>
       <button data-juego="avion"><svg class="ico"><use href="#i-avion"/></svg>Avión</button>
       <button data-juego="pollo"><svg class="ico"><use href="#i-pollo"/></svg>Pollo</button>
@@ -90,15 +91,69 @@
             <p>Ocho juegos con sus reglas y probabilidades a la vista. Todo con fichas de mentira: aquí se juega por diversión.</p>
           </div>
           <div class="amigos">
-            <span class="chip-nuevo"><svg><use href="#i-amigos"/></svg>Muy pronto · En línea</span>
+            <span class="chip-nuevo"><svg><use href="#i-amigos"/></svg>Nuevo · En línea</span>
             <h2>Jugar con amigos</h2>
             <p>Crea una sala privada de Texas Hold'em, comparte el código y jueguen todos con las mismas fichas de práctica.</p>
             <div class="avatares" aria-hidden="true"><span>🦊</span><span>🐼</span><span>🦁</span><span>🐸</span><span class="mas">+2</span></div>
-            <button class="btn" disabled>Próximamente</button>
+            <button class="btn" data-ir="amigos">Crear o entrar a una sala</button>
           </div>
         </div>
         <h2 class="seccion-titulo">Juegos</h2>
         <div class="tarjetas" id="tarjetas"></div>
+      </section>
+
+      <!-- JUGAR CON AMIGOS (Texas Hold'em en línea) -->
+      <section class="vista vista-amigos" id="v-amigos" aria-label="Jugar con amigos">
+        <div class="am-lobby" id="am-lobby">
+          <button class="volver" data-ir="inicio"><svg><use href="#i-atras"/></svg>Inicio</button>
+          <h1>Jugar con amigos</h1>
+          <p class="am-intro">Texas Hold'em de 2 a 6 jugadores en una sala privada. Solo entra quien tenga el código. Todos empiezan con las mismas fichas de práctica de la sala, que no cambian tu saldo personal ni se pueden pasar a otros.</p>
+          <div class="am-aviso" id="am-sin-servidor" hidden>Abriste el casino desde un archivo de tu computador, y así no hay servidor. El modo en línea funciona en tu enlace publicado (el que termina en <b>.workers.dev</b>).</div>
+          <div class="am-tarjeta">
+            <label class="am-campo">Tu apodo <input id="am-apodo" maxlength="16" autocomplete="nickname" placeholder="Por ejemplo: Nico"></label>
+            <div class="am-campo">Tu avatar <div class="am-avatares" id="am-avatares" role="radiogroup" aria-label="Avatar"></div></div>
+            <p class="am-nota">No pedimos correo, teléfono ni ningún dato personal.</p>
+          </div>
+          <div class="am-dos">
+            <div class="am-tarjeta">
+              <h2>Crear una sala</h2>
+              <label class="am-campo">Fichas para cada jugador <select id="am-fichas"><option>500</option><option selected>1000</option><option>2000</option><option>5000</option></select></label>
+              <label class="am-campo">Ciega grande <select id="am-ciega"><option>10</option><option selected>20</option><option>50</option><option>100</option></select></label>
+              <label class="am-campo">Tiempo por turno <select id="am-tiempo"><option value="15">15 segundos</option><option value="30" selected>30 segundos</option><option value="60">60 segundos</option></select></label>
+              <button class="btn" id="am-crear">Crear sala</button>
+            </div>
+            <div class="am-tarjeta">
+              <h2>Entrar con un código</h2>
+              <label class="am-campo">Código de la sala <input id="am-codigo" maxlength="6" autocapitalize="characters" autocomplete="off" placeholder="ABC234"></label>
+              <button class="btn sec" id="am-entrar">Entrar</button>
+            </div>
+          </div>
+          <div class="msg" id="am-msg" aria-live="polite"></div>
+        </div>
+
+        <div class="am-sala" id="am-sala" hidden>
+          <div class="am-barra">
+            <div class="am-codigo">Sala <b id="am-cod"></b></div>
+            <button class="btn sec btn-chico" id="am-copiar">Copiar enlace</button>
+            <button class="btn sec btn-chico" id="am-compartir" hidden>Compartir</button>
+            <span class="am-conexion" id="am-conexion"></span>
+            <button class="btn sec btn-chico am-salir" id="am-salir">Salir de la sala</button>
+          </div>
+          <p class="am-fichas-nota">Fichas de la sala: iguales para todos, no cambian tu saldo personal.</p>
+          <div class="am-mesa" id="am-mesa">
+            <div class="am-centro">
+              <div class="am-board" id="am-board"></div>
+              <div class="am-bote" id="am-bote"></div>
+              <div class="am-aviso-mesa" id="am-aviso-mesa"></div>
+            </div>
+          </div>
+          <div class="am-panel">
+            <div class="am-acciones" id="am-acciones"></div>
+            <div class="am-control" id="am-control"></div>
+          </div>
+          <div class="am-reacciones" id="am-reacciones" aria-label="Reacciones"></div>
+          <details class="am-registro"><summary>Lo que pasó en la mano</summary><ol id="am-registro"></ol></details>
+        </div>
       </section>
 
       <!-- ZONA DE JUEGO -->
@@ -335,6 +390,7 @@
 <script src="js/juegos/ruleta.js"></script>
 <script src="js/juegos/fantan.js"></script>
 <script src="js/reglas.js"></script>
+<script src="js/amigos.js"></script>
 <script src="js/interfaz.js"></script>
 </body>
 </html>

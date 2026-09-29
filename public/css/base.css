@@ -264,6 +264,73 @@ input[type="range"]{ accent-color:var(--acento); width:100%; }
   background:var(--superficie2); box-shadow:inset 0 0 0 1px var(--acento), var(--sombra); font-weight:800; color:var(--acento2); opacity:0; pointer-events:none; transition:opacity .3s, transform .35s var(--ease-rebote); }
 .aviso-toast.ver{ opacity:1; transform:translate(-50%, 0); }
 
+/* ── jugar con amigos ── */
+.vista-amigos{ padding:24px 28px 48px; max-width:1240px; margin:0 auto; }
+.am-lobby h1{ font-size:clamp(1.8rem, 4vw, 2.6rem); margin:6px 0 8px; }
+.am-intro{ color:var(--suave); max-width:70ch; margin:0 0 18px; }
+.am-aviso{ padding:12px 16px; border-radius:var(--radio); background:rgba(122,26,42,.35); box-shadow:inset 0 0 0 1px rgba(255,138,138,.4); margin-bottom:14px; }
+.am-tarjeta{ padding:18px; border-radius:14px; background:var(--superficie); box-shadow:inset 0 0 0 1px var(--linea), var(--sombra); display:grid; gap:12px; margin-bottom:14px; align-content:start; }
+.am-tarjeta h2{ margin:0; font-size:1.3rem; }
+.am-dos{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.am-campo{ display:grid; gap:6px; color:var(--suave); font-weight:700; font-size:.85rem; }
+.am-campo input, .am-campo select{ font:inherit; font-size:1rem; font-weight:700; color:var(--texto); background:var(--fondo); border:1px solid var(--linea-fuerte); border-radius:8px; padding:10px 12px; }
+#am-codigo{ text-transform:uppercase; letter-spacing:.3em; font-size:1.2rem; }
+.am-avatares{ display:flex; flex-wrap:wrap; gap:6px; }
+.am-avatares button{ width:46px; height:46px; border-radius:50%; border:none; background:var(--superficie2); font-size:1.5rem; box-shadow:inset 0 0 0 1px var(--linea); transition:transform .15s; }
+.am-avatares button:hover{ transform:scale(1.08); }
+.am-avatares button[aria-checked="true"]{ box-shadow:0 0 0 3px var(--acento); background:var(--superficie3); }
+.am-nota{ margin:0; color:var(--tenue); font-size:.82rem; }
+
+.am-barra{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+.am-codigo{ font-weight:700; color:var(--suave); margin-right:6px; } .am-codigo b{ font-family:ui-monospace, monospace; font-size:1.5rem; letter-spacing:.2em; color:var(--acento2); }
+.am-conexion{ font-size:.8rem; font-weight:800; padding:4px 10px; border-radius:999px; background:rgba(0,0,0,.25); }
+.am-conexion.ok{ color:var(--gana); } .am-conexion.mal{ color:var(--pierde); } .am-conexion.espera{ color:var(--parcial); }
+.am-salir{ margin-left:auto; }
+.am-fichas-nota{ margin:0 0 10px; font-size:.8rem; color:var(--tenue); }
+.am-mesa{ position:relative; aspect-ratio:16 / 9.5; margin:48px 60px 70px; border-radius:50% / 46%;
+  background:radial-gradient(ellipse at 50% 35%, #23875a 0%, #156541 50%, #0b3f28 100%);
+  box-shadow:inset 0 0 0 2px rgba(255,214,120,.35), inset 0 0 70px rgba(0,0,0,.55), 0 0 0 12px #2b1b10, 0 0 0 14px #8a6232, 0 22px 40px rgba(0,0,0,.55); }
+.am-centro{ position:absolute; left:50%; top:47%; transform:translate(-50%, -50%); display:grid; justify-items:center; gap:8px; width:70%; }
+.am-board{ display:flex; gap:6px; justify-content:center; }
+.am-board .carta, .am-board .hueco{ font-size:12px; }
+.am-bote{ font-weight:700; color:#d5f5e1; background:rgba(0,0,0,.35); padding:4px 14px; border-radius:999px; font-size:.9rem; } .am-bote:empty{ display:none; } .am-bote b{ color:#fff; }
+.am-aviso-mesa{ text-align:center; color:#fff6c9; font-weight:700; font-size:.9rem; display:grid; gap:2px; text-shadow:0 1px 3px rgba(0,0,0,.6); }
+.am-asiento{ position:absolute; transform:translate(-50%, -50%); width:118px; display:grid; justify-items:center; gap:1px; text-align:center; z-index:2; transition:opacity .3s; }
+.am-asiento.fuera{ opacity:.5; } .am-asiento.desconectado .am-avatar span{ filter:grayscale(1); opacity:.6; }
+.am-avatar{ --resta:0; position:relative; width:56px; height:56px; border-radius:50%; display:grid; place-items:center; font-size:1.9rem; background:var(--superficie);
+  box-shadow:0 0 0 3px #2b1b10, 0 6px 14px rgba(0,0,0,.5); }
+.am-asiento.yo .am-avatar{ box-shadow:0 0 0 3px var(--acento), 0 6px 14px rgba(0,0,0,.5); }
+.am-asiento.turno .am-avatar{ background:conic-gradient(var(--gana) calc(var(--resta) * 360deg), rgba(255,255,255,.08) 0); }
+.am-asiento.turno .am-avatar span{ width:48px; height:48px; border-radius:50%; background:var(--superficie); display:grid; place-items:center; }
+.am-asiento.turno .am-avatar::after{ content:attr(data-seg); position:absolute; right:-10px; top:-6px; min-width:22px; height:22px; padding:0 4px; border-radius:999px; background:var(--gana); color:#0b1712; font-size:.72rem; font-weight:900; display:grid; place-items:center; }
+.am-asiento.gana .am-avatar{ box-shadow:0 0 0 3px var(--oro), 0 0 24px rgba(224,182,79,.8); animation:latidoSube .8s ease-in-out 3; }
+.am-d, .am-c{ position:absolute; bottom:-4px; width:20px; height:20px; border-radius:50%; font-style:normal; font-size:.62rem; font-weight:900; display:grid; place-items:center; }
+.am-d{ right:-6px; background:#fff; color:#0b1712; } .am-c{ left:-6px; background:var(--acento); color:var(--sobre-acento); }
+.am-nombre{ font-weight:800; font-size:.85rem; max-width:118px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:4px; text-shadow:0 1px 3px rgba(0,0,0,.8); }
+.am-nombre small{ color:var(--acento2); }
+.am-fichas{ display:flex; align-items:center; gap:4px; font-size:.8rem; font-weight:800; background:rgba(0,0,0,.45); padding:1px 8px; border-radius:999px; font-variant-numeric:tabular-nums; }
+.am-fichas .moneda, .am-apuesta .moneda{ width:12px; height:12px; }
+.am-estado{ font-size:.7rem; font-weight:800; color:#ffd9a0; }
+.am-jugada{ font-size:.72rem; font-weight:800; color:#fff; background:var(--borgona); padding:1px 8px; border-radius:999px; }
+.am-cobra{ font-weight:900; color:var(--gana); animation:msgGana .5s; }
+.am-cartas{ display:flex; gap:3px; margin-top:3px; } .am-cartas .carta{ font-size:9px; } .am-asiento.yo .am-cartas .carta{ font-size:12px; }
+.am-cartas:empty{ display:none; }
+.am-apuesta{ position:absolute; top:-26px; display:flex; align-items:center; gap:4px; font-size:.78rem; font-weight:800; background:rgba(0,0,0,.55); padding:2px 8px; border-radius:999px; animation:ficha .3s ease-out; }
+.am-asiento.yo .am-apuesta, .am-asiento[style*="top:70%"] .am-apuesta{ top:-30px; }
+.am-burbuja{ position:absolute; top:-14px; right:-8px; font-size:2rem; animation:burbuja 2.2s ease-out forwards; pointer-events:none; z-index:5; }
+@keyframes burbuja{ 0%{ transform:scale(.2) translateY(0); opacity:0; } 15%{ transform:scale(1.2); opacity:1; } 80%{ opacity:1; } 100%{ transform:scale(1) translateY(-40px); opacity:0; } }
+.am-panel{ display:grid; grid-template-columns:1fr auto; gap:14px; align-items:center; min-height:64px; }
+.am-acciones p{ margin:0 0 8px; font-weight:800; } .am-tu-turno{ color:var(--gana); } .am-espera{ color:var(--suave); }
+.am-botones{ display:flex; gap:8px; flex-wrap:wrap; }
+.am-subir{ display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; margin-top:10px; }
+.am-rapidos{ display:flex; gap:4px; } .am-rapidos button{ border:none; border-radius:6px; padding:6px 9px; font-weight:800; font-size:.78rem; background:rgba(0,0,0,.3); box-shadow:inset 0 0 0 1px var(--linea); }
+.am-rapidos button:hover{ background:rgba(216,178,90,.15); }
+.am-control{ display:grid; gap:6px; justify-items:end; } .am-control p{ margin:0; color:var(--parcial); font-weight:700; } .am-cfg{ font-size:.8rem; color:var(--tenue); }
+.am-reacciones{ display:flex; gap:6px; flex-wrap:wrap; margin-top:14px; }
+.am-reacciones button{ width:44px; height:44px; border-radius:50%; border:none; background:var(--superficie); font-size:1.4rem; box-shadow:inset 0 0 0 1px var(--linea); transition:transform .12s; }
+.am-reacciones button:hover{ transform:scale(1.12); } .am-reacciones button:active{ transform:scale(.9); }
+.am-registro{ margin-top:14px; color:var(--suave); font-size:.85rem; } .am-registro summary{ cursor:pointer; font-weight:700; } .am-registro ol{ margin:6px 0 0; padding-left:22px; }
+
 /* ── celular y tabletas ── */
 @media (max-width:1100px){ .tarjetas{ grid-template-columns:repeat(3, 1fr); } }
 @media (max-width:900px){
@@ -281,6 +348,12 @@ input[type="range"]{ accent-color:var(--acento); width:100%; }
   .hero{ grid-template-columns:1fr; }
   .vista-inicio{ padding:18px 16px 40px; }
   .vista-juego.activa{ grid-template-columns:minmax(0, 1fr); margin:12px; }
+  .vista-amigos{ padding:16px 12px 40px; } .am-dos{ grid-template-columns:1fr; }
+  .am-mesa{ aspect-ratio:3 / 4; margin:40px 8px 60px; border-radius:46% / 32%; }
+  .am-asiento{ width:92px; } .am-avatar{ width:46px; height:46px; font-size:1.5rem; } .am-asiento.turno .am-avatar span{ width:38px; height:38px; }
+  .am-board .carta, .am-board .hueco{ font-size:9px; } .am-board{ gap:3px; }
+  .am-panel{ grid-template-columns:1fr; } .am-control{ justify-items:start; }
+  .am-subir{ grid-template-columns:1fr; }
   .panel-apuesta{ border-right:none; border-bottom:1px solid var(--linea); }
   .panel-apuesta .info{ display:none; }
   .lienzo{ padding:18px 14px 24px; min-height:0; }

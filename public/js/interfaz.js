@@ -56,7 +56,7 @@ document.addEventListener("click", e => { if (!sPanel.hidden && !e.target.closes
 pintarSonido();
 
 /* ── arranque: abrir el juego de la dirección (#ruleta…) y quitar la pantalla de carga ── */
-mostrarJuego(decodeURIComponent(location.hash.slice(1)) || "inicio");
+{ const h = decodeURIComponent(location.hash.slice(1)); mostrarJuego(h.startsWith("sala=") ? "amigos" : h || "inicio"); }
 const inicioCarga = performance.now();
 function quitarCarga(){ setTimeout(() => $("#carga").classList.add("fuera"), Math.max(0, 900 - (performance.now() - inicioCarga))); }
 if (document.readyState === "complete") quitarCarga(); else addEventListener("load", quitarCarga);
