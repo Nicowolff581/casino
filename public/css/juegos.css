@@ -193,10 +193,12 @@
 
 /* ── plinko ── */
 .pl-zona{ display:flex; gap:14px; align-items:flex-start; justify-content:center; }
-.pl-caja{ flex:1; max-width:600px; aspect-ratio:1 / .9; }
+.pl-caja{ flex:1; max-width:620px; aspect-ratio:1 / .9; border-radius:18px; overflow:hidden; background:#05020d;
+  box-shadow:0 0 0 1px rgba(160,90,255,.5), 0 0 24px rgba(160,90,255,.35), 0 0 60px rgba(62,231,255,.12), 0 20px 40px rgba(0,0,0,.5); }
 .pl-caja canvas{ width:100%; height:100%; display:block; }
 .pl-hist{ display:flex; flex-direction:column; gap:6px; width:62px; flex:none; margin-top:30px; }
-.pl-hist span{ border-radius:6px; padding:8px 0; text-align:center; font-weight:800; font-size:.8rem; color:#0f212e; animation:entra .25s ease-out; }
+.pl-hist span{ border-radius:6px; padding:7px 0; text-align:center; font-weight:800; font-size:.8rem; color:#fff; background:rgba(5,2,13,.9);
+  box-shadow:inset 0 0 0 1.5px var(--c), 0 0 12px var(--c); text-shadow:0 0 8px var(--c); animation:entra .25s ease-out; }
 @keyframes entra{ from{ transform:translateY(-10px); opacity:0; } }
 
 /* ── móvil ── */

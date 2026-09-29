@@ -53,7 +53,8 @@ function celebrar(pagado, apostado){
   const m = pagado / apostado;
   if (m >= FIESTA_ENORME){
     sonido.gana(3); sonido.monedas(14, 0.4);
-    granPremio(pagado, apostado); lluviaMonedas(50); confeti(120);
+    // la pantalla grande llega un momento después, para que primero se vea el efecto del propio juego
+    setTimeout(() => granPremio(pagado, apostado), 700); lluviaMonedas(50); confeti(120);
     setTimeout(() => confeti(80, innerWidth * 0.25, innerHeight * 0.4), 450);
     setTimeout(() => confeti(80, innerWidth * 0.75, innerHeight * 0.4), 800);
   } else if (m >= FIESTA_GRANDE){

@@ -70,6 +70,14 @@ const sonido = (() => {
     monedas(n = 8, t = 0){ for (let i = 0; i < n; i++) tono({ t: t + i * 0.06 + Math.random() * 0.03, f: 2200 + Math.random() * 1400, tipo: "sine", dur: 0.07, vol: 0.06 }); },
     cuenta(){ tono({ f: 1500, tipo: "square", dur: 0.02, vol: 0.025 }); },
     pierde(){ tono({ f: 330, f2: 250, tipo: "triangle", dur: 0.22, vol: 0.1 }); tono({ t: 0.16, f: 250, f2: 190, tipo: "triangle", dur: 0.3, vol: 0.09 }); },
+    // bola de Plinko cayendo en una casilla: más brillo cuanto mayor el multiplicador
+    caja(m){
+      if (m < 1){ tono({ f: 260, f2: 200, tipo: "triangle", dur: 0.18, vol: 0.08 }); return; }
+      if (m < 2){ tono({ f: 660, tipo: "sine", dur: 0.2, vol: 0.1 }); return; }
+      const n = m >= 10 ? 7 : 4;
+      for (let i = 0; i < n; i++) tono({ t: i * 0.06, f: NOTAS[i], tipo: "square", dur: 0.16, vol: 0.05 });
+      if (m >= 10){ soplo({ filtro: "lowpass", f: 900, f2: 80, dur: 0.8, vol: 0.4 }); tono({ f: 70, f2: 40, tipo: "sine", dur: 0.7, vol: 0.25 }); }
+    },
     // efectos de caricatura (muertes del Pollo)
     golpe(t = 0){ tono({ t, f: 130, f2: 40, tipo: "square", dur: 0.28, vol: 0.18 }); soplo({ t, filtro: "lowpass", f: 700, f2: 120, dur: 0.35, vol: 0.45 }); },
     clang(t = 0){ this.golpe(t); [1250, 1870, 2630].forEach((f, i) => tono({ t, f, tipo: i ? "triangle" : "square", dur: 0.9 - i * 0.15, vol: 0.05 })); },
