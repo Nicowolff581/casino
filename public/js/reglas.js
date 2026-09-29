@@ -101,13 +101,16 @@ const REGLAS = {
   ruleta: () => devuelve(pct(36 / 37), "devuelve a largo plazo en todas las apuestas") +
     `<h3>Cómo se juega</h3><ul>
       <li>Ruleta europea con 37 casillas (0 a 36), todas igual de probables.</li>
-      <li>Si sale el 0, las apuestas exteriores (rojo, negro, par, impar, 1 a 18, 19 a 36) pierden.</li>
+      <li>Si sale el 0, todas las apuestas exteriores (docenas, columnas, rojo, negro, par, impar, 1 a 18, 19 a 36) pierden.</li>
+      <li>El número se sortea al tocar «Girar»; el resultado se anuncia cuando la bola y la rueda se detienen.</li>
       <li>Puedes poner varias fichas en el mismo giro, cada una con el monto elegido en ese momento. Se descuentan al girar y cada apuesta se paga por separado.</li>
       <li>Como todas las apuestas devuelven lo mismo, combinar varias no cambia el porcentaje: sigue siendo ${pct(36 / 37)} de lo apostado.</li></ul>
     <h3>Apuestas</h3>` +
     tabla(["Apuesta", "Números que ganan", "Probabilidad", "Paga", "Devuelve"], [
       ["Pleno (un número)", "1", pct(1 / 37), "35 a 1", pct(ruPremio("17", 17, 1) / 37)],
-      ["Rojo o negro", "18", pct(18 / 37), "1 a 1", pct(18 * ruPremio("r", 1, 1) / 37)],
+      ["Docena (1-12, 13-24, 25-36)", "12", pct(12 / 37), "2 a 1", pct(12 * ruPremio("d1", 1, 1) / 37)],
+      ["Columna («2 a 1»)", "12", pct(12 / 37), "2 a 1", pct(12 * ruPremio("c1", 1, 1) / 37)],
+            ["Rojo o negro", "18", pct(18 / 37), "1 a 1", pct(18 * ruPremio("r", 1, 1) / 37)],
       ["Par o impar", "18", pct(18 / 37), "1 a 1", pct(18 * ruPremio("p", 2, 1) / 37)],
       ["1 a 18 o 19 a 36", "18", pct(18 / 37), "1 a 1", pct(18 * ruPremio("b", 1, 1) / 37)]]),
   fantan: () => devuelve(pct(ftPremio(1, 1, 1000) / 4000), "devuelve a largo plazo, elijas el número que elijas") +

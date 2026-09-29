@@ -66,9 +66,9 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
       let chi = 0; cuenta.forEach((o, k) => { const e = N * comb(PL_FILAS, k) / 2 ** PL_FILAS; chi += (o - e) ** 2 / e; });
       r.plChi = chi; r.plSim = Object.fromEntries(Object.entries(PL_TABLAS).map(([k, t]) => [k, cuenta.reduce((a, o, i) => a + o * t[i], 0) / N])); }
     // ruleta: los 37 números para cada tipo de apuesta
-    r.ruleta = Object.fromEntries(["17", "0", "r", "n", "p", "i", "b", "a"].map(sel => { let t = 0; for (let n = 0; n <= 36; n++) t += ruPremio(sel, n, 1); return [sel, t / 37]; }));
+    r.ruleta = Object.fromEntries(["17", "0", "r", "n", "p", "i", "b", "a", "d1", "d2", "d3", "c1", "c2", "c3"].map(sel => { let t = 0; for (let n = 0; n <= 36; n++) t += ruPremio(sel, n, 1); return [sel, t / 37]; }));
     // ruleta con varias apuestas: 2.000 combinaciones al azar, revisando los 37 números de cada una
-    const tipos = ["r", "n", "p", "i", "b", "a", ...Array.from({ length: 37 }, (_, i) => String(i))];
+    const tipos = ["r", "n", "p", "i", "b", "a", "d1", "d2", "d3", "c1", "c2", "c3", ...Array.from({ length: 37 }, (_, i) => String(i))];
     let peor = 1, mejor = 0;
     for (let k = 0; k < 2000; k++){
       const fichas = Array.from({ length: 1 + azarEntero(8) }, () => ({ t: tipos[azarEntero(tipos.length)], monto: 1 + azarEntero(500) }));
@@ -212,10 +212,20 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     await pagina.click('.pano [data-t="17"]');                         // limpia el resultado anterior
     await pagina.click("#ru-borrar");
     await ficha("33", 10); await ficha("16", 25); await ficha("r", 40); await ficha("r", 5); await ficha("7", 99);
+    const conDocena = await pagina.evaluate(() => [$$('.pano [data-t^="d"]').length, $$('.pano [data-t^="c"]').length]);
+    ok(conDocena[0] === 3 && conDocena[1] === 3, "Ruleta: el paño tiene las 3 docenas y las 3 columnas «2 a 1»");
     await pagina.click("#ru-deshacer");                                 // quita el 99 al 7
     const antes = await pagina.evaluate(() => ({ saldo, fichas: ru.fichas.map(f => ({ ...f })), texto: $("#ru-sel").textContent, chips: $$(".ficha-ru").map(c => c.textContent) }));
     ok(antes.fichas.length === 4 && antes.texto.includes("80") && antes.chips.sort().join() === "10,25,45", `Paño con 33 (10), 16 (25) y rojo (40+5): «${antes.texto}», fichas visibles ${antes.chips.join(" ")}`);
     await pagina.click("#ru-girar"); await esperarLibre(() => !ocupado);
+    // la bola quedó sobre el número que salió: se busca la casilla más cercana a la bola en la rueda girada
+    const bolaOk = await pagina.evaluate(() => {
+      const bb = $("#ru-bola").getBoundingClientRect(), rb = $("#rueda").getBoundingClientRect();
+      const bx = bb.x + bb.width / 2 - (rb.x + rb.width / 2), by = bb.y + bb.height / 2 - (rb.y + rb.height / 2);
+      const ang = (Math.atan2(bx, -by) * 180 / Math.PI - giroRueda + 720) % 360, seg = 360 / 37;
+      return { casilla: ORDEN[Math.round(ang / seg) % 37], salio: ruUlt[0], cartel: $("#ru-resultado").textContent };
+    });
+    ok(bolaOk.casilla === bolaOk.salio && bolaOk.cartel === String(bolaOk.salio), `Ruleta: la bola se detuvo en el ${bolaOk.casilla} y el resultado anunciado es ${bolaOk.salio}`);
     const despues = await pagina.evaluate(() => ({ saldo, n: ruUlt[0], msg: $("#ru-msg").textContent, clase: $("#ru-msg").className }));
     const pago = await pagina.evaluate(([f, n]) => ruPagoTotal(f, n), [antes.fichas, despues.n]);
     ok(despues.saldo - antes.saldo === pago - 80, `Salió el ${despues.n}: pagó ${pago} por 80 apostadas; saldo ${despues.saldo - antes.saldo >= 0 ? "+" : ""}${despues.saldo - antes.saldo} · «${despues.msg}»`);

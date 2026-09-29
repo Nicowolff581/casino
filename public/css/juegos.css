@@ -139,26 +139,32 @@
 /* ── ruleta ── */
 .ruleta-zona{ display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start; }
 .rueda-caja{ position:relative; width:min(340px, 82vw); aspect-ratio:1; flex:none; }
-.rueda-caja svg{ width:100%; height:100%; transition:transform 4.5s cubic-bezier(.12,.7,.15,1); }
-.bola-orbita{ position:absolute; inset:0; pointer-events:none; }
-.bola{ position:absolute; left:50%; top:5%; width:4.2%; aspect-ratio:1; border-radius:50%; transform:translate(-50%, -50%);
+.rueda-caja svg{ width:100%; height:100%; }
+.ru-resultado{ position:absolute; left:50%; top:50%; transform:translate(-50%, -50%) scale(.4); width:24%; aspect-ratio:1; border-radius:50%; display:grid; place-items:center;
+  font:800 clamp(1.4rem, 6vw, 2.2rem)/1 var(--f-texto); color:#fff; opacity:0; pointer-events:none; transition:opacity .3s, transform .45s var(--ease-rebote);
+  box-shadow:0 0 0 3px #f3d893, 0 0 24px rgba(243,216,147,.8); }
+.ru-resultado.ver{ opacity:1; transform:translate(-50%, -50%) scale(1); }
+.ru-resultado.r{ background:#c8102e; } .ru-resultado.n{ background:#111418; } .ru-resultado.v{ background:#1fa84a; }
+.bola{ position:absolute; left:50%; top:5%; width:5.2%; aspect-ratio:1; border-radius:50%; transform:translate(-50%, -50%); z-index:2;
   background:radial-gradient(circle at 35% 30%, #fff 0 20%, #dcdcdc 55%, #8a8a8a 100%); box-shadow:0 1px 3px rgba(0,0,0,.7); }
 .ru-ultimos{ display:flex; flex-direction:column; gap:6px; }
 .ru-ultimos span{ width:40px; height:40px; border-radius:50%; display:grid; place-items:center; font-weight:800; color:#fff; box-shadow:inset 0 -3px 0 rgba(0,0,0,.3); }
 .ru-ultimos span:first-child{ box-shadow:0 0 0 3px var(--acento); }
 .pano-scroll{ overflow-x:auto; margin-top:20px; }
-.pano{ min-width:560px; padding:14px; border-radius:14px; background:radial-gradient(ellipse at 50% 30%, #1d7a50, #0d4a2f); box-shadow:inset 0 0 40px rgba(0,0,0,.45); }
-.pano-grid{ display:grid; grid-template-columns:1.2fr repeat(12, 1fr); grid-template-rows:repeat(3, 44px); border:2px solid rgba(255,255,255,.75); }
-.pano-grid button, .pano-ext button{ position:relative; border:1px solid rgba(255,255,255,.6); color:#fff; font-weight:800; background:transparent; padding:0; }
-.pano-grid .cero{ grid-row:1 / 4; background:#1fa84a; border-radius:40px 0 0 40px; font-size:1.1rem; }
-.pano-grid .nro{ display:inline-grid; place-items:center; width:30px; height:30px; border-radius:50%; }
-.pano-grid .r .nro{ background:var(--rojo); } .pano-grid .n .nro{ background:#10141c; }
-.pano-grid button:hover, .pano-ext button:hover{ background:rgba(255,255,255,.12); }
-.pano-grid button{ font-size:.9rem; transition:filter .15s; } .pano-grid button:hover{ filter:brightness(1.25); }
-.pano-ext button{ border-radius:6px; }
-.pano-ext{ display:grid; grid-template-columns:1.2fr repeat(6, 2fr); height:44px; }
-.pano-ext .vacio{ border:none; pointer-events:none; }
-.rombo{ display:inline-block; width:22px; height:22px; transform:rotate(45deg); border-radius:3px; }
+.pano{ min-width:600px; padding:14px; border-radius:14px; background:radial-gradient(ellipse at 50% 30%, #1d7a50, #0d4a2f); box-shadow:inset 0 0 40px rgba(0,0,0,.45); }
+/* paño como en los casinos: casillas rojas y negras, «2 a 1» a la derecha, docenas y apuestas exteriores abajo */
+.pano-grid, .pano-docenas, .pano-ext{ display:grid; grid-template-columns:1.1fr repeat(12, 1fr) 1.1fr; }
+.pano-grid{ grid-template-rows:repeat(3, 48px); }
+.pano-docenas, .pano-ext{ height:40px; }
+.pano-docenas > *:nth-child(2), .pano-docenas > *:nth-child(3), .pano-docenas > *:nth-child(4){ grid-column:span 4; }
+.pano-ext > button{ grid-column:span 2; }
+.pano button{ position:relative; border:1px solid rgba(255,255,255,.7); color:#fff; font-weight:800; background:transparent; padding:0; font-size:.9rem; transition:filter .15s, background .15s; }
+.pano button:hover{ filter:brightness(1.25); background-color:rgba(255,255,255,.1); }
+.pano-grid .num.r{ background:#c8102e; } .pano-grid .num.n{ background:#111418; }
+.pano-grid .cero{ grid-row:1 / 4; background:#1fa84a; border-radius:36px 0 0 36px; font-size:1.2rem; }
+.pano-grid .col{ font-size:.8rem; letter-spacing:.02em; }
+.pano .ext.rojo{ background:#c8102e; } .pano .ext.negro{ background:#111418; }
+.pano .vacio{ border:none; pointer-events:none; }
 /* fichas puestas sobre el paño */
 .ficha-ru{ position:absolute; left:50%; top:50%; z-index:2; min-width:30px; height:30px; padding:0 3px; transform:translate(-50%, -50%); border-radius:999px; pointer-events:none;
   display:grid; place-items:center; font:800 .66rem/1 var(--f-texto); color:#1d1406; letter-spacing:-.02em;
@@ -249,5 +255,4 @@
   .th-centro{ padding:12px 0; } .th-centro .fila-cartas{ gap:4px; }
 }
 @media (prefers-reduced-motion: reduce){
-  .rueda-caja svg{ transition-duration:.01s; }
 }

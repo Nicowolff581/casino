@@ -236,23 +236,30 @@
       <!-- RULETA -->
       <section class="game" id="g-ruleta">
         <h2>Ruleta europea</h2>
-        <p class="reglas">Toca el paño para poner fichas del monto elegido: puedes apostar a varios números y apuestas exteriores en el mismo giro. Un número paga 35 a 1; rojo, negro, par, impar, 1 a 18 y 19 a 36 pagan 1 a 1 y pierden si sale el cero.</p>
+        <p class="reglas">Toca el paño para poner fichas del monto elegido: puedes apostar a varios números y apuestas exteriores en el mismo giro. Un número paga 35 a 1; docenas y columnas («2 a 1») pagan 2 a 1; rojo, negro, par, impar, 1 a 18 y 19 a 36 pagan 1 a 1. Si sale el cero, las exteriores pierden.</p>
         <div class="ruleta-zona">
           <div class="rueda-caja">
             <svg id="rueda" viewBox="0 0 300 300" aria-hidden="true"></svg>
-            <div class="bola-orbita" id="ru-orbita"><div class="bola" id="ru-bola"></div></div>
+            <div class="bola" id="ru-bola"></div>
+            <div class="ru-resultado" id="ru-resultado" aria-live="polite"></div>
           </div>
           <div class="ru-ultimos" id="ru-ult" aria-label="Últimos números"></div>
         </div>
         <div class="pano-scroll">
           <div class="pano">
             <div class="pano-grid" id="ru-nums"></div>
+            <div class="pano-docenas">
+              <span class="vacio"></span>
+              <button class="ext" data-t="d1">1 a 12</button><button class="ext" data-t="d2">13 a 24</button><button class="ext" data-t="d3">25 a 36</button>
+              <span class="vacio"></span>
+            </div>
             <div class="pano-ext">
               <span class="vacio"></span>
               <button class="ext" data-t="b">1 a 18</button><button class="ext" data-t="p">Par</button>
-              <button class="ext" data-t="r" aria-label="Rojo"><span class="rombo" style="background:var(--rojo)"></span></button>
-              <button class="ext" data-t="n" aria-label="Negro"><span class="rombo" style="background:#10141c"></span></button>
+              <button class="ext rojo" data-t="r" aria-label="Rojo"></button>
+              <button class="ext negro" data-t="n" aria-label="Negro"></button>
               <button class="ext" data-t="i">Impar</button><button class="ext" data-t="a">19 a 36</button>
+              <span class="vacio"></span>
             </div>
           </div>
         </div>
@@ -316,6 +323,7 @@
 <script src="js/sonido.js"></script>
 <script src="js/fiesta.js"></script>
 <script src="js/cartas.js"></script>
+<script src="js/manos.js"></script>
 <script src="js/juegos/avion.js"></script>
 <script src="js/juegos/pollo-muertes.js"></script>
 <script src="js/juegos/pollo.js"></script>

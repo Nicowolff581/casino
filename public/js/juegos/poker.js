@@ -1,57 +1,10 @@
 /* ═════════ TEXAS HOLD'EM ═════════
    Tú contra dos rivales controlados por el programa. Los rivales no ven tus cartas ni las
    del mazo: deciden solo con sus propias cartas y la mesa. Se reparte con una baraja justa. */
-const ORD = Object.fromEntries(VALORES.map((v, i) => [v, i + 2]));
-const NOMBRES_MANO = ["Carta alta","Pareja","Doble pareja","Trío","Escalera","Color","Full","Póker","Escalera de color"];
 const th = { jugadores: [], board: [], mazo: [], bote: 0, apuestaActual: 0, dealer: 2, ciega: 0, subidas: 0 };
 let thResolver = null;
-
-function eval5(cs){
-  const nums = cs.map(c => ORD[c.v]).sort((a, b) => b - a);
-  const cnt = {}; nums.forEach(n => cnt[n] = (cnt[n] || 0) + 1);
-  const grupos = Object.entries(cnt).map(([v, c]) => [+v, c]).sort((a, b) => b[1] - a[1] || b[0] - a[0]);
-  const gv = grupos.map(g => g[0]);
-  const flush = new Set(cs.map(c => c.p)).size === 1;
-  let esc = 0;
-  if (grupos.length === 5){ if (nums[0] - nums[4] === 4) esc = nums[0]; else if (nums.join() === "14,5,4,3,2") esc = 5; }
-  if (esc && flush) return [8, esc];
-  if (grupos[0][1] === 4) return [7, ...gv];
-  if (grupos[0][1] === 3 && grupos[1][1] === 2) return [6, ...gv];
-  if (flush) return [5, ...nums];
-  if (esc) return [4, esc];
-  if (grupos[0][1] === 3) return [3, ...gv];
-  if (grupos[0][1] === 2 && grupos[1][1] === 2) return [2, ...gv];
-  if (grupos[0][1] === 2) return [1, ...gv];
-  return [0, ...nums];
-}
-// Reparte el bote en capas (bote principal y botes laterales).
-// Cada jugador solo puede ganar, de cada rival, hasta lo mismo que él puso.
-// Devuelve las fichas que le tocan al jugador humano (índice 0).
-function thCobroHumano(jugadores, puntajes){
-  const vivosK = [0, 1, 2].filter(k => !jugadores[k].retirado);
-  const niveles = [...new Set(vivosK.map(k => jugadores[k].total))].sort((a, b) => a - b);
-  let previo = 0, cobro = 0;
-  for (const nivel of niveles){
-    const capa = jugadores.reduce((s, p) => s + Math.min(p.total, nivel) - Math.min(p.total, previo), 0);
-    const elegibles = vivosK.filter(k => jugadores[k].total >= nivel);
-    let ganan = elegibles;
-    if (elegibles.length > 1){
-      const mejor = elegibles.map(k => puntajes[k]).reduce((m, s) => cmpMano(s, m) > 0 ? s : m);
-      ganan = elegibles.filter(k => cmpMano(puntajes[k], mejor) === 0);
-    }
-    if (ganan.includes(0)) cobro += Math.floor(capa / ganan.length);
-    previo = nivel;
-  }
-  return cobro;
-}
-const cmpMano = (a, b) => { for (let i = 0; i < Math.max(a.length, b.length); i++){ const d = (a[i] || 0) - (b[i] || 0); if (d) return d; } return 0; };
-function combinaciones(arr, k, desde = 0, actual = [], out = []){
-  if (actual.length === k){ out.push([...actual]); return out; }
-  for (let i = desde; i < arr.length; i++){ actual.push(arr[i]); combinaciones(arr, k, i + 1, actual, out); actual.pop(); }
-  return out;
-}
-function mejorMano(cs){ return combinaciones(cs, 5).map(eval5).reduce((m, s) => cmpMano(s, m) > 0 ? s : m); }
-function nombreMano(s){ return s[0] === 8 && s[1] === 14 ? "Escalera real" : NOMBRES_MANO[s[0]]; }
+// Fichas que le tocan al jugador humano (índice 0), con botes laterales (ver repartirBotes en manos.js).
+const thCobroHumano = (jugadores, puntajes) => repartirBotes(jugadores.map((p, k) => ({ total: p.total, retirado: p.retirado, puntaje: puntajes[k] }))).cobros[0];
 function categoriaMesa(cs){
   const cnt = {}; cs.forEach(c => cnt[c.v] = (cnt[c.v] || 0) + 1);
   const v = Object.values(cnt).sort((a, b) => b - a);

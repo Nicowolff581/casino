@@ -5,7 +5,7 @@
 const ORDEN = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 const ROJOS = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 const colorN = n => n === 0 ? "#1fa84a" : ROJOS.has(n) ? "#d10f35" : "#10141c";
-let giro = 0, giroBola = 0;
+let giroRueda = 0;                                  // ángulo actual de la rueda (grados)
 const ruUlt = [];
 (function dibujarRueda(){
   const seg = 360 / 37, c = 150, rad = a => a * Math.PI / 180;
@@ -49,14 +49,24 @@ const ruUlt = [];
     b.innerHTML = `<span class="nro">${n}</span>`; b.setAttribute("aria-label", "Número " + n);
     g.appendChild(b);
   }
+  // columnas «2 a 1» a la derecha de cada fila (la fila de arriba es la columna del 3 al 36)
+  for (let fila = 0; fila < 3; fila++){
+    const b = document.createElement("button"); b.className = "ext col"; b.dataset.t = "c" + (3 - fila);
+    b.style.gridRow = fila + 1; b.style.gridColumn = 14; b.textContent = "2 a 1";
+    g.appendChild(b);
+  }
 })();
-const nombresRU = { r: "rojo", n: "negro", p: "par", i: "impar", b: "1 a 18", a: "19 a 36" };
+const nombresRU = { r: "rojo", n: "negro", p: "par", i: "impar", b: "1 a 18", a: "19 a 36", d1: "1 a 12", d2: "13 a 24", d3: "25 a 36",
+  c1: "la columna del 1 al 34", c2: "la columna del 2 al 35", c3: "la columna del 3 al 36" };
 const nombreApuesta = t => nombresRU[t] || "el " + t;
 // Fichas que paga una apuesta (incluye la ficha devuelta si gana).
+// Pleno 35 a 1 · docena y columna 2 a 1 · rojo, negro, par, impar, 1-18 y 19-36 pagan 1 a 1. Con el 0 solo gana el pleno al 0.
 function ruPremio(sel, n, bet){
-  const numero = /^\d+$/.test(sel);
-  const gana = numero ? +sel === n : n !== 0 && ({ r: ROJOS.has(n), n: !ROJOS.has(n), p: n % 2 === 0, i: n % 2 === 1, b: n <= 18, a: n >= 19 })[sel];
-  return gana ? bet * (numero ? 36 : 2) : 0;
+  if (/^\d+$/.test(sel)) return +sel === n ? bet * 36 : 0;
+  if (n === 0) return 0;
+  if (sel[0] === "d") return Math.ceil(n / 12) === +sel[1] ? bet * 3 : 0;
+  if (sel[0] === "c") return (n - 1) % 3 + 1 === +sel[1] ? bet * 3 : 0;
+  return ({ r: ROJOS.has(n), n: !ROJOS.has(n), p: n % 2 === 0, i: n % 2 === 1, b: n <= 18, a: n >= 19 })[sel] ? bet * 2 : 0;
 }
 // Suma de todas las fichas del paño para el número n.
 const ruPagoTotal = (fichas, n) => fichas.reduce((s, f) => s + ruPremio(f.t, n, f.monto), 0);
@@ -120,24 +130,52 @@ $("#ru-repetir").onclick = () => {
   casillas.forEach(b => b.querySelector(".ficha-ru")?.classList.add("cae"));
 };
 
+/* ── animación de la bola ──
+   La rueda gira en un sentido y la bola en el otro por el borde, frenando. Luego cae hacia las
+   casillas, rebota sobre las vecinas y se queda en la suya, girando con la rueda hasta que ésta se detiene.
+   Radios en % del tamaño de la rueda: borde 45 %, casillas 34,7 %. */
+function ruPonerBola(ang, radio){
+  const b = $("#ru-bola"), a = ang * Math.PI / 180;
+  b.style.left = (50 + radio * Math.sin(a)) + "%"; b.style.top = (50 - radio * Math.cos(a)) + "%";
+}
+function ruAnimarBola(idx){
+  const seg = 360 / 37, rapido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const T = rapido ? 400 : 7200, TD = rapido ? 250 : 4700, TC = rapido ? 350 : 5700;   // total, caída, encaje (ms)
+  const W0 = giroRueda, VUELTAS = 360 * 3 + Math.round(azar() * 180);
+  const rueda = t => W0 + VUELTAS * (1 - Math.pow(1 - Math.min(1, t / T), 3));        // frena suave
+  const casilla = t => rueda(t) + idx * seg;                                          // dónde está la casilla ganadora
+  const B0 = azar() * 360, fin = casilla(TD) % 360;
+  const recorrido = ((B0 - fin) % 360 + 360) % 360 + 360 * (rapido ? 1 : 7);          // vueltas de la bola (al revés), termina sobre la casilla
+  const bola = t => B0 - recorrido * (1 - Math.pow(1 - Math.min(1, t / TD), 2));
+  let rebotes = 0; const t0 = performance.now();
+  if (!rapido) sonido.giro(TD - 200, 0.03, 0.2);
+  return new Promise(listo => {
+    const paso = ahora => {
+      const t = ahora - t0;
+      $("#rueda").style.transform = `rotate(${rueda(t)}deg)`;
+      if (t < TD) ruPonerBola(bola(t), 45);
+      else if (t < TC){
+        const u = (t - TD) / (TC - TD);
+        const salto = Math.abs(Math.cos(u * Math.PI * 2.5)) * Math.pow(1 - u, 2);        // rebota contra los separadores
+        ruPonerBola(casilla(t) + seg * 1.4 * (1 - u) * Math.sin(u * Math.PI * 3), 34.7 + 10.3 * salto);
+        const r = Math.floor(u * 3); if (r > rebotes && !rapido){ rebotes = r; sonido.tope(); }
+      } else ruPonerBola(casilla(t), 34.7);
+      if (t < T) requestAnimationFrame(paso);
+      else { giroRueda = rueda(T) % 360; sonido.clic(); listo(); }
+    };
+    requestAnimationFrame(paso);
+  });
+}
+ruPonerBola(0, 45);
+
 $("#ru-girar").onclick = async () => {
   const fichas = ru.fichas, total = sumaFichas(fichas);
   if (ocupado || !fichas.length || ru.resultado || !apostar("#ru-msg", total)) return;
   ocupado = true; ruBotones(); msg("#ru-msg", "No va más…", "neutral");
-  const n = azarEntero(37), idx = ORDEN.indexOf(n), seg = 360 / 37;
-  const destino = (360 - idx * seg) % 360;
-  giro += 360 * 5 + ((destino - (giro % 360)) + 360) % 360;
-  const orb = $("#ru-orbita"), bola = $("#ru-bola");
-  orb.style.transition = "none"; bola.style.transition = "none"; bola.style.top = "5%";
-  orb.style.transform = `rotate(${giroBola}deg)`; void orb.offsetWidth;
-  giroBola = giroBola - 360 * 9;
-  orb.style.transition = "transform 5s cubic-bezier(.12,.6,.18,1)";
-  bola.style.transition = "top .7s cubic-bezier(.5,0,.5,1.6) 3.6s";
-  orb.style.transform = `rotate(${giroBola}deg)`; bola.style.top = "15.3%";
-  $("#rueda").style.transition = "transform 5s cubic-bezier(.12,.7,.15,1)";
-  $("#rueda").style.transform = `rotate(${giro}deg)`;
-  sonido.giro(4300); setTimeout(() => sonido.tope(), 4350);
-  await espera(matchMedia("(prefers-reduced-motion: reduce)").matches ? 100 : 5200);
+  const n = azarEntero(37);                          // el número se sortea aquí; la animación solo lo muestra
+  $("#ru-resultado").className = "ru-resultado"; $("#ru-resultado").textContent = "";
+  await ruAnimarBola(ORDEN.indexOf(n));
+  const r = $("#ru-resultado"); r.textContent = n; r.className = "ru-resultado ver " + (n === 0 ? "v" : ROJOS.has(n) ? "r" : "n");
   ruUlt.unshift(n); ruUlt.splice(8);
   $("#ru-ult").innerHTML = ruUlt.map(x => `<span style="background:${colorN(x)}">${x}</span>`).join("");
   // Marca en el paño qué apuestas ganaron y cuáles perdieron.
