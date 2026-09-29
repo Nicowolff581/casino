@@ -6,7 +6,7 @@ const INFO_JUEGOS = [
   { id: "poker",  nombre: "Texas Hold'em", desc: "Contra Valentina y Mateo", fondo: "linear-gradient(165deg, #1c4a36, #0e241a)", brillo: "rgba(216,178,90,.25)" },
   { id: "bj",     nombre: "Blackjack",     desc: "Llega a 21 sin pasarte",   fondo: "linear-gradient(165deg, #1a3d52, #0c1d28)", brillo: "rgba(120,190,255,.2)" },
   { id: "ruleta", nombre: "Ruleta",        desc: "Europea, un solo cero",    fondo: "linear-gradient(165deg, #5c1422, #2a0910)", brillo: "rgba(239,210,142,.25)" },
-  { id: "slots",  nombre: "Tragamonedas",  desc: "Frutas de oro",            fondo: "linear-gradient(165deg, #54301a, #26140a)", brillo: "rgba(255,190,90,.25)" },
+  { id: "slots",  nombre: "Tragamonedas",  desc: "Medianoche en el Club",            fondo: "linear-gradient(165deg, #54301a, #26140a)", brillo: "rgba(255,190,90,.25)" },
   { id: "avion",  nombre: "Avión",         desc: "Llega a destino y cobra",         fondo: "linear-gradient(165deg, #1d2d5c, #0c142c)", brillo: "rgba(140,170,255,.25)" },
   { id: "plinko", nombre: "Plinko",        desc: "Suelta la bola",           fondo: "linear-gradient(165deg, #3d1d55, #1a0c28)", brillo: "rgba(220,140,255,.22)" },
   { id: "pollo",  nombre: "Pollo",         desc: "Cruza y cobra a tiempo",   fondo: "linear-gradient(165deg, #4a4418, #201d08)", brillo: "rgba(255,230,120,.22)" },
