@@ -199,7 +199,22 @@ input[type="range"]{ accent-color:var(--acento); width:100%; }
 /* ── historial en píldoras ── */
 .historial{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; min-height:28px; }
 .historial span{ padding:4px 10px; border-radius:999px; font-weight:800; font-size:.8rem; background:rgba(0,0,0,.25); box-shadow:inset 0 0 0 1px var(--linea); font-variant-numeric:tabular-nums; }
+.historial button{ padding:4px 10px; border:none; border-radius:999px; font-weight:800; font-size:.8rem; background:rgba(0,0,0,.25); box-shadow:inset 0 0 0 1px var(--linea); font-variant-numeric:tabular-nums; transition:background .15s, transform .1s; }
+.historial button:hover{ background:rgba(216,178,90,.14); } .historial button:active{ transform:scale(.95); }
 .historial .si{ color:var(--gana); } .historial .no{ color:var(--pierde); } .historial .med{ color:var(--parcial); }
+.historial-cab{ font-size:.8rem; font-weight:800; color:var(--suave); margin-bottom:6px; } .historial-cab small{ font-weight:600; color:var(--tenue); }
+
+/* ── caja de juego justo ── */
+.justo{ margin-top:18px; padding:14px 16px; border-radius:var(--radio); background:rgba(0,0,0,.22); box-shadow:inset 0 0 0 1px var(--linea); display:grid; gap:8px; }
+.justo-cab{ display:flex; align-items:center; gap:8px; color:var(--acento2); } .justo-cab svg{ width:18px; height:18px; } .justo-cab b{ font-family:var(--f-titulo); font-size:1.05rem; }
+.justo-nota{ margin:0; color:var(--suave); font-size:.85rem; } .justo-nota strong{ color:var(--texto); }
+.justo-fila{ display:grid; grid-template-columns:190px minmax(0, 1fr); gap:10px; align-items:baseline; font-size:.85rem; }
+.justo-fila span{ color:var(--tenue); font-weight:700; }
+.justo-fila code{ font-family:ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size:.78rem; color:var(--acento2); overflow-wrap:anywhere; background:rgba(0,0,0,.25); padding:4px 8px; border-radius:6px; }
+.justo-fila b.si, .justo-acciones .si{ color:var(--gana); } .justo-fila b.no, .justo-acciones .no{ color:var(--pierde); } .justo-fila b.med{ color:var(--parcial); }
+#av-revelado{ display:grid; gap:8px; } #av-revelado:not(:empty){ padding-top:8px; border-top:1px solid var(--linea); }
+.justo-acciones{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; font-size:.85rem; color:var(--suave); }
+@media (max-width:560px){ .justo-fila{ grid-template-columns:1fr; gap:3px; } }
 
 /* ── ventana de reglas ── */
 .dialogo{ width:min(720px, calc(100vw - 24px)); max-height:min(86vh, 900px); padding:0; border:none; border-radius:16px; color:var(--texto); background:var(--superficie);

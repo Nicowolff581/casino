@@ -177,7 +177,7 @@
 /* ── avión ── */
 .av-cielo{ position:relative; aspect-ratio:16 / 8.5; min-height:240px; border-radius:14px; overflow:hidden; background:#0b1d4a; box-shadow:0 10px 30px rgba(0,0,0,.35); }
 .av-cielo canvas{ width:100%; height:100%; display:block; }
-.av-mult{ position:absolute; left:50%; top:20%; transform:translateX(-50%); text-align:center; font-size:clamp(1.4rem, 4.5vw, 2.4rem); font-weight:800;
+.av-mult{ position:absolute; left:50%; top:auto; bottom:24%; transform:translateX(-50%); text-align:center; font-size:clamp(1.4rem, 4.5vw, 2.4rem); font-weight:800;
   pointer-events:none; text-shadow:0 4px 18px rgba(0,0,0,.6); line-height:1.1; white-space:nowrap; }
 .av-mult:empty{ display:none; }
 .av-mult small{ display:block; font-size:.5em; font-weight:700; color:#dbe4ff; }

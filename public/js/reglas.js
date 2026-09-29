@@ -30,12 +30,17 @@ const REGLAS = {
     return devuelve(pct(AV_RTP, 0), "devuelve a largo plazo en las 4 velocidades (cálculo exacto)") +
     `<h3>Cómo se juega</h3><ul>
       <li>Apuestas y el avión despega. En el camino recoge premios: los <strong>+</strong> suman al multiplicador y los <strong>×</strong> lo multiplican. Los <strong>cohetes</strong> lo parten a la mitad.</li>
-      <li>Al final, o <strong>aterriza</strong> en el portaaviones y cobras <strong>apuesta × multiplicador</strong> (máximo ×${AV_TOPE}), o <strong>cae al mar</strong> y pierdes la apuesta.</li>
-      <li>Todo el vuelo se sortea al despegar con el azar justo del navegador. Lo que ves en el vuelo no cambia el resultado.</li></ul>
-    <h3>Probabilidad de aterrizar</h3>` +
-    tabla(["Velocidad", "Aterriza", "Multiplicador promedio", "Devuelve"], AV_NOMBRE.map((n, k) => [n, pct(AV_PROB[k], 1), "×" + num(AV_MULT_MEDIO[k]), pct(AV_PROB[k] * AV_MULT_MEDIO[k], 1)])) +
+      <li>Al final, o <strong>llega a destino</strong> y cobras <strong>apuesta × multiplicador</strong> (máximo ×${AV_TOPE}), o <strong>entra en una tormenta</strong> y pierdes la apuesta.</li>
+      <li>Todo el vuelo se decide al despegar. Lo que ves durante el vuelo no cambia el resultado.</li></ul>
+    <h3>Probabilidad de llegar a destino</h3>` +
+    tabla(["Velocidad", "Llega", "Multiplicador promedio", "Devuelve"], AV_NOMBRE.map((n, k) => [n, pct(AV_PROB[k], 1), "×" + num(AV_MULT_MEDIO[k]), pct(AV_PROB[k] * AV_MULT_MEDIO[k], 1)])) +
     `<h3>Qué aparece en el camino</h3><p>Cada vuelo tiene entre 4 y ${3 + avEventos(3)} eventos (más en velocidades altas). Probabilidad de cada evento:</p>` +
-    tabla(["Evento", ...AV_NOMBRE], nombres.map((n, i) => [n, ...[0, 1, 2, 3].map(k => pct(probEvento(k)[i], 1))])) + NO_CELEBRA;
+    tabla(["Evento", ...AV_NOMBRE], nombres.map((n, i) => [n, ...[0, 1, 2, 3].map(k => pct(probEvento(k)[i], 1))])) +
+    `<h3>Prueba de juego justo</h3><ul>
+      <li>Antes de cada vuelo se sortea un <strong>número secreto</strong> de 64 caracteres y se muestra su <strong>huella SHA-256</strong>.</li>
+      <li>Todos los eventos y el final del vuelo se calculan a partir de ese secreto: con el mismo secreto y la misma velocidad, siempre sale el mismo vuelo.</li>
+      <li>Al terminar se revela el secreto. El botón «Comprobar» recalcula la huella y el vuelo; también puedes pegar el secreto en cualquier calculadora de SHA-256 de internet.</li>
+      <li>Límite honesto: como todo pasa en tu propio navegador, esto prueba que el resultado no se cambió después de mostrarte la huella. La posición de los premios en el cielo es solo decoración.</li></ul>` + NO_CELEBRA;
   },
   pollo: () => {
     const difs = $$("#po-dif button").map(b => [b.textContent, +b.dataset.p]);
