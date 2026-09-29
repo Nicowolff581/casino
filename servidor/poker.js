@@ -4,10 +4,11 @@
    Fichas de práctica de la sala: todos empiezan con la misma cantidad, no se pueden pasar
    entre jugadores y no tocan el saldo personal de nadie. */
 import "../public/js/manos.js";
-const { mejorMano, nombreMano, repartirBotes } = globalThis;
+import "../public/js/avatares.js";
+const { mejorMano, nombreMano, repartirBotes, AVATARES_ID } = globalThis;
 
 export const MAX_JUGADORES = 6;
-export const AVATARES = ["🦊", "🐼", "🦁", "🐸", "🐯", "🐨", "🐵", "🦉", "🐙", "🦄", "🐧", "🐶"];
+export const AVATARES = AVATARES_ID;
 export const REACCIONES = ["👍", "😂", "😮", "😢", "🔥", "👏", "🍀", "😎"];
 const OPCIONES = { fichas: [500, 1000, 2000, 5000], ciega: [10, 20, 50, 100], tiempo: [15, 30, 60] };
 const PALOS = ["♠", "♥", "♦", "♣"], VALORES = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];

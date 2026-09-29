@@ -20,6 +20,8 @@ $("#tarjetas").innerHTML = INFO_JUEGOS.map((j, i) =>
 $("#v-inicio").insertAdjacentHTML("beforeend", `<p class="pie-inicio">El porcentaje de cada tarjeta es cuánto devuelve el juego a largo plazo. Toca «Reglas» dentro de cada juego para ver cómo se calcula.</p>`);
 $$("#tarjetas [data-ir]").forEach(b => b.addEventListener("click", () => ir(b.dataset.ir)));
 
+$("#hero-avatares").innerHTML = ["siete", "corona", "corazon", "dado"].map(a => `<span>${avatarHTML(a)}</span>`).join("") + '<span class="mas">+2</span>';
+
 /* ── botón «Reglas» en cada juego ── */
 const dialogo = $("#reglas-dialogo");
 $$(".game").forEach(g => {

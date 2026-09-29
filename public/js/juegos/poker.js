@@ -50,7 +50,7 @@ function pintarTH(revelar = false, turno = -1, ganadores = []){
     const p = th.jugadores[k] || { nombre: ["Tú", "Valentina", "Mateo"][k], cartas: [], estado: "" };
     const el = document.createElement("div");
     el.className = "asiento" + (k === 0 ? " tu" : "") + (p.retirado ? " fuera" : "") + (k === turno ? " turno" : "") + (ganadores.includes(k) ? " gana" : "");
-    el.innerHTML = `<div class="nombre">${p.nombre}${th.dealer === k && th.jugadores.length ? '<span class="boton-d" title="Repartidor">D</span>' : ""}</div><div class="fila-cartas ${k ? "mini" : ""}"></div><div class="estado">${p.estado || ""}</div>`;
+    el.innerHTML = `<div class="nombre">${avatarHTML(["corona", "corazon", "sombrero"][k], "chico")}${p.nombre}${th.dealer === k && th.jugadores.length ? '<span class="boton-d" title="Repartidor">D</span>' : ""}</div><div class="fila-cartas ${k ? "mini" : ""}"></div><div class="estado">${p.estado || ""}</div>`;
     p.cartas.forEach(c => el.querySelector(".fila-cartas").appendChild(cartaEl(c, k !== 0 && !(revelar && !p.retirado))));
     (k === 0 ? $("#th-yo") : $("#th-rivales")).appendChild(el);
   });

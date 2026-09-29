@@ -94,7 +94,7 @@
             <span class="chip-nuevo"><svg><use href="#i-amigos"/></svg>Nuevo · En línea</span>
             <h2>Jugar con amigos</h2>
             <p>Crea una sala privada de Texas Hold'em, comparte el código y jueguen todos con las mismas fichas de práctica.</p>
-            <div class="avatares" aria-hidden="true"><span>🦊</span><span>🐼</span><span>🦁</span><span>🐸</span><span class="mas">+2</span></div>
+            <div class="avatares" id="hero-avatares" aria-hidden="true"></div>
             <button class="btn" data-ir="amigos">Crear o entrar a una sala</button>
           </div>
         </div>
@@ -301,22 +301,7 @@
           <div class="ru-ultimos" id="ru-ult" aria-label="Últimos números"></div>
         </div>
         <div class="pano-scroll">
-          <div class="pano">
-            <div class="pano-grid" id="ru-nums"></div>
-            <div class="pano-docenas">
-              <span class="vacio"></span>
-              <button class="ext" data-t="d1">1 a 12</button><button class="ext" data-t="d2">13 a 24</button><button class="ext" data-t="d3">25 a 36</button>
-              <span class="vacio"></span>
-            </div>
-            <div class="pano-ext">
-              <span class="vacio"></span>
-              <button class="ext" data-t="b">1 a 18</button><button class="ext" data-t="p">Par</button>
-              <button class="ext rojo" data-t="r" aria-label="Rojo"></button>
-              <button class="ext negro" data-t="n" aria-label="Negro"></button>
-              <button class="ext" data-t="i">Impar</button><button class="ext" data-t="a">19 a 36</button>
-              <span class="vacio"></span>
-            </div>
-          </div>
+          <div class="pano" id="ru-pano"></div>
         </div>
         <div class="ru-barra">
           <p class="seleccion" id="ru-sel" aria-live="polite">Toca el paño para poner fichas.</p>
@@ -379,6 +364,8 @@
 <script src="js/fiesta.js"></script>
 <script src="js/cartas.js"></script>
 <script src="js/manos.js"></script>
+<script src="js/avatares.js"></script>
+<script src="js/ruleta-comun.js"></script>
 <script src="js/juegos/avion.js"></script>
 <script src="js/juegos/pollo-muertes.js"></script>
 <script src="js/juegos/pollo.js"></script>

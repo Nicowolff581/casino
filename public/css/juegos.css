@@ -59,7 +59,7 @@
 .asiento.fuera{ opacity:.4; }
 .asiento.gana{ box-shadow:0 0 0 2px var(--oro); }
 .asiento.tu{ max-width:340px; margin:0 auto; }
-.asiento .nombre{ font-weight:800; display:flex; align-items:center; gap:8px; margin-bottom:8px; min-height:22px; }
+.asiento .nombre{ font-weight:800; display:flex; align-items:center; gap:8px; margin-bottom:8px; min-height:26px; }
 .asiento .estado{ min-height:1.3em; margin-top:8px; color:var(--acento); font-weight:700; font-size:.9rem; }
 .asiento .fila-cartas{ min-height:0; }
 .boton-d{ width:22px; height:22px; border-radius:50%; background:#fff; color:#0f212e; font-size:.7rem; display:grid; place-items:center; font-weight:800; }

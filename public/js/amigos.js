@@ -2,7 +2,7 @@
    La página solo muestra lo que manda el servidor (servidor/worker.js + servidor/poker.js).
    El servidor reparte y guarda las cartas; a cada jugador le llegan solo las suyas.
    Se guarda en este navegador: apodo, avatar y el «pase» de cada sala para volver al mismo asiento. */
-const AM_AVATARES = ["🦊", "🐼", "🦁", "🐸", "🐯", "🐨", "🐵", "🦉", "🐙", "🦄", "🐧", "🐶"];
+const AM_AVATARES = AVATARES_ID;
 const AM_REACCIONES = ["👍", "😂", "😮", "😢", "🔥", "👏", "🍀", "😎"];
 const am = { ws: null, codigo: null, estado: null, desfase: 0, intentos: 0, cerrando: false, reintento: 0, anterior: null, datos: {} };
 try { am.datos = JSON.parse(localStorage.getItem("casino-nico-amigos")) || {}; } catch (e) {}
@@ -13,7 +13,7 @@ const enLinea = location.protocol === "http:" || location.protocol === "https:";
 /* ── entrada: apodo, avatar, crear o entrar ── */
 $("#am-apodo").value = am.datos.apodo || "";
 am.datos.avatar = AM_AVATARES.includes(am.datos.avatar) ? am.datos.avatar : AM_AVATARES[azarEntero(AM_AVATARES.length)];
-$("#am-avatares").innerHTML = AM_AVATARES.map(a => `<button role="radio" aria-checked="${a === am.datos.avatar}" data-a="${a}">${a}</button>`).join("");
+$("#am-avatares").innerHTML = AM_AVATARES.map(a => `<button role="radio" aria-checked="${a === am.datos.avatar}" data-a="${a}">${avatarHTML(a)}</button>`).join("");
 $$("#am-avatares button").forEach(b => b.onclick = () => {
   am.datos.avatar = b.dataset.a; amGuardar(); sonido.clic();
   $$("#am-avatares button").forEach(x => x.setAttribute("aria-checked", x === b));
@@ -115,7 +115,7 @@ function amPintar(s){
     el.style.cssText = `left:${x}%;top:${y}%`; el.dataset.asiento = j.asiento;
     const marcas = m ? [m.boton === j.asiento ? '<i class="am-d" title="Repartidor">D</i>' : "", m.sb === j.asiento ? '<i class="am-c">CP</i>' : "", m.bb === j.asiento ? '<i class="am-c">CG</i>' : ""].join("") : "";
     const estado = !j.conectado ? "Sin conexión" : j.ausente ? "Ausente" : p?.retirado ? "Se retiró" : p?.allin ? "Con todo" : j.fichas === 0 && !p ? "Sin fichas" : "";
-    el.innerHTML = `<div class="am-avatar"><span>${j.avatar}</span>${marcas}</div>
+    el.innerHTML = `<div class="am-avatar"><span>${avatarHTML(j.avatar)}</span>${marcas}</div>
       <div class="am-nombre">${j.apodo.replace(/[<>&]/g, "")}${j.anfitrion ? ' <small title="Creó la sala">★</small>' : ""}</div>
       <div class="am-fichas"><span class="moneda"></span>${fmt(j.fichas)}</div>
       ${estado ? `<div class="am-estado">${estado}</div>` : ""}
