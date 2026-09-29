@@ -41,6 +41,15 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     r.plinko = Object.fromEntries(Object.entries(PL_TABLAS).map(([k, t]) => [k, t.reduce((a, mm, i) => a + comb(PL_FILAS, i) / 2 ** PL_FILAS * mm, 0)]));
     // ruleta: los 37 números para cada tipo de apuesta
     r.ruleta = Object.fromEntries(["17", "0", "r", "n", "p", "i", "b", "a"].map(sel => { let t = 0; for (let n = 0; n <= 36; n++) t += ruPremio(sel, n, 1); return [sel, t / 37]; }));
+    // ruleta con varias apuestas: 2.000 combinaciones al azar, revisando los 37 números de cada una
+    const tipos = ["r", "n", "p", "i", "b", "a", ...Array.from({ length: 37 }, (_, i) => String(i))];
+    let peor = 1, mejor = 0;
+    for (let k = 0; k < 2000; k++){
+      const fichas = Array.from({ length: 1 + azarEntero(8) }, () => ({ t: tipos[azarEntero(tipos.length)], monto: 1 + azarEntero(500) }));
+      let pago = 0; for (let n = 0; n <= 36; n++) pago += ruPagoTotal(fichas, n);
+      const d = pago / 37 / sumaFichas(fichas); peor = Math.min(peor, d); mejor = Math.max(mejor, d);
+    }
+    r.ruletaMulti = [peor, mejor];
     // fan-tan: cada cantidad posible de fichas (20..59)
     const restos = [0, 0, 0, 0, 0]; for (let n = 20; n < 60; n++) restos[ftResto(n)]++;
     r.ftRestos = restos.slice(1); r.ftRtp = [1, 2, 3, 4].map(sel => restos.slice(1).reduce((a, c, i) => a + c / 40 * ftPremio(sel, i + 1, 100), 0) / 100);
@@ -83,7 +92,8 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
   ok(Math.abs(m.slots - 0.79066) < 1e-6, `Tragamonedas devuelve ${(m.slots * 100).toFixed(2)} %`);
   for (const [k, v] of Object.entries(m.plinko)) ok(v > 0.98 && v < 1, `Plinko ${k} devuelve ${(v * 100).toFixed(2)} %`);
   for (const [k, v] of Object.entries(m.ruleta)) ok(Math.abs(v - 36 / 37) < 1e-9, `Ruleta «${k}» devuelve ${(v * 100).toFixed(2)} %`);
-  ok(m.ftRestos.every(c => c === 10), `Fan-Tan: cada resto sale 10 de 40 veces (${m.ftRestos.join(", ")})`);
+  ok(Math.abs(m.ruletaMulti[0] - 36 / 37) < 1e-9 && Math.abs(m.ruletaMulti[1] - 36 / 37) < 1e-9, `Ruleta con varias apuestas: 2.000 combinaciones devuelven exactamente ${(m.ruletaMulti[0] * 100).toFixed(2)} %`);
+    ok(m.ftRestos.every(c => c === 10), `Fan-Tan: cada resto sale 10 de 40 veces (${m.ftRestos.join(", ")})`);
   ok(m.ftRango[0] === 20 && m.ftRango[1] === 59, `Fan-Tan sortea entre ${m.ftRango[0]} y ${m.ftRango[1]} fichas`);
   ok(m.ftRtp.every(v => Math.abs(v - 0.9625) < 1e-9), `Fan-Tan devuelve ${m.ftRtp.map(v => (v * 100).toFixed(2) + " %").join(" / ")}`);
   m.avionExacto.forEach(([calc, guardado, rtp], k) => ok(Math.abs(calc - guardado) < 1e-5 && Math.abs(rtp - 0.97) < 1e-4, `Avión velocidad ${k} devuelve ${(rtp * 100).toFixed(2)} % (exacto)`));
@@ -142,6 +152,27 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     await esperarLibre(() => !ocupado);
   });
   await jugar("ruleta", "#ru-msg", async () => { await pagina.click('.pano [data-t="r"]'); await pagina.click("#ru-girar"); await esperarLibre(() => !ocupado); });
+  // Ruleta: varias fichas con montos distintos, deshacer, borrar y repetir
+  {
+    const ficha = async (t, monto) => { await pagina.fill("#monto", String(monto)); await pagina.dispatchEvent("#monto", "change"); await pagina.click(`.pano [data-t="${t}"]`); };
+    await pagina.click('.pano [data-t="17"]');                         // limpia el resultado anterior
+    await pagina.click("#ru-borrar");
+    await ficha("33", 10); await ficha("16", 25); await ficha("r", 40); await ficha("r", 5); await ficha("7", 99);
+    await pagina.click("#ru-deshacer");                                 // quita el 99 al 7
+    const antes = await pagina.evaluate(() => ({ saldo, fichas: ru.fichas.map(f => ({ ...f })), texto: $("#ru-sel").textContent, chips: $$(".ficha-ru").map(c => c.textContent) }));
+    ok(antes.fichas.length === 4 && antes.texto.includes("80") && antes.chips.sort().join() === "10,25,45", `Paño con 33 (10), 16 (25) y rojo (40+5): «${antes.texto}», fichas visibles ${antes.chips.join(" ")}`);
+    await pagina.click("#ru-girar"); await esperarLibre(() => !ocupado);
+    const despues = await pagina.evaluate(() => ({ saldo, n: ruUlt[0], msg: $("#ru-msg").textContent, clase: $("#ru-msg").className }));
+    const pago = await pagina.evaluate(([f, n]) => ruPagoTotal(f, n), [antes.fichas, despues.n]);
+    ok(despues.saldo - antes.saldo === pago - 80, `Salió el ${despues.n}: pagó ${pago} por 80 apostadas; saldo ${despues.saldo - antes.saldo >= 0 ? "+" : ""}${despues.saldo - antes.saldo} · «${despues.msg}»`);
+    ok(pago > 80 ? despues.clase.includes("win") : pago === 80 ? despues.clase.includes("neutral") : !despues.clase.includes("win"), "El mensaje solo celebra si el total pagado supera lo apostado");
+    await pagina.click("#ru-repetir");
+    const rep = await pagina.evaluate(() => sumaFichas(ru.fichas));
+    await pagina.click("#ru-borrar");
+    const borrado = await pagina.evaluate(() => ru.fichas.length);
+    ok(rep === 80 && borrado === 0, "«Repetir apuesta» vuelve a poner las 80 fichas y «Borrar todo» las quita");
+    await pagina.fill("#monto", "10"); await pagina.dispatchEvent("#monto", "change");
+  }
   await jugar("fantan", "#ft-msg", async () => { await pagina.click('.ft-lado[data-n="2"]'); await pagina.click("#ft-jugar"); await esperarLibre(() => !ocupado); });
   await jugar("plinko", "#pl-msg", async () => { await pagina.click("#pl-soltar"); await esperarLibre(() => !ocupado); });
   await jugar("avion", "#av-msg", async () => { await pagina.click('#av-vel [data-k="3"]'); await pagina.click("#av-btn"); await esperarLibre(() => !ocupado); });

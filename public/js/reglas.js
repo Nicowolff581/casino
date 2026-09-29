@@ -91,7 +91,9 @@ const REGLAS = {
   ruleta: () => devuelve(pct(36 / 37), "devuelve a largo plazo en todas las apuestas") +
     `<h3>Cómo se juega</h3><ul>
       <li>Ruleta europea con 37 casillas (0 a 36), todas igual de probables.</li>
-      <li>Si sale el 0, las apuestas exteriores (rojo, negro, par, impar, 1 a 18, 19 a 36) pierden.</li></ul>
+      <li>Si sale el 0, las apuestas exteriores (rojo, negro, par, impar, 1 a 18, 19 a 36) pierden.</li>
+      <li>Puedes poner varias fichas en el mismo giro, cada una con el monto elegido en ese momento. Se descuentan al girar y cada apuesta se paga por separado.</li>
+      <li>Como todas las apuestas devuelven lo mismo, combinar varias no cambia el porcentaje: sigue siendo ${pct(36 / 37)} de lo apostado.</li></ul>
     <h3>Apuestas</h3>` +
     tabla(["Apuesta", "Números que ganan", "Probabilidad", "Paga", "Devuelve"], [
       ["Pleno (un número)", "1", pct(1 / 37), "35 a 1", pct(ruPremio("17", 17, 1) / 37)],

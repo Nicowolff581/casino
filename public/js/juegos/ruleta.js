@@ -1,10 +1,11 @@
 /* ═════════ RULETA EUROPEA ═════════
    37 casillas (0 a 36), todas igual de probables. Un número paga 35 a 1;
-   las apuestas exteriores (rojo, par, 1-18…) pagan 1 a 1 y pierden si sale el 0. */
+   las apuestas exteriores (rojo, par, 1-18…) pagan 1 a 1 y pierden si sale el 0.
+   Se pueden poner varias fichas en el mismo giro; cada una se paga por separado. */
 const ORDEN = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 const ROJOS = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 const colorN = n => n === 0 ? "#1fa84a" : ROJOS.has(n) ? "#d10f35" : "#10141c";
-let ruSel = null, giro = 0, giroBola = 0;
+let giro = 0, giroBola = 0;
 const ruUlt = [];
 (function dibujarRueda(){
   const seg = 360 / 37, c = 150, rad = a => a * Math.PI / 180;
@@ -45,26 +46,85 @@ const ruUlt = [];
     const n = col * 3 + (3 - fila), b = document.createElement("button");
     b.className = "num " + (ROJOS.has(n) ? "r" : "n"); b.dataset.t = String(n);
     b.style.gridRow = fila + 1; b.style.gridColumn = col + 2;
-    b.innerHTML = `<span>${n}</span>`; b.setAttribute("aria-label", "Número " + n);
+    b.innerHTML = `<span class="nro">${n}</span>`; b.setAttribute("aria-label", "Número " + n);
     g.appendChild(b);
   }
 })();
 const nombresRU = { r: "rojo", n: "negro", p: "par", i: "impar", b: "1 a 18", a: "19 a 36" };
-// Fichas que paga la ruleta (incluye la apuesta devuelta).
+const nombreApuesta = t => nombresRU[t] || "el " + t;
+// Fichas que paga una apuesta (incluye la ficha devuelta si gana).
 function ruPremio(sel, n, bet){
   const numero = /^\d+$/.test(sel);
   const gana = numero ? +sel === n : n !== 0 && ({ r: ROJOS.has(n), n: !ROJOS.has(n), p: n % 2 === 0, i: n % 2 === 1, b: n <= 18, a: n >= 19 })[sel];
   return gana ? bet * (numero ? 36 : 2) : 0;
 }
-grupoOpciones(".pano .num, .pano .ext", b => {
-  ruSel = b.dataset.t;
-  $("#ru-sel").innerHTML = `Apuestas a <b>${nombresRU[ruSel] || "el número " + ruSel}</b> · paga ${nombresRU[ruSel] ? "1 a 1" : "35 a 1"}.`;
-  $("#ru-girar").disabled = false;
+// Suma de todas las fichas del paño para el número n.
+const ruPagoTotal = (fichas, n) => fichas.reduce((s, f) => s + ruPremio(f.t, n, f.monto), 0);
+const sumaFichas = fichas => fichas.reduce((s, f) => s + f.monto, 0);
+
+/* ── fichas sobre el paño ──
+   ru.fichas: lista en el orden en que se pusieron (para «Deshacer»).
+   ru.anterior: las fichas del último giro (para «Repetir apuesta»). */
+const ru = { fichas: [], anterior: [], resultado: false };
+const casillas = $$(".pano .num, .pano .ext");
+// Monto corto para que quepa en la ficha: 1.500 → «1,5k», 2.000.000 → «2M».
+const corto = (v, sufijo) => v.toLocaleString("es-CO", { maximumFractionDigits: 1 }) + sufijo;
+const fmtCorto = n => n >= 1e6 ? corto(n / 1e6, "M") : n >= 1e4 ? Math.round(n / 1e3) + "k" : n >= 1e3 ? corto(n / 1e3, "k") : String(n);
+
+function pintarFichas(nueva){
+  const porCasilla = {};
+  ru.fichas.forEach(f => porCasilla[f.t] = (porCasilla[f.t] || 0) + f.monto);
+  casillas.forEach(b => {
+    const t = b.dataset.t, monto = porCasilla[t];
+    let chip = b.querySelector(".ficha-ru");
+    if (!monto){ chip?.remove(); b.setAttribute("aria-label", "Apostar a " + nombreApuesta(t)); return; }
+    if (!chip){ chip = document.createElement("span"); chip.className = "ficha-ru"; b.appendChild(chip); }
+    chip.textContent = fmtCorto(monto);
+    if (t === nueva){ chip.classList.remove("cae"); void chip.offsetWidth; chip.classList.add("cae"); }
+    b.setAttribute("aria-label", `${nombreApuesta(t)}: ${fmt(monto)} fichas`);
+  });
+  const total = sumaFichas(ru.fichas), n = Object.keys(porCasilla).length;
+  $("#ru-sel").innerHTML = total ? `${ru.resultado ? "Última apuesta" : "Apuesta total"}: <b>${fmt(total)}</b> fichas en ${n} ${n === 1 ? "apuesta" : "apuestas"}.` : "Toca el paño para poner fichas.";
+  ruBotones();
+}
+function ruBotones(){
+  const hay = ru.fichas.length > 0 && !ru.resultado;
+  $("#ru-girar").disabled = ocupado || !hay;
+  $("#ru-deshacer").disabled = ocupado || !hay;
+  $("#ru-borrar").disabled = ocupado || !hay;
+  $("#ru-repetir").disabled = ocupado || !ru.anterior.length;
+}
+// Después de un giro, la siguiente acción limpia el paño.
+function limpiarResultado(){
+  if (!ru.resultado) return;
+  ru.resultado = false; ru.fichas = [];
+  casillas.forEach(b => b.classList.remove("gano", "perdio"));
+  $("#ru-msg").textContent = "";
+}
+casillas.forEach(b => b.onclick = () => {
+  if (ocupado) return;
+  limpiarResultado();
+  const total = sumaFichas(ru.fichas);
+  if (total + apuesta > saldo){ avisar(saldo - total > 0 ? `Solo te alcanza para ${fmt(saldo - total)} fichas más.` : "No te quedan fichas para otra apuesta."); return; }
+  ru.fichas.push({ t: b.dataset.t, monto: apuesta });
+  sonido.ficha(); pintarFichas(b.dataset.t);
 });
+$("#ru-deshacer").onclick = () => { if (ocupado) return; const f = ru.fichas.pop(); sonido.clic(); pintarFichas(); if (f) avisar(`Quitaste ${fmt(f.monto)} de ${nombreApuesta(f.t)}.`); };
+$("#ru-borrar").onclick = () => { if (ocupado) return; ru.fichas = []; sonido.clic(); pintarFichas(); };
+$("#ru-repetir").onclick = () => {
+  if (ocupado || !ru.anterior.length) return;
+  limpiarResultado();
+  const total = sumaFichas(ru.anterior);
+  if (total > saldo){ avisar(`La apuesta anterior (${fmt(total)}) es mayor que tu saldo.`); return; }
+  ru.fichas = ru.anterior.map(f => ({ ...f })); sonido.ficha(); pintarFichas();
+  casillas.forEach(b => b.querySelector(".ficha-ru")?.classList.add("cae"));
+};
+
 $("#ru-girar").onclick = async () => {
-  if (ocupado || ruSel === null || !apostar("#ru-msg")) return;
-  ocupado = true; $("#ru-girar").disabled = true; msg("#ru-msg", "No va más…", "neutral");
-  const bet = apuesta, n = azarEntero(37), idx = ORDEN.indexOf(n), seg = 360 / 37;
+  const fichas = ru.fichas, total = sumaFichas(fichas);
+  if (ocupado || !fichas.length || ru.resultado || !apostar("#ru-msg", total)) return;
+  ocupado = true; ruBotones(); msg("#ru-msg", "No va más…", "neutral");
+  const n = azarEntero(37), idx = ORDEN.indexOf(n), seg = 360 / 37;
   const destino = (360 - idx * seg) % 360;
   giro += 360 * 5 + ((destino - (giro % 360)) + 360) % 360;
   const orb = $("#ru-orbita"), bola = $("#ru-bola");
@@ -80,6 +140,13 @@ $("#ru-girar").onclick = async () => {
   await espera(matchMedia("(prefers-reduced-motion: reduce)").matches ? 100 : 5200);
   ruUlt.unshift(n); ruUlt.splice(8);
   $("#ru-ult").innerHTML = ruUlt.map(x => `<span style="background:${colorN(x)}">${x}</span>`).join("");
-  liquidar("#ru-msg", ruPremio(ruSel, n, bet), bet, `Salió el ${n} ${n === 0 ? "verde" : ROJOS.has(n) ? "rojo" : "negro"}. `);
-  ocupado = false; $("#ru-girar").disabled = false;
+  // Marca en el paño qué apuestas ganaron y cuáles perdieron.
+  const ganadoras = new Set(fichas.filter(f => ruPremio(f.t, n, 1)).map(f => f.t));
+  casillas.forEach(b => { if (b.querySelector(".ficha-ru")) b.classList.add(ganadoras.has(b.dataset.t) ? "gano" : "perdio"); });
+  ru.anterior = fichas.map(f => ({ ...f })); ru.resultado = true;
+  pintarFichas();
+  const detalle = ganadoras.size ? `Ganaron: ${[...ganadoras].map(nombreApuesta).join(", ")}. ` : "";
+  liquidar("#ru-msg", ruPagoTotal(fichas, n), total, `Salió el ${n} ${n === 0 ? "verde" : ROJOS.has(n) ? "rojo" : "negro"}. ${detalle}`);
+  ocupado = false; ruBotones();
 };
+pintarFichas();

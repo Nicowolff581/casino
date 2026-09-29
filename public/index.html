@@ -231,7 +231,7 @@
       <!-- RULETA -->
       <section class="game" id="g-ruleta">
         <h2>Ruleta europea</h2>
-        <p class="reglas">Toca un número del paño (paga 35 a 1) o una apuesta exterior (paga 1 a 1). Si sale el cero, las apuestas exteriores pierden.</p>
+        <p class="reglas">Toca el paño para poner fichas del monto elegido: puedes apostar a varios números y apuestas exteriores en el mismo giro. Un número paga 35 a 1; rojo, negro, par, impar, 1 a 18 y 19 a 36 pagan 1 a 1 y pierden si sale el cero.</p>
         <div class="ruleta-zona">
           <div class="rueda-caja">
             <svg id="rueda" viewBox="0 0 300 300" aria-hidden="true"></svg>
@@ -251,7 +251,14 @@
             </div>
           </div>
         </div>
-        <p class="seleccion" id="ru-sel">Elige dónde apostar.</p>
+        <div class="ru-barra">
+          <p class="seleccion" id="ru-sel" aria-live="polite">Toca el paño para poner fichas.</p>
+          <div class="ru-herramientas">
+            <button class="btn sec btn-chico" id="ru-deshacer" disabled>Deshacer</button>
+            <button class="btn sec btn-chico" id="ru-borrar" disabled>Borrar todo</button>
+            <button class="btn sec btn-chico" id="ru-repetir" disabled>Repetir apuesta</button>
+          </div>
+        </div>
         <div class="acciones"><button class="btn" id="ru-girar" disabled>Girar la ruleta</button></div>
         <div class="msg" id="ru-msg" aria-live="polite"></div>
       </section>
