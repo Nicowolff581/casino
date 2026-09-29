@@ -11,12 +11,12 @@ import * as P from "./poker.js";
 const { esApuestaRU, ruPagoTotal, sumaFichas, RU_DURACION, ROJOS } = globalThis;
 const PAUSA_RESULTADO = 7000, MAX_FICHAS = 60;
 
-function azarEntero(n){
+export function azarEntero(n){
   const lim = Math.floor(0x100000000 / n) * n, b = new Uint32Array(1);
   do crypto.getRandomValues(b); while (b[0] >= lim);
   return b[0] % n;
 }
-async function sha256(texto){
+export async function sha256(texto){
   const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(texto));
   return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, "0")).join("");
 }

@@ -1,4 +1,4 @@
-/* ═════════ Casino Nico · jugar con amigos (Texas Hold'em en línea) ═════════
+/* ═════════ Casino Nico · jugar con amigos (Texas Hold'em, Ruleta y Blackjack en línea) ═════════
    La página solo muestra lo que manda el servidor (servidor/worker.js + servidor/poker.js).
    El servidor reparte y guarda las cartas; a cada jugador le llegan solo las suyas.
    Se guarda en este navegador: apodo, avatar y el «pase» de cada sala para volver al mismo asiento. */
@@ -19,13 +19,13 @@ $$("#am-avatares button").forEach(b => b.onclick = () => {
   $$("#am-avatares button").forEach(x => x.setAttribute("aria-checked", x === b));
 });
 ["fichas", "ciega", "tiempo"].forEach(k => { if (am.datos[k]) $("#am-" + k).value = am.datos[k]; });
-// juego de la sala nueva: póker o ruleta
-am.datos.juego = am.datos.juego === "ruleta" ? "ruleta" : "poker";
+// juego de la sala nueva: póker, ruleta o blackjack
+am.datos.juego = ["ruleta", "blackjack"].includes(am.datos.juego) ? am.datos.juego : "poker";
 function amElegirJuego(j){
   am.datos.juego = j; amGuardar();
   $$(".am-juego button").forEach(b => b.setAttribute("aria-pressed", b.dataset.juego === j));
-  $("#am-campo-ciega").hidden = j === "ruleta";
-  $("#am-tiempo-txt").textContent = j === "ruleta" ? "Tiempo para apostar" : "Tiempo por turno";
+  $("#am-campo-ciega").hidden = j !== "poker";
+  $("#am-tiempo-txt").textContent = j === "ruleta" ? "Tiempo para apostar" : j === "blackjack" ? "Tiempo para apostar y por turno" : "Tiempo por turno";
 }
 $$(".am-juego button").forEach(b => b.onclick = () => { sonido.clic(); amElegirJuego(b.dataset.juego); });
 amElegirJuego(am.datos.juego);
@@ -92,7 +92,7 @@ const amEnviar = m => { if (am.ws?.readyState === 1) am.ws.send(JSON.stringify(m
 function amConexion(texto, clase){ const c = $("#am-conexion"); c.textContent = texto; c.className = "am-conexion " + clase; }
 function amVolverAlLobby(){
   am.cerrando = true; clearTimeout(am.reintento); try { am.ws?.close(); } catch (e) {}
-  am.ws = null; am.codigo = null; am.estado = null; am.anterior = null; amrReiniciar();
+  am.ws = null; am.codigo = null; am.estado = null; am.anterior = null; amrReiniciar(); ambReiniciar();
   $("#am-lobby").hidden = false; $("#am-sala").hidden = true;
   try { history.replaceState(null, "", "#amigos"); } catch (e) {}
 }
@@ -105,7 +105,7 @@ $("#am-copiar").onclick = async () => {
   try { await navigator.clipboard.writeText(amEnlace()); avisar("Enlace copiado. ¡Mándaselo a tus amigos!"); }
   catch (e){ prompt("Copia este enlace:", amEnlace()); }
 };
-$("#am-compartir").onclick = () => navigator.share?.({ title: "Casino Nico", text: `Juguemos póker en Casino Nico. Sala ${am.codigo}`, url: amEnlace() }).catch(() => {});
+$("#am-compartir").onclick = () => navigator.share?.({ title: "Casino Nico", text: `Juguemos ${{ ruleta: "ruleta", blackjack: "blackjack" }[am.estado?.juego] || "póker"} en Casino Nico. Sala ${am.codigo}`, url: amEnlace() }).catch(() => {});
 
 /* ── la mesa ── */
 // Posiciones de los 6 asientos alrededor de la mesa; tu asiento siempre abajo al centro.
@@ -114,9 +114,10 @@ $("#am-reacciones").innerHTML = AM_REACCIONES.map(e => `<button data-e="${e}" ar
 $$("#am-reacciones button").forEach(b => b.onclick = () => amEnviar({ tipo: "reaccion", emoji: b.dataset.e }));
 
 function amPintar(s){
-  const ruleta = s.juego === "ruleta";
-  $("#amr").hidden = !ruleta; $("#am-mesa").hidden = ruleta; $(".am-panel").hidden = ruleta; $(".am-registro").hidden = ruleta;
+  const ruleta = s.juego === "ruleta", bj = s.juego === "blackjack", poker = !ruleta && !bj;
+  $("#amr").hidden = !ruleta; $("#amb").hidden = !bj; $("#am-mesa").hidden = !poker; $(".am-panel").hidden = !poker; $(".am-registro").hidden = !poker;
   if (ruleta){ am.estado = s; am.anterior = s; return amrPintar(s); }
+  if (bj){ am.estado = s; am.anterior = s; return ambPintar(s); }
   const antes = am.anterior; am.estado = s; am.anterior = s;
   const yo = s.jugadores.find(j => j.esYo), m = s.mano, giro = s.tuAsiento ?? 0, mesa = $("#am-mesa");
   // asientos
@@ -210,7 +211,7 @@ function amSonidos(antes, s){
   }
 }
 function amBurbuja(asiento, emoji){
-  const el = $(`#am-mesa .am-asiento[data-asiento="${asiento}"]`) || $(`#amr-jugadores [data-asiento="${asiento}"]`); if (!el) return;
+  const el = $(`#am-mesa .am-asiento[data-asiento="${asiento}"]`) || $(`#amr-jugadores [data-asiento="${asiento}"]`) || $(`#amb-asientos [data-asiento="${asiento}"]`); if (!el) return;
   const b = document.createElement("span"); b.className = "am-burbuja"; b.textContent = emoji; el.appendChild(b);
   setTimeout(() => b.remove(), 2200);
 }

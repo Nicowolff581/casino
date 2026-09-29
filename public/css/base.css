@@ -281,6 +281,7 @@ input[type="range"]{ accent-color:var(--acento); width:100%; }
 .am-tarjeta h2{ margin:0; font-size:1.3rem; }
 .am-dos{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 .am-campo{ display:grid; gap:6px; color:var(--suave); font-weight:700; font-size:.85rem; }
+[hidden]{ display:none !important; }        /* «hidden» siempre oculta, aunque la clase diga otra cosa */
 .am-campo input, .am-campo select{ font:inherit; font-size:1rem; font-weight:700; color:var(--texto); background:var(--fondo); border:1px solid var(--linea-fuerte); border-radius:8px; padding:10px 12px; }
 #am-codigo{ text-transform:uppercase; letter-spacing:.3em; font-size:1.2rem; }
 .am-avatares{ display:flex; flex-wrap:wrap; gap:6px; }
@@ -366,6 +367,34 @@ input[type="range"]{ accent-color:var(--acento); width:100%; }
   background:radial-gradient(circle, #f6dc97 0 46%, transparent 48%), repeating-conic-gradient(#d8b25a 0 30deg, #fff6dc 30deg 45deg); box-shadow:inset 0 0 0 2px #a97a25, 0 3px 0 #7a5510; }
 .amr-valor[aria-pressed="true"]{ transform:translateY(-4px) scale(1.08); box-shadow:inset 0 0 0 2px #a97a25, 0 3px 0 #7a5510, 0 0 0 3px var(--gana); }
 .amr-extra:not(:empty){ margin-top:10px; }
+
+/* ── blackjack en línea ── */
+.amb-mesa{ margin:12px 12px 16px; padding-bottom:28px; }
+.amb-mesa .felt-arco{ top:22%; }
+.amb-asientos{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(auto-fit, minmax(128px, 1fr)); gap:10px; margin-top:54px; }
+.amb-asiento{ --c:var(--acento); position:relative; display:grid; justify-items:center; align-content:start; gap:3px; padding:8px 6px 10px; border-radius:14px; background:rgba(0,0,0,.22); box-shadow:inset 0 0 0 1px rgba(255,255,255,.08); transition:box-shadow .2s, transform .2s; }
+.amb-asiento.yo{ box-shadow:inset 0 0 0 2px var(--acento); background:rgba(216,178,90,.1); }
+.amb-asiento.turno{ box-shadow:inset 0 0 0 2px var(--gana), 0 0 18px rgba(52,211,122,.45); transform:translateY(-3px); }
+.amb-asiento.desconectado{ opacity:.55; }
+.amb-av{ width:40px; height:40px; font-size:1.2rem; display:grid; }
+.amb-nom{ font-weight:800; font-size:.85rem; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-shadow:0 1px 3px rgba(0,0,0,.7); } .amb-nom small{ color:var(--acento2); }
+.amb-fi{ display:flex; align-items:center; gap:4px; font-size:.78rem; font-weight:800; background:rgba(0,0,0,.4); padding:1px 8px; border-radius:999px; font-variant-numeric:tabular-nums; } .amb-fi .moneda{ width:12px; height:12px; }
+.amb-cartas{ display:flex; justify-content:center; min-height:5.2em; font-size:11px; margin-top:4px; } .amb-cartas .carta + .carta{ margin-left:-2.6em; }
+.amb-asiento.yo .amb-cartas{ font-size:13px; }
+.amb-val{ font-weight:900; font-size:.8rem; background:rgba(0,0,0,.45); border-radius:999px; padding:1px 9px; } .amb-val.pasado{ color:var(--pierde); } .amb-val.bj{ color:var(--oro); }
+.amb-ficha{ display:inline-grid; place-items:center; min-width:2.6em; height:2.6em; padding:0 4px; border-radius:50%; font:800 .72rem var(--f-texto); color:#fff; animation:ficha .3s ease-out;
+  background:repeating-conic-gradient(#c8102e 0 22.5deg, #fff 22.5deg 30deg, #c8102e 30deg 45deg); box-shadow:0 2px 4px rgba(0,0,0,.5); text-shadow:0 1px 2px #000; }
+.amb-ficha.doble{ background:repeating-conic-gradient(#1e5fd0 0 22.5deg, #fff 22.5deg 30deg, #1e5fd0 30deg 45deg); }
+.amb-tag{ font-size:.75rem; font-weight:900; padding:1px 10px; border-radius:999px; animation:msgGana .5s; }
+.amb-tag.si{ background:var(--gana); color:#0b1712; } .amb-tag.no{ background:rgba(255,107,107,.18); color:var(--pierde); } .amb-tag.igual{ background:rgba(255,255,255,.12); }
+.amb-tag.listo{ background:rgba(52,211,122,.18); color:var(--gana); animation:none; }
+.amb-reloj{ position:absolute; left:10px; right:10px; bottom:3px; height:4px; border-radius:2px; background:rgba(255,255,255,.1); overflow:hidden; }
+.amb-reloj i{ display:block; height:100%; background:var(--gana); transform-origin:left; transform:scaleX(var(--resta, 1)); }
+.amb-asiento .am-burbuja{ top:-16px; right:4px; }
+.amb-estado{ margin:0 12px; }
+.amb-jugar{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:12px 0 0; }
+.amb-reglas{ margin:14px 0 0; color:var(--suave); font-size:.88rem; } .amb-reglas summary{ cursor:pointer; font-weight:800; color:var(--texto); } .amb-reglas ul{ margin:8px 0 0; padding-left:20px; display:grid; gap:4px; }
+@media (max-width:600px){ .amb-asientos{ grid-template-columns:repeat(2, 1fr); margin-top:30px; } .amb-mesa{ margin:8px 4px 12px; padding:16px 8px 20px; } }
 
 /* ── celular y tabletas ── */
 @media (max-width:1100px){ .tarjetas{ grid-template-columns:repeat(3, 1fr); } }

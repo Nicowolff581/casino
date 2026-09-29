@@ -4,23 +4,7 @@
    Blackjack natural paga 3 a 2; ganar normal paga 1 a 1; empate devuelve la apuesta. */
 const bj = { mazo: [], p: [], d: [], bet: 0, primera: true, vistasD: 0, vistasP: 0, ocultaba: false };
 
-function valorBJ(mano){
-  let t = 0, ases = 0;
-  for (const c of mano){ if (c.v === "A"){ t += 11; ases++; } else if (c.v === "J" || c.v === "Q" || c.v === "K") t += 10; else t += +c.v; }
-  while (t > 21 && ases){ t -= 10; ases--; }
-  return t;
-}
-const esBlackjack = mano => mano.length === 2 && valorBJ(mano) === 21;
-
-// Fichas que recibe el jugador al terminar (incluye su apuesta si la recupera).
-function bjPago(p, d, bet){
-  const pbj = esBlackjack(p), dbj = esBlackjack(d);
-  if (pbj || dbj) return pbj && dbj ? bet : pbj ? bet + Math.floor(bet * 1.5) : 0;
-  const tu = valorBJ(p), cr = valorBJ(d);
-  if (tu > 21) return 0;
-  if (cr > 21 || tu > cr) return bet * 2;
-  return tu === cr ? bet : 0;
-}
+// valorBJ, esBlackjack y bjPago están en blackjack-comun.js (los comparte con el blackjack en línea).
 
 function pintarBJ(ocultar){
   const d = $("#bj-d"), p = $("#bj-p"), vd = bj.vistasD, vp = bj.vistasP, revela = !ocultar && bj.ocultaba;

@@ -107,7 +107,7 @@
         <div class="am-lobby" id="am-lobby">
           <button class="volver" data-ir="inicio"><svg><use href="#i-atras"/></svg>Inicio</button>
           <h1>Jugar con amigos</h1>
-          <p class="am-intro">Texas Hold'em de 2 a 6 jugadores en una sala privada. Solo entra quien tenga el código. Todos empiezan con las mismas fichas de práctica de la sala, que no cambian tu saldo personal ni se pueden pasar a otros.</p>
+          <p class="am-intro">Texas Hold'em, Ruleta o Blackjack de 2 a 6 jugadores en una sala privada. Solo entra quien tenga el código. Todos empiezan con las mismas fichas de práctica de la sala, que no cambian tu saldo personal ni se pueden pasar a otros.</p>
           <div class="am-aviso" id="am-sin-servidor" hidden>Abriste el casino desde un archivo de tu computador, y así no hay servidor. El modo en línea funciona en tu enlace publicado (el que termina en <b>.workers.dev</b>).</div>
           <div class="am-tarjeta">
             <label class="am-campo">Tu apodo <input id="am-apodo" maxlength="16" autocomplete="nickname" placeholder="Por ejemplo: Nico"></label>
@@ -119,7 +119,7 @@
               <h2>Crear una sala</h2>
               <div class="am-campo">Juego
                 <div class="dificultad am-juego" role="group" aria-label="Juego">
-                  <button data-juego="poker" aria-pressed="true">Texas Hold'em</button><button data-juego="ruleta" aria-pressed="false">Ruleta</button>
+                  <button data-juego="poker" aria-pressed="true">Texas Hold'em</button><button data-juego="ruleta" aria-pressed="false">Ruleta</button><button data-juego="blackjack" aria-pressed="false">Blackjack</button>
                 </div>
               </div>
               <label class="am-campo">Fichas para cada jugador <select id="am-fichas"><option>500</option><option selected>1000</option><option>2000</option><option>5000</option></select></label>
@@ -145,6 +145,45 @@
             <button class="btn sec btn-chico am-salir" id="am-salir">Salir de la sala</button>
           </div>
           <p class="am-fichas-nota">Fichas de la sala: iguales para todos, no cambian tu saldo personal.</p>
+          <!-- blackjack en línea -->
+          <div class="amb" id="amb" hidden>
+            <div class="felt felt-bj amb-mesa">
+              <svg class="felt-arco" viewBox="0 0 600 120" aria-hidden="true"><path id="arco-amb" d="M40,20 Q300,130 560,20" fill="none"/><text><textPath href="#arco-amb" startOffset="50%" text-anchor="middle">BLACKJACK PAGA 3 A 2 · EL CRUPIER SE PLANTA EN 17</textPath></text></svg>
+              <div class="lado"><h3>Crupier <b id="amb-dv"></b></h3><div class="fila-cartas" id="amb-d"></div></div>
+              <div class="amb-asientos" id="amb-asientos"></div>
+            </div>
+            <div class="amr-estado amb-estado" id="amb-estado" aria-live="polite"></div>
+            <div class="amb-jugar" id="amb-jugar">
+              <button class="btn" data-a="pedir">Pedir carta</button>
+              <button class="btn sec" data-a="plantarse">Plantarse</button>
+              <button class="btn sec" data-a="doblar">Doblar</button>
+            </div>
+            <div class="amr-controles" id="amb-apostar">
+              <div class="amr-valores" id="amb-valores" role="group" aria-label="Agregar fichas a tu apuesta"></div>
+              <div class="ru-herramientas">
+                <button class="btn sec btn-chico" id="amb-borrar">Borrar</button>
+                <button class="btn sec btn-chico" id="amb-repetir">Repetir apuesta</button>
+                <button class="btn btn-chico" id="amb-listo">¡Listo, repartir!</button>
+              </div>
+            </div>
+            <div class="amr-extra" id="amb-extra"></div>
+            <details class="amb-reglas"><summary>Reglas y pagos de esta mesa</summary>
+              <ul>
+                <li>Todos juegan contra el mismo crupier, cada uno con su propia mano. Todos ven las cartas de todos, menos la segunda carta del crupier, que se destapa al final.</li>
+                <li>Se juega con un zapato de 6 barajas (312 cartas), mezclado de nuevo en cada ronda.</li>
+                <li>Por turno, en orden de asiento: <b>pedir carta</b>, <b>plantarse</b> o <b>doblar</b> (con las dos primeras cartas: doblas la apuesta y recibes una sola carta más). No hay dividir ni seguro. Si se acaba tu tiempo, te plantas.</li>
+                <li>El crupier pide hasta llegar a 17 y se planta en 17 (también en 17 «blando», con As). Si tiene blackjack, se revela al repartir y la ronda termina.</li>
+                <li>Pagos: blackjack (As + 10 en 2 cartas) 3 a 2 · ganar 1 a 1 · empate devuelve la apuesta · perder o pasarte de 21, pierdes la apuesta. Con apuestas impares el 3 a 2 se redondea hacia abajo.</li>
+                <li>Con la estrategia básica devuelve cerca del 99 % de lo apostado a la larga (medido con 200.000 rondas simuladas); jugando al azar devuelve bastante menos.</li>
+              </ul>
+            </details>
+            <div class="justo">
+              <div class="justo-cab"><svg aria-hidden="true"><use href="#i-candado"/></svg><b>Juego justo</b></div>
+              <p class="justo-nota">Las cartas de cada ronda se mezclan antes de las apuestas y aquí ves la <strong>huella</strong> del zapato completo. Al final se revela el orden de las cartas y un secreto para que compruebes que nadie las cambió.</p>
+              <div class="justo-fila"><span>Huella de esta ronda</span><code id="amb-huella"></code></div>
+              <div id="amb-revelado"></div>
+            </div>
+          </div>
           <!-- ruleta en línea -->
           <div class="amr" id="amr" hidden>
             <div class="amr-arriba">
@@ -400,6 +439,7 @@
 <script src="js/manos.js"></script>
 <script src="js/avatares.js"></script>
 <script src="js/ruleta-comun.js"></script>
+<script src="js/blackjack-comun.js"></script>
 <script src="js/juegos/avion.js"></script>
 <script src="js/juegos/pollo-muertes.js"></script>
 <script src="js/juegos/pollo.js"></script>
@@ -413,6 +453,7 @@
 <script src="js/reglas.js"></script>
 <script src="js/amigos.js"></script>
 <script src="js/amigos-ruleta.js"></script>
+<script src="js/amigos-blackjack.js"></script>
 <script src="js/interfaz.js"></script>
 </body>
 </html>
