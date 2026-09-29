@@ -117,9 +117,14 @@
           <div class="am-dos">
             <div class="am-tarjeta">
               <h2>Crear una sala</h2>
+              <div class="am-campo">Juego
+                <div class="dificultad am-juego" role="group" aria-label="Juego">
+                  <button data-juego="poker" aria-pressed="true">Texas Hold'em</button><button data-juego="ruleta" aria-pressed="false">Ruleta</button>
+                </div>
+              </div>
               <label class="am-campo">Fichas para cada jugador <select id="am-fichas"><option>500</option><option selected>1000</option><option>2000</option><option>5000</option></select></label>
-              <label class="am-campo">Ciega grande <select id="am-ciega"><option>10</option><option selected>20</option><option>50</option><option>100</option></select></label>
-              <label class="am-campo">Tiempo por turno <select id="am-tiempo"><option value="15">15 segundos</option><option value="30" selected>30 segundos</option><option value="60">60 segundos</option></select></label>
+              <label class="am-campo" id="am-campo-ciega">Ciega grande <select id="am-ciega"><option>10</option><option selected>20</option><option>50</option><option>100</option></select></label>
+              <label class="am-campo"><span id="am-tiempo-txt">Tiempo por turno</span> <select id="am-tiempo"><option value="15">15 segundos</option><option value="30" selected>30 segundos</option><option value="60">60 segundos</option></select></label>
               <button class="btn" id="am-crear">Crear sala</button>
             </div>
             <div class="am-tarjeta">
@@ -140,6 +145,35 @@
             <button class="btn sec btn-chico am-salir" id="am-salir">Salir de la sala</button>
           </div>
           <p class="am-fichas-nota">Fichas de la sala: iguales para todos, no cambian tu saldo personal.</p>
+          <!-- ruleta en línea -->
+          <div class="amr" id="amr" hidden>
+            <div class="amr-arriba">
+              <div class="rueda-caja"><svg id="amr-rueda" viewBox="0 0 300 300" aria-hidden="true"></svg><div class="bola" id="amr-bola"></div><div class="ru-resultado" id="amr-resultado" aria-live="polite"></div></div>
+              <div class="amr-lado">
+                <div class="amr-estado" id="amr-estado" aria-live="polite"></div>
+                <div class="amr-hist" id="amr-hist" aria-label="Últimos números"></div>
+                <div class="amr-jugadores" id="amr-jugadores"></div>
+              </div>
+            </div>
+            <div class="pano-scroll"><div class="pano" id="amr-pano"></div></div>
+            <div class="amr-controles">
+              <div class="amr-valores" id="amr-valores" role="group" aria-label="Valor de la ficha"></div>
+              <div class="ru-herramientas">
+                <button class="btn sec btn-chico" id="amr-deshacer">Deshacer</button>
+                <button class="btn sec btn-chico" id="amr-borrar">Borrar todo</button>
+                <button class="btn sec btn-chico" id="amr-repetir">Repetir apuesta</button>
+                <button class="btn btn-chico" id="amr-listo">¡Listo!</button>
+              </div>
+            </div>
+            <div class="amr-extra" id="amr-extra"></div>
+            <div class="justo">
+              <div class="justo-cab"><svg aria-hidden="true"><use href="#i-candado"/></svg><b>Juego justo</b></div>
+              <p class="justo-nota">El número de cada ronda se sortea antes de las apuestas y aquí ves su <strong>huella</strong>. Después del giro se revela el secreto para que compruebes que no cambió.</p>
+              <div class="justo-fila"><span>Huella de esta ronda</span><code id="amr-huella"></code></div>
+              <div id="amr-revelado"></div>
+            </div>
+          </div>
+
           <div class="am-mesa" id="am-mesa">
             <div class="am-centro">
               <div class="am-board" id="am-board"></div>
@@ -378,6 +412,7 @@
 <script src="js/juegos/fantan.js"></script>
 <script src="js/reglas.js"></script>
 <script src="js/amigos.js"></script>
+<script src="js/amigos-ruleta.js"></script>
 <script src="js/interfaz.js"></script>
 </body>
 </html>

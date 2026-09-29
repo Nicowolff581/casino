@@ -15,13 +15,14 @@ npm run dev -- --ip 0.0.0.0
 
 y abre `http://localhost:8787`.
 
-## Jugar con amigos (Texas Hold'em en línea)
+## Jugar con amigos (Texas Hold'em y Ruleta en línea)
 - Salas privadas de 2 a 6 jugadores con un código de 6 letras o un enlace `…/#sala=CÓDIGO`.
 - Cada jugador entra solo con apodo y avatar: no se pide ningún dato personal.
 - El servidor (un «Durable Object» de Cloudflare por sala) baraja y reparte; a cada jugador le manda solo sus cartas.
 - Todos empiezan con las mismas fichas de la sala, separadas del saldo personal; no se pueden pasar entre jugadores.
 - Si alguien recarga o pierde la conexión, vuelve a su asiento (el navegador guarda un «pase» de la sala).
 - Tiempo límite por turno (15, 30 o 60 s); con 2 turnos vencidos seguidos el jugador queda «ausente».
+- Ruleta en línea: todos apuestan al mismo giro con fichas de su color; el número se sortea antes de las apuestas y se muestra su huella (SHA-256), que se comprueba al final.
 
 ## Cómo está organizado
 - `public/`: todo lo que se publica en internet.
@@ -38,8 +39,12 @@ y abre `http://localhost:8787`.
 - `public/js/amigos.js`: pantalla de «Jugar con amigos» (entrada, mesa, botones y reacciones).
 - `servidor/worker.js`: el servidor en Cloudflare (salas para jugar con amigos).
 - `servidor/poker.js`: el crupier del póker en línea (reglas, turnos, ciegas y botes laterales).
+- `servidor/ruleta.js`: la ruleta en línea (rondas, apuestas, giro y pagos).
+- `public/js/ruleta-comun.js` y `public/js/avatares.js`: reglas de la ruleta y avatares (los usan la página y el servidor).
+- `public/js/amigos-ruleta.js`: pantalla de la ruleta en línea.
 - `casino-nico-original.html`: copia intacta de la versión original.
 - `pruebas/probar.js`: prueba automática de reglas, pagos y consola (solo para desarrollo).
 - `pruebas/simular-tragamonedas.js`: simula millones de jugadas del tragamonedas para medir cuánto devuelve.
 - `pruebas/probar-poker-en-linea.mjs`: miles de manos del crupier en línea (fichas, turnos, privacidad, botes laterales).
 - `pruebas/probar-en-linea.js`: 4 jugadores en 4 ventanas contra el servidor local (`npx wrangler dev --port 8790`).
+- `pruebas/probar-ruleta-en-linea.mjs` y `pruebas/probar-ruleta-linea.js`: la ruleta en línea sin red y con 3 ventanas.

@@ -5,6 +5,7 @@
    reparte las cartas y habla con los jugadores por WebSocket (conexión en vivo). */
 import { DurableObject } from "cloudflare:workers";
 import * as P from "./poker.js";
+import * as R from "./ruleta.js";
 
 const CODIGO = /^[A-HJ-NP-Z2-9]{6}$/;
 const BORRAR_TRAS = 24 * 3600 * 1000;           // una sala sin actividad se borra al día siguiente
@@ -17,29 +18,31 @@ export class Sala extends DurableObject {
   }
   async guardar(){
     await this.ctx.storage.put("sala", this.sala);
-    const prox = P.proximaAlarma(this.sala);
+    const prox = this.sala.juego === "ruleta" ? R.proximaAlarma(this.sala) : P.proximaAlarma(this.sala);
     await this.ctx.storage.setAlarm(prox ?? this.sala.actividad + BORRAR_TRAS);
   }
   // Manda a cada conexión su propia vista (cada uno solo ve sus cartas).
   difundir(){
     for (const ws of this.ctx.getWebSockets()){
       const { token } = ws.deserializeAttachment() || {};
-      if (token) this.enviar(ws, { tipo: "estado", ahora: Date.now(), sala: P.vistaPara(this.sala, token) });
+      if (token) this.enviar(ws, { tipo: "estado", ahora: Date.now(), sala: this.vista(token) });
     }
   }
+  vista(token){ return this.sala.juego === "ruleta" ? R.vistaPara(this.sala, token) : { juego: "poker", ...P.vistaPara(this.sala, token) }; }
   enviar(ws, m){ try { ws.send(JSON.stringify(m)); } catch (e) {} }
 
   async fetch(req){
     const url = new URL(req.url);
     if (url.pathname === "/crear"){
       if (this.sala) return json({ error: "existe" }, 409);
-      this.sala = P.nuevaSala(url.searchParams.get("codigo"), await req.json().catch(() => ({})));
+      const cfg = await req.json().catch(() => ({}));
+      this.sala = cfg.juego === "ruleta" ? await R.nuevaSalaRuleta(url.searchParams.get("codigo"), cfg) : P.nuevaSala(url.searchParams.get("codigo"), cfg);
       await this.guardar();
       return json({ codigo: this.sala.codigo });
     }
     if (url.pathname === "/info"){
       if (!this.sala) return json({ existe: false }, 404);
-      return json({ existe: true, jugadores: this.sala.jugadores.length, estado: this.sala.estado, config: this.sala.config });
+      return json({ existe: true, juego: this.sala.juego || "poker", jugadores: this.sala.jugadores.length, estado: this.sala.estado, config: this.sala.config });
     }
     if (req.headers.get("Upgrade") !== "websocket") return json({ error: "Se esperaba una conexión en vivo." }, 426);
     if (!this.sala) return json({ error: "Esa sala no existe." }, 404);
@@ -63,6 +66,21 @@ export class Sala extends DurableObject {
       }
     }
     else if (!token) r = { error: "Primero entra a la sala." };
+    else if (s.juego === "ruleta"){
+      if (m.tipo === "apostar") r = R.apostar(s, token, m, ahora);
+      else if (m.tipo === "deshacer") r = R.deshacer(s, token);
+      else if (m.tipo === "borrar") r = R.borrar(s, token);
+      else if (m.tipo === "repetir") r = R.repetir(s, token, ahora);
+      else if (m.tipo === "listo") r = R.listo(s, token, ahora);
+      else if (m.tipo === "nuevaPartida") r = R.nuevaPartida(s, token);
+      else if (m.tipo === "salir"){ R.salir(s, token, ahora); ws.serializeAttachment({}); }
+      else if (m.tipo === "reaccion"){
+        const re = P.reaccion(s, token, m.emoji, ahora);
+        if (re) for (const otro of this.ctx.getWebSockets()) this.enviar(otro, { tipo: "reaccion", ...re });
+        return;
+      }
+      else if (m.tipo === "hola") return this.enviar(ws, { tipo: "hola" });
+    }
     else if (m.tipo === "empezar") r = P.empezar(s, token, ahora);
     else if (m.tipo === "nuevaPartida") r = P.nuevaPartida(s, token, ahora);
     else if (m.tipo === "accion") r = P.accion(s, token, m, ahora);
@@ -92,7 +110,7 @@ export class Sala extends DurableObject {
     if (!this.sala) return;
     const ahora = Date.now();
     if (!this.ctx.getWebSockets().length && ahora - this.sala.actividad > BORRAR_TRAS){ await this.ctx.storage.deleteAll(); this.sala = null; return; }
-    P.alarma(this.sala, ahora);
+    if (this.sala.juego === "ruleta") await R.alarma(this.sala, ahora); else P.alarma(this.sala, ahora);
     await this.guardar();
     this.difundir();
   }

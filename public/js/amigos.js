@@ -19,6 +19,16 @@ $$("#am-avatares button").forEach(b => b.onclick = () => {
   $$("#am-avatares button").forEach(x => x.setAttribute("aria-checked", x === b));
 });
 ["fichas", "ciega", "tiempo"].forEach(k => { if (am.datos[k]) $("#am-" + k).value = am.datos[k]; });
+// juego de la sala nueva: póker o ruleta
+am.datos.juego = am.datos.juego === "ruleta" ? "ruleta" : "poker";
+function amElegirJuego(j){
+  am.datos.juego = j; amGuardar();
+  $$(".am-juego button").forEach(b => b.setAttribute("aria-pressed", b.dataset.juego === j));
+  $("#am-campo-ciega").hidden = j === "ruleta";
+  $("#am-tiempo-txt").textContent = j === "ruleta" ? "Tiempo para apostar" : "Tiempo por turno";
+}
+$$(".am-juego button").forEach(b => b.onclick = () => { sonido.clic(); amElegirJuego(b.dataset.juego); });
+amElegirJuego(am.datos.juego);
 if (!enLinea){ $("#am-sin-servidor").hidden = false; }
 function amApodo(){
   const a = $("#am-apodo").value.trim();
@@ -28,7 +38,7 @@ function amApodo(){
 $("#am-crear").onclick = async () => {
   if (!enLinea) return msg("#am-msg", "El modo en línea funciona en tu enlace publicado, no abriendo el archivo.", "lose");
   if (!amApodo()) return;
-  const cfg = { fichas: +$("#am-fichas").value, ciega: +$("#am-ciega").value, tiempo: +$("#am-tiempo").value };
+  const cfg = { juego: am.datos.juego, fichas: +$("#am-fichas").value, ciega: +$("#am-ciega").value, tiempo: +$("#am-tiempo").value };
   Object.assign(am.datos, cfg); amGuardar();
   msg("#am-msg", "Creando la sala…");
   try {
@@ -82,7 +92,7 @@ const amEnviar = m => { if (am.ws?.readyState === 1) am.ws.send(JSON.stringify(m
 function amConexion(texto, clase){ const c = $("#am-conexion"); c.textContent = texto; c.className = "am-conexion " + clase; }
 function amVolverAlLobby(){
   am.cerrando = true; clearTimeout(am.reintento); try { am.ws?.close(); } catch (e) {}
-  am.ws = null; am.codigo = null; am.estado = null; am.anterior = null;
+  am.ws = null; am.codigo = null; am.estado = null; am.anterior = null; amrReiniciar();
   $("#am-lobby").hidden = false; $("#am-sala").hidden = true;
   try { history.replaceState(null, "", "#amigos"); } catch (e) {}
 }
@@ -104,6 +114,9 @@ $("#am-reacciones").innerHTML = AM_REACCIONES.map(e => `<button data-e="${e}" ar
 $$("#am-reacciones button").forEach(b => b.onclick = () => amEnviar({ tipo: "reaccion", emoji: b.dataset.e }));
 
 function amPintar(s){
+  const ruleta = s.juego === "ruleta";
+  $("#amr").hidden = !ruleta; $("#am-mesa").hidden = ruleta; $(".am-panel").hidden = ruleta; $(".am-registro").hidden = ruleta;
+  if (ruleta){ am.estado = s; am.anterior = s; return amrPintar(s); }
   const antes = am.anterior; am.estado = s; am.anterior = s;
   const yo = s.jugadores.find(j => j.esYo), m = s.mano, giro = s.tuAsiento ?? 0, mesa = $("#am-mesa");
   // asientos
@@ -197,7 +210,7 @@ function amSonidos(antes, s){
   }
 }
 function amBurbuja(asiento, emoji){
-  const el = $(`#am-mesa .am-asiento[data-asiento="${asiento}"]`); if (!el) return;
+  const el = $(`#am-mesa .am-asiento[data-asiento="${asiento}"]`) || $(`#amr-jugadores [data-asiento="${asiento}"]`); if (!el) return;
   const b = document.createElement("span"); b.className = "am-burbuja"; b.textContent = emoji; el.appendChild(b);
   setTimeout(() => b.remove(), 2200);
 }
