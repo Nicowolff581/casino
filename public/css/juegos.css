@@ -69,33 +69,72 @@
 .bote{ margin-top:14px; color:var(--suave); font-weight:700; display:inline-flex; gap:8px; align-items:center; background:rgba(0,0,0,.4); padding:6px 14px; border-radius:999px; }
 .bote b{ color:var(--texto); font-variant-numeric:tabular-nums; }
 
-/* ── tragamonedas ── */
-.gabinete{ position:relative; display:inline-flex; flex-direction:column; align-items:center; gap:12px; padding:18px 20px 22px; border-radius:26px 26px 16px 16px; overflow:hidden;
-  background:linear-gradient(180deg, #7a1022 0%, #4b0914 100%); box-shadow:inset 0 0 0 3px #ffc84a, inset 0 0 0 7px #7a1022, inset 0 0 0 9px #ffdf80, 0 20px 40px rgba(0,0,0,.5); }
-.marquesina{ font-weight:800; font-size:clamp(1.2rem, 3.4vw, 1.7rem); letter-spacing:.06em; color:#ffe27a; font-style:italic;
-  text-shadow:0 0 12px rgba(255,200,60,.8), 0 2px 0 #7a3b00; }
-.luces{ display:flex; gap:10px; }
-.luces i{ width:10px; height:10px; border-radius:50%; background:#ffd24a; box-shadow:0 0 8px #ffd24a; animation:foco 1s infinite; }
-.luces i:nth-child(2n){ animation-delay:.5s; }
-@keyframes foco{ 50%{ background:#5a3a00; box-shadow:none; } }
-.jackpot{ background:#120308; border-radius:8px; padding:6px 16px; color:#ff4d4d; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:.08em;
-  box-shadow:inset 0 0 0 2px #3b0a12; text-shadow:0 0 8px rgba(255,60,60,.8); }
-.jackpot b{ color:#ffe27a; text-shadow:0 0 8px rgba(255,210,80,.8); }
-.ventana{ --celda:clamp(62px, 13vw, 92px); position:relative; display:flex; gap:8px; padding:10px; background:#140408; border-radius:12px; box-shadow:inset 0 4px 12px rgba(0,0,0,.8); }
-.rodillo{ width:clamp(74px, 17vw, 112px); height:calc(var(--celda) * 3); overflow:hidden; border-radius:6px; position:relative;
-  background:linear-gradient(180deg, #bdbdbd 0%, #ffffff 30%, #ffffff 70%, #bdbdbd 100%); }
-.rodillo::after{ content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 28%, transparent 72%, rgba(0,0,0,.55) 100%); }
-.tira{ will-change:transform; }
-.tira.gira{ filter:blur(2px); }
-.sim{ height:var(--celda); display:grid; place-items:center; font-size:calc(var(--celda) * .6); }
-.linea-pago{ position:absolute; left:4px; right:4px; top:50%; height:3px; transform:translateY(-50%); background:rgba(255,60,80,.7); box-shadow:0 0 8px rgba(255,60,80,.8); pointer-events:none; z-index:2; }
-.ventana.gana .linea-pago{ background:#7dff7a; box-shadow:0 0 16px #7dff7a; animation:parpadeo .3s 5 alternate; }
-@keyframes parpadeo{ to{ opacity:.2; } }
-.moneda-cae{ position:absolute; top:-40px; font-size:28px; animation:cae 1.4s ease-in forwards; pointer-events:none; z-index:3; }
-@keyframes cae{ to{ transform:translateY(520px) rotate(540deg); opacity:.2; } }
-.tabla-pagos{ display:grid; grid-template-columns:repeat(auto-fill, minmax(120px,1fr)); gap:6px; margin-top:22px; font-size:.92rem; }
-.tabla-pagos div{ background:var(--superficie); border-radius:6px; padding:8px 10px; color:var(--suave); }
-.tabla-pagos b{ color:var(--acento); }
+/* ── tragamonedas «Medianoche en el Club» ── */
+.sl-maquina{ position:relative; max-width:660px; margin:0 auto; padding:14px 14px 16px; border-radius:22px;
+  background:radial-gradient(120% 70% at 50% 0%, #3a1f5c, #1a0f2e 55%, #0e0819);
+  box-shadow:inset 0 0 0 2px var(--acento), inset 0 0 0 7px rgba(0,0,0,.3), inset 0 0 0 8px rgba(239,210,142,.35), 0 22px 50px rgba(0,0,0,.55), 0 0 60px rgba(120,60,200,.2); }
+.sl-marquesina{ text-align:center; line-height:1; margin:2px 0 10px; }
+.sl-marquesina span{ font-family:var(--f-titulo); font-style:italic; font-weight:800; font-size:clamp(1.5rem, 5vw, 2.2rem); color:var(--acento2); text-shadow:0 0 18px rgba(239,210,142,.6), 0 2px 0 #5a3a0a; }
+.sl-marquesina small{ display:block; margin-top:4px; font-size:.7rem; letter-spacing:.4em; text-transform:uppercase; color:#c9b7ef; }
+.sl-info{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin:0 4px 8px; font-size:.85rem; color:#c9b7ef; font-weight:700; }
+.sl-info b{ color:#fff; font-variant-numeric:tabular-nums; font-size:1.05rem; }
+.sl-bono{ padding:3px 10px; border-radius:999px; background:rgba(216,178,90,.18); box-shadow:inset 0 0 0 1px var(--acento); color:var(--acento2); animation:msgGana .4s; }
+.sl-bono[hidden]{ display:none; }
+.sl-rejilla{ position:relative; aspect-ratio:6 / 5; border-radius:14px; overflow:hidden; container-type:inline-size;
+  background:radial-gradient(circle at 50% 40%, #241444, #0c0718 75%); box-shadow:inset 0 0 0 2px rgba(216,178,90,.45), inset 0 0 50px rgba(0,0,0,.7); }
+.sl-rejilla::before{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(90deg, transparent calc(100%/6 - 1px), rgba(255,255,255,.04) 0) 0 0 / calc(100%/6) 100%; }
+.sl-c{ position:absolute; left:calc(var(--c) * 100% / 6); top:calc(var(--f) * 100% / 5); width:calc(100% / 6); height:calc(100% / 5); display:grid; place-items:center;
+  transition:top .5s cubic-bezier(.3,.9,.35,1.18), opacity .35s, transform .35s; }
+.sl-c.sale{ top:calc((var(--f) + 6) * 100% / 5); opacity:0; transition-duration:.45s; transition-timing-function:ease-in; }
+.sl-s{ position:relative; width:84%; height:84%; display:grid; place-items:center; border-radius:24%; font-size:8.2cqw; line-height:1;
+  box-shadow:0 .4cqw .8cqw rgba(0,0,0,.5); }
+.sl-s span{ filter:drop-shadow(0 .3cqw .3cqw rgba(0,0,0,.4)); }
+/* palos: fichas redondas con borde de casino */
+.sl-trebol, .sl-diamante, .sl-corazon, .sl-pica{ border-radius:50%; color:#fff; font-size:7cqw; font-family:Georgia, serif;
+  background:radial-gradient(circle, var(--c1) 0 52%, transparent 54%), repeating-conic-gradient(#fff 0 12deg, var(--c2) 12deg 45deg);
+  box-shadow:inset 0 0 0 .6cqw var(--c2), 0 .5cqw 0 rgba(0,0,0,.35), 0 .8cqw 1.4cqw rgba(0,0,0,.45); }
+.sl-trebol{ --c1:#2fae62; --c2:#16693a; } .sl-diamante{ --c1:#3f8ef0; --c2:#1b4d9c; }
+.sl-corazon{ --c1:#e8385b; --c2:#8f1230; } .sl-pica{ --c1:#8b5cf6; --c2:#4a2594; }
+/* objetos del club */
+.sl-dado{ background:linear-gradient(160deg, #6a2030, #3a0f1a); box-shadow:inset 0 0 0 .4cqw rgba(255,160,170,.35), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
+.sl-coctel{ background:linear-gradient(160deg, #11606a, #07323a); box-shadow:inset 0 0 0 .4cqw rgba(120,240,230,.35), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
+.sl-sombrero{ background:linear-gradient(160deg, #3b3550, #1a1626); box-shadow:inset 0 0 0 .4cqw rgba(200,190,255,.3), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
+.sl-saxo{ background:linear-gradient(160deg, #6b4a12, #3a2606); box-shadow:inset 0 0 0 .4cqw rgba(255,210,120,.45), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
+.sl-ficha{ border-radius:50%; background:radial-gradient(circle, #133a28 0 50%, transparent 52%), repeating-conic-gradient(#f3d893 0 15deg, #b8862c 15deg 30deg);
+  box-shadow:inset 0 0 0 .5cqw #8a6420, 0 0 2.2cqw rgba(255,214,107,.55), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
+.sl-ficha b{ font-family:var(--f-titulo); font-size:7.5cqw; color:#f3d893; text-shadow:0 0 1.2cqw rgba(255,214,107,.8); }
+/* especiales */
+.sl-llave{ background:radial-gradient(circle at 50% 40%, #a0263d, #4d0c19); box-shadow:inset 0 0 0 .5cqw var(--acento), 0 0 2.4cqw rgba(216,60,90,.7); animation:slLatido 1.6s ease-in-out infinite; }
+.sl-farol{ border-radius:50%; background:radial-gradient(circle at 40% 35%, #fff4c9, #ffc94d 40%, #c77a0e 100%); color:#3a1c00;
+  box-shadow:0 0 2.6cqw rgba(255,190,70,.8), inset 0 -.6cqw 1cqw rgba(0,0,0,.25); font-family:var(--f-texto); font-weight:900; font-size:4.6cqw; }
+.sl-farol.n2{ background:radial-gradient(circle at 40% 35%, #ffe0f4, #ff6fd0 45%, #9a1b7e 100%); color:#2a0020; box-shadow:0 0 3cqw rgba(255,90,210,.85); }
+.sl-farol.n3{ background:radial-gradient(circle at 40% 35%, #e0fbff, #53e6ff 45%, #0d6a9a 100%); color:#001a2a; box-shadow:0 0 3.6cqw rgba(80,230,255,.95); animation:slLatido 1s ease-in-out infinite; }
+@keyframes slLatido{ 50%{ transform:scale(1.06); } }
+/* estados */
+.sl-c.gana{ z-index:2; } .sl-c.gana .sl-s{ animation:slGana .42s ease-in-out infinite alternate; box-shadow:0 0 0 .6cqw #fff6c9, 0 0 3.5cqw #ffd66b; }
+@keyframes slGana{ to{ transform:scale(1.12); } }
+.sl-c.explota .sl-s{ animation:slExplota .3s ease-out forwards; }
+@keyframes slExplota{ to{ transform:scale(1.6) rotate(12deg); opacity:0; filter:brightness(2.5) blur(1px); } }
+.sl-c.brilla .sl-s{ animation:slBrilla .5s ease-in-out 3 alternate; }
+@keyframes slBrilla{ to{ transform:scale(1.25); filter:brightness(1.4); } }
+/* cartel de premios */
+.sl-cartel{ position:absolute; left:50%; bottom:22px; transform:translate(-50%, 10px); z-index:5; display:flex; flex-wrap:wrap; justify-content:center; gap:6px 12px; max-width:92%;
+  padding:8px 16px; border-radius:14px; background:rgba(8,4,18,.88); box-shadow:inset 0 0 0 1px var(--acento), 0 10px 30px rgba(0,0,0,.6); opacity:0; pointer-events:none;
+  font-weight:800; font-size:.9rem; color:#e9dcff; transition:opacity .25s, transform .3s var(--ease-rebote); }
+.sl-cartel.ver{ opacity:1; transform:translate(-50%, 0); }
+.sl-cartel:empty{ display:none; }
+.sl-cartel b{ color:var(--gana); } .sl-cartel.mult b{ color:#ffd66b; }
+.sl-cartel.bono{ flex-direction:column; align-items:center; bottom:40%; padding:16px 26px; font-size:1rem; }
+.sl-cartel.bono strong{ font-family:var(--f-titulo); font-style:italic; font-size:1.8rem; color:var(--acento2); text-shadow:0 0 18px rgba(239,210,142,.7); }
+.sl-rapido{ margin-left:auto; font-size:.9rem; color:var(--suave); }
+/* tabla de pagos corta */
+.sl-pagos{ display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:6px; margin-top:20px; container-type:inline-size; }
+.sl-pagos > div{ display:grid; grid-template-columns:38px 1fr; grid-template-rows:repeat(3, auto); column-gap:10px; align-items:center; padding:8px 10px; border-radius:10px; background:rgba(0,0,0,.22); box-shadow:inset 0 0 0 1px var(--linea); font-size:.78rem; color:var(--suave); }
+.sl-pagos .sl-s{ grid-row:1 / 4; width:38px; height:38px; font-size:20px; }
+.sl-pagos .sl-trebol, .sl-pagos .sl-diamante, .sl-pagos .sl-corazon, .sl-pagos .sl-pica{ font-size:18px; box-shadow:inset 0 0 0 3px var(--c2); }
+.sl-pagos .sl-ficha b{ font-size:18px; }
+.sl-pagos b{ color:var(--texto); display:inline-block; min-width:38px; }
 
 /* ── ruleta ── */
 .ruleta-zona{ display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start; }

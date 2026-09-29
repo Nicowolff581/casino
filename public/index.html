@@ -175,26 +175,23 @@
   
       <!-- TRAGAMONEDAS -->
       <section class="game" id="g-slots">
-        <h2>Tragamonedas</h2>
-        <p class="reglas">Tres símbolos iguales en la línea roja pagan según la tabla. Dos cerezas devuelven el doble de tu apuesta.</p>
-        <div class="gabinete">
-          <div class="luces" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="marquesina">Frutas de Oro</div>
-          <div class="jackpot">PREMIO MAYOR <b id="s-jack">×100</b></div>
-          <div class="ventana" id="s-ventana">
-            <div class="rodillo"><div class="tira"></div></div>
-            <div class="rodillo"><div class="tira"></div></div>
-            <div class="rodillo"><div class="tira"></div></div>
-            <div class="linea-pago" aria-hidden="true"></div>
+        <h2>Medianoche en el Club</h2>
+        <p class="reglas">Tragamonedas de 6×5 que paga en cualquier parte: 8 o más símbolos iguales en cualquier lugar ganan. Los ganadores explotan y caen nuevos (cascada). Los faroles multiplican el premio y 4 llaves 🗝️ dan 10 giros gratis.</p>
+        <div class="sl-maquina">
+          <div class="sl-marquesina" aria-hidden="true"><span>Medianoche</span><small>en el Club</small></div>
+          <div class="sl-info">
+            <div>Premio de la jugada <b id="sl-ganancia">0</b></div>
+            <div class="sl-bono" id="sl-bono" hidden>Giros gratis <b id="sl-giros">0</b> · Multiplicador <b id="sl-acum">×0</b></div>
           </div>
-          <div class="luces" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="sl-rejilla" id="sl-rejilla" aria-label="Cuadrícula de 6 por 5 símbolos"></div>
+          <div class="sl-cartel" id="sl-cartel" aria-live="polite"></div>
         </div>
-        <div class="acciones"><button class="btn" id="s-girar">Girar</button></div>
+        <div class="acciones">
+          <button class="btn" id="s-girar">Girar</button>
+          <label class="interruptor sl-rapido"><input type="checkbox" id="sl-rapido"><span></span>Giro rápido</label>
+        </div>
         <div class="msg" id="s-msg" aria-live="polite"></div>
-        <div class="tabla-pagos">
-          <div>💎💎💎 <b>x100</b></div><div>⭐⭐⭐ <b>x50</b></div><div>🔔🔔🔔 <b>x20</b></div>
-          <div>🍇🍇🍇 <b>x10</b></div><div>🍋🍋🍋 <b>x8</b></div><div>🍒🍒🍒 <b>x5</b></div><div>🍒🍒 <b>x2</b></div>
-        </div>
+        <div class="sl-pagos" id="sl-pagos"></div>
       </section>
   
       <!-- BLACKJACK -->
@@ -323,6 +320,7 @@
 <script src="js/juegos/pollo-muertes.js"></script>
 <script src="js/juegos/pollo.js"></script>
 <script src="js/juegos/plinko.js"></script>
+<script src="js/juegos/tragamonedas-motor.js"></script>
 <script src="js/juegos/tragamonedas.js"></script>
 <script src="js/juegos/blackjack.js"></script>
 <script src="js/juegos/poker.js"></script>

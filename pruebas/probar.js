@@ -33,9 +33,30 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     for (let i = 0; i < 600000; i++){ const x = azar(); s += x; dado[azarEntero(6)]++; if (x < 0 || x >= 1) r.fueraRango = true; }
     r.promedio = s / 600000; r.dado = dado.map(d => d / 100000);
     // tragamonedas: cálculo exacto sobre todas las combinaciones
-    const tot = PESOS.reduce((a, b) => a + b); let rtp = 0;
-    SIMB.forEach((a, i) => SIMB.forEach((b, j) => SIMB.forEach((c, k) => { rtp += PESOS[i] * PESOS[j] * PESOS[k] / tot ** 3 * slotsPremio([a, b, c], 1); })));
-    r.slots = rtp;
+    // tragamonedas: reglas internas de 20.000 jugadas y devolución de 300.000 (la cifra exacta sale de pruebas/simular-tragamonedas.js)
+    { const fallas = []; let s = 0, bonos = 0;
+      for (let n = 0; n < 20000; n++){
+        const j = slJugada();
+        [j.base, ...(j.gratis || [])].forEach(g => {
+          g.pasos.forEach((p, k) => {
+            if (p.rejilla.length !== 30) fallas.push("tamaño");
+            const cuenta = {}; p.rejilla.forEach(c => { if (c.s < SL_SIMBOLOS.length) cuenta[c.s] = (cuenta[c.s] || 0) + 1; });
+            const esperado = Object.entries(cuenta).filter(([, c]) => c >= SL_MIN).map(([x]) => +x).sort().join();
+            if (p.premios.map(x => x.s).sort().join() !== esperado) fallas.push("premios mal contados");
+            if (k === g.pasos.length - 1 && p.premios.length) fallas.push("cascada sin terminar");
+            p.premios.forEach(x => { if (x.n !== cuenta[x.s] || x.pago !== SL_SIMBOLOS[x.s].pagos[x.n >= 12 ? 2 : x.n >= 10 ? 1 : 0]) fallas.push("pago"); });
+            if (p.premios.length){ const sig = g.pasos[k + 1].rejilla, gan = new Set(p.premios.map(x => x.s));
+              for (let col = 0; col < 6; col++){ const q = p.rejilla.slice(col * 5, col * 5 + 5).filter(c => !gan.has(c.s)).map(c => c.s + ":" + c.v).join(); if (sig.slice(col * 5 + 5 - q.split(",").filter(Boolean).length, col * 5 + 5).map(c => c.s + ":" + c.v).join() !== q) fallas.push("cascada"); } }
+          });
+        });
+        if (j.gratis && j.base.llaves < 4) fallas.push("bono sin llaves"); if (!j.gratis && j.base.llaves >= 4) fallas.push("llaves sin bono");
+        if (j.total > SL_TOPE || j.total < 0) fallas.push("tope");
+      }
+      r.slFallas = [...new Set(fallas)];
+      for (let n = 0; n < 300000; n++){ const j = slJugada(); s += j.total; if (j.gratis) bonos++; }
+      r.slSim = s / 300000; r.slBonos = bonos / 300000;
+      const sA = secretoAzar(), a = slJugada(azarDesde(sA)), b = slJugada(azarDesde(sA)); r.slDeterminista = a.total === b.total && JSON.stringify(a.base.pasos) === JSON.stringify(b.base.pasos);
+      r.slEst = SL_ESTADISTICAS; }
     // plinko: distribución binomial exacta
     const comb = (n, k) => { let x = 1; for (let i = 1; i <= k; i++) x = x * (n - k + i) / i; return x; };
     r.plinko = Object.fromEntries(Object.entries(PL_TABLAS).map(([k, t]) => [k, t.reduce((a, mm, i) => a + comb(PL_FILAS, i) / 2 ** PL_FILAS * mm, 0)]));
@@ -102,7 +123,9 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
   ok(m.plTablasIguales, "Plinko: las tablas de pago son idénticas a las originales");
   ok(m.plChi < 36, `Plinko: 400.000 bolas siguen la distribución exacta (prueba chi² = ${m.plChi.toFixed(1)}, debe ser menor que 36)`);
   for (const [k, v] of Object.entries(m.plSim)) ok(Math.abs(v - m.plinko[k]) < (k === "alto" ? 0.025 : 0.01), `Plinko ${k}: simulado ${(v * 100).toFixed(2)} % vs exacto ${(m.plinko[k] * 100).toFixed(2)} %`);
-  ok(Math.abs(m.slots - 0.79066) < 1e-6, `Tragamonedas devuelve ${(m.slots * 100).toFixed(2)} %`);
+  ok(!m.slFallas.length, `Tragamonedas: 20.000 jugadas cumplen las reglas (8+ iguales, pagos de la tabla, cascadas y giros gratis)${m.slFallas.length ? " · " + m.slFallas.join(", ") : ""}`);
+  ok(m.slDeterminista, "Tragamonedas: con el mismo azar sale exactamente la misma jugada (la animación no cambia nada)");
+  ok(Math.abs(m.slSim - m.slEst.devuelve) < 0.05, `Tragamonedas: 300.000 jugadas devolvieron ${(m.slSim * 100).toFixed(1)} % (cifra de las reglas: ${(m.slEst.devuelve * 100).toFixed(2)} % con ${m.slEst.jugadas / 1e6} millones); giros gratis 1 de cada ${Math.round(1 / m.slBonos)}`);
   for (const [k, v] of Object.entries(m.plinko)) ok(v > 0.98 && v < 1, `Plinko ${k} devuelve ${(v * 100).toFixed(2)} %`);
   for (const [k, v] of Object.entries(m.ruleta)) ok(Math.abs(v - 36 / 37) < 1e-9, `Ruleta «${k}» devuelve ${(v * 100).toFixed(2)} %`);
   ok(Math.abs(m.ruletaMulti[0] - 36 / 37) < 1e-9 && Math.abs(m.ruletaMulti[1] - 36 / 37) < 1e-9, `Ruleta con varias apuestas: 2.000 combinaciones devuelven exactamente ${(m.ruletaMulti[0] * 100).toFixed(2)} %`);
@@ -162,7 +185,21 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     }
     ok(bien === RONDAS, `${juego}: ${bien}/${RONDAS} rondas con mensaje coherente con el saldo`);
   }
-  await jugar("slots", "#s-msg", async () => { await pagina.click("#s-girar"); await esperarLibre(() => !ocupado); });
+  await pagina.click('nav button[data-juego="slots"]'); await pagina.check("#sl-rapido", { force: true });
+  await jugar("slots", "#s-msg", async () => { await pagina.click("#s-girar"); await esperarLibre(() => !ocupado, 180000); });
+  {
+    // una jugada con giros gratis forzada (solo en la prueba), para revisar que se muestre completa y pague lo calculado
+    const r = await pagina.evaluate(async () => {
+      let sj; do { sj = secretoAzar(); } while (!slJugada(azarDesde(sj)).gratis);
+      const esperado = slJugada(azarDesde(sj)), original = slJugada;
+      window.slJugada = () => original(azarDesde(sj));
+      const antes = saldo, bet = apuesta; $("#s-girar").click();
+      await new Promise(res => { const t = setInterval(() => { if (!ocupado){ clearInterval(t); res(); } }, 100); });
+      window.slJugada = original;
+      return { cambio: saldo - antes, esperado: Math.floor(esperado.total * bet + 1e-9) - bet, giros: esperado.gratis.length, texto: $("#s-msg").textContent, marcador: $("#sl-ganancia").textContent };
+    });
+    ok(r.cambio === r.esperado, `Tragamonedas con ${r.giros} giros gratis: el saldo cambió ${r.cambio} (esperado ${r.esperado}) · «${r.texto}»`);
+  }
   await jugar("bj", "#bj-msg", async () => {
     await pagina.click("#bj-repartir");
     if (await pagina.isEnabled("#bj-plantarse")) await pagina.click("#bj-plantarse");

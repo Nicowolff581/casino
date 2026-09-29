@@ -15,8 +15,9 @@ En internet se publica con Cloudflare (gratis): ver `wrangler.jsonc`.
 - `public/js/reglas.js`: reglas y tablas de probabilidades (se calculan con los números de cada juego).
 - `public/js/interfaz.js`: pantalla de inicio, ventana de reglas, panel de sonido y pantalla de carga.
 - `public/js/cartas.js`: baraja y dibujo de cartas.
-- `public/js/juegos/`: un archivo por juego.
+- `public/js/juegos/`: un archivo por juego (el tragamonedas separa su motor de resultados en `tragamonedas-motor.js`).
 - `public/muestras/estilos.html`: muestra de los 3 estilos visuales.
 - `servidor/worker.js`: el servidor en Cloudflare (salas para jugar con amigos).
 - `casino-nico-original.html`: copia intacta de la versión original.
 - `pruebas/probar.js`: prueba automática de reglas, pagos y consola (solo para desarrollo).
+- `pruebas/simular-tragamonedas.js`: simula millones de jugadas del tragamonedas para medir cuánto devuelve.

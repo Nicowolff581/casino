@@ -9,17 +9,11 @@ const devuelve = (valor, texto) => `<div class="rtp-grande"><b>${valor}</b><span
 const combin = (n, k) => { let x = 1; for (let i = 1; i <= k; i++) x = x * (n - k + i) / i; return x; };
 const NO_CELEBRA = `<p class="nota-regla">Solo se celebra como victoria cuando recibes más de lo que apostaste. Si recibes menos, se muestra en naranja como devolución parcial.</p>`;
 
-// Devolución exacta del tragamonedas: recorre todas las combinaciones de los 3 rodillos.
-function slotsDevolucion(){
-  const tot = PESOS.reduce((a, b) => a + b); let r = 0;
-  SIMB.forEach((a, i) => SIMB.forEach((b, j) => SIMB.forEach((c, k) => { r += PESOS[i] * PESOS[j] * PESOS[k] / tot ** 3 * slotsPremio([a, b, c], 1); })));
-  return r;
-}
 const plinkoDevolucion = t => t.reduce((a, m, k) => a + combin(PL_FILAS, k) / 2 ** PL_FILAS * m, 0);
 
 /* Resumen corto que muestran las tarjetas de inicio. */
 const RESUMEN_DEVOLUCION = {
-  avion: pct(AV_RTP, 0), pollo: "≈ " + pct(0.97, 0), plinko: "≈ " + pct(0.99, 0), slots: pct(slotsDevolucion(), 0),
+  avion: pct(AV_RTP, 0), pollo: "≈ " + pct(0.97, 0), plinko: "≈ " + pct(0.99, 0), slots: "≈ " + pct(SL_ESTADISTICAS.devuelve, 0),
   bj: "≈ " + pct(0.996, 1), poker: "Sin comisión", ruleta: pct(36 / 37, 1), fantan: pct(ftPremio(1, 1, 1000) / 4000, 2)
 };
 
@@ -61,15 +55,25 @@ const REGLAS = {
     tabla(["Casilla", "Probabilidad", "Riesgo bajo", "Riesgo medio", "Riesgo alto"], PL_TABLAS.bajo.map((_, k) =>
       [k + 1, pct(combin(PL_FILAS, k) / 2 ** PL_FILAS, 3), ...["bajo", "medio", "alto"].map(r => "×" + num(PL_TABLAS[r][k], 1))]).concat([["<strong>Devuelve</strong>", "", ...["bajo", "medio", "alto"].map(r => `<strong>${pct(plinkoDevolucion(PL_TABLAS[r]))}</strong>`)]])) + NO_CELEBRA,
   slots: () => {
-    const tot = PESOS.reduce((a, b) => a + b), p = SIMB.map((_, i) => PESOS[i] / tot);
-    return devuelve(pct(slotsDevolucion()), "devuelve a largo plazo (cálculo exacto de todas las combinaciones)") +
+    const E = SL_ESTADISTICAS, totB = SL_PESOS.base.reduce((a, b) => a + b), totG = SL_PESOS.gratis.reduce((a, b) => a + b), totV = SL_PESOS_VALOR.reduce((a, b) => a + b);
+    return devuelve(pct(E.devuelve, 1), `devuelve a largo plazo (simulado con ${fmt(E.jugadas / 1e6)} millones de jugadas, margen ±${pct(E.margen, 1)})`) +
     `<h3>Cómo se juega</h3><ul>
-      <li>Cada rodillo elige su símbolo por separado. Todos los símbolos que ves, incluso los del giro, siguen las mismas probabilidades.</li>
-      <li>Tres símbolos iguales en la línea pagan según la tabla. Exactamente dos 🍒 pagan ×2.</li></ul>
-    <h3>Tabla de pagos</h3>` +
-    tabla(["Combinación", "Sale en cada rodillo", "Probabilidad", "Paga"], SIMB.map((s, i) => [s + s + s, pct(p[i], 0), pct(p[i] ** 3, 3), "×" + PAGO_S[s]]).reverse()
-      .concat([["🍒🍒 + otro", "", pct(3 * p[0] ** 2 * (1 - p[0]), 2), "×2"]])) +
-    `<p class="nota-regla">«Paga ×5» significa que recibes 5 veces tu apuesta (tu apuesta incluida).</p>`;
+      <li>Cuadrícula de 6 columnas × 5 filas. Cada casilla se sortea por separado.</li>
+      <li><strong>Paga en cualquier parte:</strong> 8 o más símbolos iguales en cualquier lugar de la pantalla forman premio. No hay líneas.</li>
+      <li><strong>Cascada:</strong> los símbolos ganadores explotan, los de arriba caen y entran nuevos. Se repite mientras haya premio.</li>
+      <li><strong>Farol</strong> (×2 a ×100): al terminar las cascadas, si hubo premio, se suman los faroles en pantalla y multiplican el premio del giro.</li>
+      <li><strong>4 o más llaves 🗝️</strong> pagan y dan ${SL_GIROS} giros gratis. En los giros gratis los faroles se acumulan y el total multiplica cada premio siguiente. 3 llaves durante los giros gratis dan +${SL_MAS_GIROS}.</li>
+      <li>Premio máximo por jugada: ×${fmt(SL_TOPE)} tu apuesta. El total de cada jugada se redondea hacia abajo a fichas enteras.</li>
+      <li>Toda la jugada (cascadas y giros gratis incluidos) se sortea al tocar «Girar»; la animación solo la muestra.</li></ul>
+    <h3>Números de la simulación</h3>` +
+    tabla(["Dato", "Valor"], [["Devuelve en total", pct(E.devuelve, 2) + " ± " + pct(E.margen, 2)], ["…del juego normal", pct(E.normal, 1)], ["…de los giros gratis", pct(E.gratis, 1)],
+      ["Jugadas con algún premio", pct(E.frecuencia, 1)], ["Giros gratis", `1 de cada ${fmt(Math.round(E.bonoCada))} jugadas`]]) +
+    `<p class="nota-regla">Este juego es de volatilidad alta: la mayoría de las jugadas pagan poco o nada y, de vez en cuando, paga mucho. Por eso el porcentaje solo se nota después de muchísimas jugadas.</p>
+    <h3>Tabla de pagos (veces tu apuesta)</h3>` +
+    tabla(["Símbolo", "Sale", "8-9", "10-11", "12 o más"], SL_SIMBOLOS.map((S, i) => [`${S.ico} ${S.nombre}`, pct(SL_PESOS.base[i] / totB, 1), "×" + num(S.pagos[0]), "×" + num(S.pagos[1]), "×" + num(S.pagos[2])]).reverse()
+      .concat([["🗝️ Llave (4 / 5 / 6+)", pct(SL_PESOS.base[SL_LLAVE] / totB, 1), "×" + SL_PAGO_LLAVES(4), "×" + SL_PAGO_LLAVES(5), "×" + SL_PAGO_LLAVES(6)]])) +
+    `<h3>Faroles</h3><p>Salen en ${pct(SL_PESOS.base[SL_FAROL] / totB, 1)} de las casillas del juego normal y en ${pct(SL_PESOS.gratis[SL_FAROL] / totG, 1)} en los giros gratis. En los giros gratis también salen más seguido los símbolos comunes.</p>` +
+    tabla(["Valor", "Probabilidad"], SL_VALORES.map((v, i) => ["×" + v, pct(SL_PESOS_VALOR[i] / totV, 1)])) + NO_CELEBRA;
   },
   bj: () => devuelve("≈ " + pct(0.996, 1), "devuelve jugando con estrategia básica (3 millones de manos simuladas); jugando al azar devuelve bastante menos") +
     `<h3>Cómo se juega</h3><ul>
