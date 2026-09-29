@@ -19,7 +19,7 @@
     if (sel[0] === "c") return (n - 1) % 3 + 1 === +sel[1] ? bet * 3 : 0;
     return ({ r: ROJOS.has(n), n: !ROJOS.has(n), p: n % 2 === 0, i: n % 2 === 1, b: n <= 18, a: n >= 19 })[sel] ? bet * 2 : 0;
   }
-  const RU_DURACION = 13000;                             // duración del giro con la bola (ms), como una ruleta real
+  const RU_DURACION = 20000;                             // duración del giro con la bola (ms), como una ruleta real
   const ruPagoTotal = (fichas, n) => fichas.reduce((s, f) => s + ruPremio(f.t, n, f.monto), 0);
   const sumaFichas = fichas => fichas.reduce((s, f) => s + f.monto, 0);
   Object.assign(globalThis, { ORDEN, ROJOS, colorN, nombresRU, nombreApuesta, esApuestaRU, ruPremio, ruPagoTotal, sumaFichas, RU_DURACION });

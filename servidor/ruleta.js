@@ -108,7 +108,7 @@ export function nuevaPartida(s, token){
 function girar(s, ahora){
   const r = s.ruleta, ORDEN = globalThis.ORDEN;
   r.fase = "giro";
-  r.giro = { idx: ORDEN.indexOf(r.numero), rueda0: r.rueda, vueltas: 360 * 2 + azarEntero(181), bola0: azarEntero(360), inicio: ahora };
+  r.giro = { idx: ORDEN.indexOf(r.numero), rueda0: r.rueda, vueltas: 270 + azarEntero(91), bola0: azarEntero(360), inicio: ahora };
   r.fin = ahora + RU_DURACION + 400;
 }
 function resolver(s, ahora){

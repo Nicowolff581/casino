@@ -1,7 +1,7 @@
 // Configuración para publicar Casino Nico en Cloudflare (gratis).
 // Cloudflare lee este archivo cada vez que se suben cambios a GitHub.
 {
-  "name": "casino-nico",                       // debe coincidir con el nombre del proyecto en Cloudflare
+  "name": "filete",                            // debe coincidir con el nombre del proyecto en Cloudflare (filete.nwolff.workers.dev)
   "main": "servidor/worker.js",                // el "crupier" en línea
   "compatibility_date": "2025-09-01",
   "assets": {                                  // la página del casino (index.html, css, js…)

@@ -70,18 +70,19 @@ const fmtCorto = n => n >= 1e6 ? corto(n / 1e6, "M") : n >= 1e4 ? Math.round(n /
    casillas, rebota sobre las vecinas y se queda en la suya, girando con la rueda hasta que ésta se detiene.
    Con los mismos datos del giro, todos ven exactamente el mismo movimiento.
    Radios en % del tamaño de la rueda: borde 45 %, casillas 34,7 %. */
-const ruGiroNuevo = (rnd = azar) => ({ vueltas: 360 * 2 + Math.round(rnd() * 180), bola0: rnd() * 360 });   // la rueda da 2 a 2,5 vueltas
+const ruGiroNuevo = (rnd = azar) => ({ vueltas: 270 + Math.round(rnd() * 90), bola0: rnd() * 360 });   // la rueda gira lento: 3/4 a 1 vuelta
 function ruPonerBola(bola, ang, radio){
   const a = ang * Math.PI / 180;
   bola.style.left = (50 + radio * Math.sin(a)) + "%"; bola.style.top = (50 - radio * Math.cos(a)) + "%";
 }
 function ruAnimar({ svg, bola, idx, rueda0, vueltas, bola0, transcurrido = 0 }){
-  const seg = 360 / 37, rapido = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const T = rapido ? 400 : RU_DURACION, TD = rapido ? 250 : 8600, TC = rapido ? 350 : 11000;  // total, caída, encaje (ms)
+  // Siempre se anima completa (aunque el celular tenga «reducir movimiento»): el giro es parte del juego.
+  const seg = 360 / 37, rapido = false;
+  const T = RU_DURACION, TD = 14500, TC = 17500;                                      // total, caída, encaje (ms)
   const rueda = t => rueda0 + vueltas * (1 - Math.pow(1 - Math.min(1, t / T), 3));        // frena suave
   const casilla = t => rueda(t) + idx * seg;                                          // dónde está la casilla ganadora
   const fin = casilla(TD) % 360;
-  const recorrido = ((bola0 - fin) % 360 + 360) % 360 + 360 * (rapido ? 1 : 10);      // vueltas de la bola (al revés), termina sobre la casilla
+  const recorrido = ((bola0 - fin) % 360 + 360) % 360 + 360 * 8;                     // unas 8 vueltas de la bola (al revés), termina sobre la casilla
   const posBola = t => bola0 - recorrido * (1 - Math.pow(1 - Math.min(1, t / TD), 2));
   let rebotes = Math.floor(Math.max(0, transcurrido - TD) / (TC - TD) * 4); const t0 = performance.now() - transcurrido;
   if (!rapido && transcurrido < TD - 400) sonido.giro(TD - 200 - transcurrido, 0.035, 0.28);

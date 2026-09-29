@@ -40,7 +40,7 @@ const pausa = ms => new Promise(r => setTimeout(r, ms));
     await pausa(3000);
     const aMitad = await Promise.all(J.map(j => j.p.evaluate(() => ({ disco: $("#amr-resultado").textContent, estado: $("#amr-estado").textContent }))));
     ok(aMitad.every(x => x.disco === "" && x.estado.includes("No va más")), "Mientras la bola gira nadie ve el número (dice «No va más…»)");
-    await Promise.all(J.map(j => j.p.waitForFunction(() => amr.mostrada === am.estado.ruleta.ronda && am.estado.ruleta.resultado, null, { timeout: 25000 })));
+    await Promise.all(J.map(j => j.p.waitForFunction(() => amr.mostrada === am.estado.ruleta.ronda && am.estado.ruleta.resultado, null, { timeout: 45000 })));
     const fin = await Promise.all(J.map(j => j.p.evaluate(() => ({ n: am.estado.ruleta.resultado.numero, disco: $("#amr-resultado").textContent, fichas: am.estado.jugadores.find(x => x.esYo).fichas, asiento: am.estado.tuAsiento }))));
     ok(fin.every(x => x.disco === String(fin[0].n)), `Los 3 ven el mismo número al detenerse la bola: ${fin[0].n}`);
     const bolaOk = await ana.p.evaluate(() => { const bb = $("#amr-bola").getBoundingClientRect(), rb = $("#amr-rueda").getBoundingClientRect(); const ang = (Math.atan2(bb.x + bb.width / 2 - rb.x - rb.width / 2, -(bb.y + bb.height / 2 - rb.y - rb.height / 2)) * 180 / Math.PI - am.estado.ruleta.rueda + 720) % 360; return ORDEN[Math.round(ang / (360 / 37)) % 37]; });

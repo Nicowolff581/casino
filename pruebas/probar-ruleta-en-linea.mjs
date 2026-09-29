@@ -1,10 +1,10 @@
 /* Prueba de la ruleta en línea (servidor/ruleta.js) sin red.
-   Uso: node pruebas/probar-ruleta-en-linea.mjs [rondas, por defecto 3000] */
+   Uso: node pruebas/probar-ruleta-en-linea.mjs [rondas, por defecto 20000] */
 import * as R from "../servidor/ruleta.js";
 import * as P from "../servidor/poker.js";
 import { createHash } from "node:crypto";
 
-const RONDAS = +process.argv[2] || 3000;
+const RONDAS = +process.argv[2] || 20000;
 let fallos = 0; const errores = new Set();
 const mal = t => { fallos++; errores.add(t); };
 const azar = n => Math.floor(Math.random() * n);
