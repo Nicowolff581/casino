@@ -266,17 +266,23 @@
       <!-- FAN-TAN -->
       <section class="game" id="g-fantan">
         <h2>Fan-Tan</h2>
-        <p class="reglas">Un juego chino antiguo. Toca un lado del tapete para elegir tu número. El crupier tapa un montón de fichas con el cuenco y luego las retira de cuatro en cuatro. Si al final quedan tantas como tu número, ganas 3 a 1 (menos 5% de comisión).</p>
-        <div class="ft-mesa" role="group" aria-label="Tu número">
-          <div class="ft-cuadro" aria-hidden="true"></div>
-          <button class="ft-lado" data-n="1" aria-pressed="false"><span>一<br><small>1</small></span></button>
-          <button class="ft-lado" data-n="2" aria-pressed="false"><span>二<br><small>2</small></span></button>
-          <button class="ft-lado" data-n="3" aria-pressed="false"><span>三<br><small>3</small></span></button>
-          <button class="ft-lado" data-n="4" aria-pressed="false"><span>四<br><small>4</small></span></button>
-          <div class="ft-centro" id="ft-monton"></div>
-          <div class="ft-palo" id="ft-palo" aria-hidden="true"></div>
-          <div class="ft-cuenco arriba" id="ft-cuenco" aria-hidden="true"></div>
-          <div class="ft-grande" id="ft-grande"></div>
+        <p class="reglas">Un juego chino antiguo. Toca un lado del tapete para elegir tu número. El crupier tapa un montón de fichas con el cuenco y luego las retira de cuatro en cuatro, acomodándolas en filas. Si al final sobran tantas como tu número, ganas 3 a 1 (menos 5 % de comisión).</p>
+        <div class="ft-zona">
+          <div class="ft-mesa" role="group" aria-label="Tu número">
+            <div class="ft-cuadro" aria-hidden="true"></div>
+            <button class="ft-lado" data-n="1" aria-pressed="false"><span>一<br><small>1</small></span></button>
+            <button class="ft-lado" data-n="2" aria-pressed="false"><span>二<br><small>2</small></span></button>
+            <button class="ft-lado" data-n="3" aria-pressed="false"><span>三<br><small>3</small></span></button>
+            <button class="ft-lado" data-n="4" aria-pressed="false"><span>四<br><small>4</small></span></button>
+            <div class="ft-centro" id="ft-monton"></div>
+            <div class="ft-palo" id="ft-palo" aria-hidden="true"></div>
+            <div class="ft-cuenco arriba" id="ft-cuenco" aria-hidden="true"></div>
+            <div class="ft-grande" id="ft-grande"></div>
+          </div>
+          <div class="ft-filas-caja">
+            <div class="ft-filas-cab"><b>Fichas retiradas</b><span id="ft-cuenta">en filas de 4</span></div>
+            <div class="ft-filas" id="ft-filas" aria-live="polite" aria-label="Fichas retiradas en filas de 4"></div>
+          </div>
         </div>
         <div class="acciones"><button class="btn" id="ft-jugar" disabled>Jugar</button></div>
         <div class="msg" id="ft-msg" aria-live="polite"></div>

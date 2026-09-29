@@ -161,6 +161,19 @@
 .ft-grande{ position:absolute; inset:0; display:grid; place-items:center; font-size:5rem; font-weight:800; color:#ffe27a; text-shadow:0 4px 20px rgba(0,0,0,.8); pointer-events:none; z-index:4; }
 .ft-grande:empty{ display:none; }
 
+.ft-zona{ display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
+.ft-zona .ft-mesa{ margin:0; flex:none; }
+.ft-filas-caja{ flex:1; min-width:220px; max-width:320px; align-self:stretch; padding:14px; border-radius:var(--radio); background:rgba(0,0,0,.22); box-shadow:inset 0 0 0 1px var(--linea); }
+.ft-filas-cab{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:10px; font-size:.85rem; }
+.ft-filas-cab b{ font-family:var(--f-titulo); font-size:1rem; } .ft-filas-cab span{ color:var(--acento2); font-weight:800; font-variant-numeric:tabular-nums; }
+.ft-filas{ display:grid; grid-template-columns:repeat(2, 1fr); gap:6px 12px; align-content:start; }
+.ft-fila{ display:flex; align-items:center; gap:5px; padding:3px 6px; border-radius:6px; background:rgba(255,255,255,.03); }
+.ft-fila i{ width:22px; font-style:normal; font-size:.72rem; font-weight:800; color:var(--tenue); text-align:right; margin-right:3px; font-variant-numeric:tabular-nums; }
+.frijol-f{ width:15px; height:11px; border-radius:50%; background:radial-gradient(ellipse at 35% 30%, #fff 0 12%, #f0e7cf 40%, #b8a47a 100%); box-shadow:0 1px 2px rgba(0,0,0,.6); }
+.ft-fila.sobra{ grid-column:1 / -1; margin-top:6px; padding:8px 10px; background:rgba(216,178,90,.14); box-shadow:inset 0 0 0 1px var(--acento); }
+.ft-fila.sobra i{ width:auto; color:var(--acento2); font-size:.8rem; }
+.ft-fila.sobra .frijol-f{ width:20px; height:15px; box-shadow:0 0 0 2px #ffc800, 0 0 10px #ffc800; }
+
 /* ── avión ── */
 .av-cielo{ position:relative; aspect-ratio:16 / 8.5; min-height:240px; border-radius:14px; overflow:hidden; background:#0b1d4a; box-shadow:0 10px 30px rgba(0,0,0,.35); }
 .av-cielo canvas{ width:100%; height:100%; display:block; }

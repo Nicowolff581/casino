@@ -174,6 +174,17 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     await pagina.fill("#monto", "10"); await pagina.dispatchEvent("#monto", "change");
   }
   await jugar("fantan", "#ft-msg", async () => { await pagina.click('.ft-lado[data-n="2"]'); await pagina.click("#ft-jugar"); await esperarLibre(() => !ocupado); });
+  {
+    const f = await pagina.evaluate(() => {
+      const filas = $$("#ft-filas .ft-fila:not(.sobra)"), sobra = $("#ft-filas .ft-fila.sobra");
+      const m = $("#ft-msg").textContent.match(/Sobraron (\d)/), hay = $("#ft-msg").textContent;
+      return { filas: filas.length, completas: filas.every(r => r.querySelectorAll(".frijol-f").length === 4), sobran: sobra ? sobra.querySelectorAll(".frijol-f").length : -1,
+        dicho: m ? +m[1] : -2, grande: +$("#ft-grande").textContent, enMesa: $$("#ft-monton .frijol.queda").length, cuenta: $("#ft-cuenta").textContent };
+    });
+    const total = f.filas * 4 + f.sobran;
+    ok(f.completas && f.sobran >= 1 && f.sobran <= 4 && f.sobran === f.dicho && f.sobran === f.grande && f.sobran === f.enMesa && total >= 20 && total <= 59,
+      `Fan-Tan: ${f.filas} filas de 4 + ${f.sobran} que sobran = ${total} fichas; mesa, panel y mensaje coinciden («${f.cuenta}»)`);
+  }
   await jugar("plinko", "#pl-msg", async () => { await pagina.click("#pl-soltar"); await esperarLibre(() => !ocupado); });
   await jugar("avion", "#av-msg", async () => { await pagina.click('#av-vel [data-k="3"]'); await pagina.click("#av-btn"); await esperarLibre(() => !ocupado); });
   await jugar("pollo", "#po-msg", async () => {
