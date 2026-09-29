@@ -1,5 +1,6 @@
 /* Simula millones de jugadas del tragamonedas con el MISMO código que usa la página.
    Uso:  node pruebas/simular-tragamonedas.js [millones de jugadas, por defecto 4]
+         MODO=compra node pruebas/simular-tragamonedas.js 1   (simula la compra de giros gratis)
    Reparte el trabajo entre los procesadores y muestra cuánto devuelve con su margen de error. */
 const { Worker, isMainThread, parentPort, workerData } = require("worker_threads");
 const path = require("path"), fs = require("fs"), vm = require("vm"), os = require("os");
@@ -11,7 +12,7 @@ function cargarMotor(){
   const ctx = { crypto: require("crypto").webcrypto, TextEncoder, document: { querySelector: () => null } };
   vm.createContext(ctx);
   // AJUSTE (opcional): código para probar otros pesos o pagos sin tocar el juego
-  vm.runInContext(nucleo + motor + ";" + (process.env.AJUSTE || "") + "; this.jugada = slJugada; this.azar = azar;", ctx);
+  vm.runInContext(nucleo + motor + ";" + (process.env.AJUSTE || "") + "; this.jugada = " + (process.env.MODO === "compra" ? "slCompra" : "slJugada") + "; this.azar = azar;", ctx);
   return ctx;
 }
 
@@ -37,8 +38,8 @@ if (isMainThread){
   for (let i = 0; i < workerData; i++){
     const j = jugada(azar);
     r.n++; r.s += j.total; r.s2 += j.total * j.total; if (j.total > 0) r.gana++;
-    const bono = j.total - Math.min(j.base.total, j.total);
-    r.sBase += Math.min(j.base.total, j.total);
+    const baseT = j.base ? j.base.total : 0, bono = j.total - Math.min(baseT, j.total);
+    r.sBase += Math.min(baseT, j.total);
     if (j.gratis){ r.bonos++; r.sBono += bono; }
     if (j.total > r.max) r.max = j.total; if (j.topado) r.topados++;
   }

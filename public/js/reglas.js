@@ -76,6 +76,10 @@ const REGLAS = {
     tabla(["Dato", "Valor"], [["Devuelve en total", pct(E.devuelve, 2) + " ± " + pct(E.margen, 2)], ["…del juego normal", pct(E.normal, 1)], ["…de los giros gratis", pct(E.gratis, 1)],
       ["Jugadas con algún premio", pct(E.frecuencia, 1)], ["Giros gratis", `1 de cada ${fmt(Math.round(E.bonoCada))} jugadas`]]) +
     `<p class="nota-regla">Este juego es de volatilidad alta: la mayoría de las jugadas pagan poco o nada y, de vez en cuando, paga mucho. Por eso el porcentaje solo se nota después de muchísimas jugadas.</p>
+    <h3>Comprar los giros gratis</h3><ul>
+      <li>Con el botón «Comprar ${SL_GIROS} giros gratis» pagas <strong>${SL_PRECIO_COMPRA} veces tu apuesta</strong> en fichas de práctica y entras directo a la ronda de ${SL_GIROS} giros gratis (con las mismas reglas: faroles que se acumulan y +${SL_MAS_GIROS} giros con 3 llaves). Por ejemplo, con apuesta ${fmt(20)} cuesta ${fmt(20 * SL_PRECIO_COMPRA)}.</li>
+      <li>Los premios se calculan con tu apuesta, no con el precio. En promedio la ronda paga ${num(SL_COMPRA.promedio)} veces tu apuesta, así que la compra devuelve <strong>${pct(SL_COMPRA.promedio / SL_PRECIO_COMPRA, 1)}</strong> (simulado con ${fmt(SL_COMPRA.rondas / 1e6)} millones de rondas compradas), casi lo mismo que el juego normal.</li>
+      <li>Muchas veces la ronda paga menos de lo que costó: solo se celebra si recibes más de lo que pagaste. Son solo fichas de práctica: no se compra nada con dinero real.</li></ul>
     <h3>Tabla de pagos (veces tu apuesta)</h3>` +
     tabla(["Símbolo", "Sale", "8-9", "10-11", "12 o más"], SL_SIMBOLOS.map((S, i) => [`${S.ico} ${S.nombre}`, pct(SL_PESOS.base[i] / totB, 1), "×" + num(S.pagos[0]), "×" + num(S.pagos[1]), "×" + num(S.pagos[2])]).reverse()
       .concat([["🗝️ Llave (4 / 5 / 6+)", pct(SL_PESOS.base[SL_LLAVE] / totB, 1), "×" + SL_PAGO_LLAVES(4), "×" + SL_PAGO_LLAVES(5), "×" + SL_PAGO_LLAVES(6)]])) +

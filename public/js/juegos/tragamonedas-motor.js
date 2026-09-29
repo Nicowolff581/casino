@@ -36,6 +36,9 @@ const SL_PESOS_VALOR = [38, 24, 14, 9, 6, 4, 2.2, 1.4, 0.9, 0.35, 0.15];
 // Resultado de simular millones de jugadas con este mismo código (pruebas/simular-tragamonedas.js).
 // Si se cambian pesos o pagos, hay que volver a simular y actualizar estos números.
 const SL_ESTADISTICAS = { jugadas: 80e6, devuelve: 0.9611, margen: 0.0021, normal: 0.6432, gratis: 0.3179, frecuencia: 0.3772, bonoCada: 364 };
+// Compra de giros gratis: precio en veces la apuesta y lo que devuelve (simulado con pruebas/simular-tragamonedas.js, MODO=compra).
+const SL_PRECIO_COMPRA = 120;
+const SL_COMPRA = { rondas: 10e6, promedio: 115.86, margen: 0.08 };   // la ronda comprada paga en promedio 115,86 × la apuesta → devuelve 96,5 %
 const SL_PAGO_LLAVES = n => n >= 6 ? 100 : n === 5 ? 5 : n === 4 ? 3 : 0;
 
 const slTramo = n => n >= 12 ? 2 : n >= 10 ? 1 : 0;
@@ -73,19 +76,28 @@ function slGiro(rnd, modo = "base", acumulado = 0){
   const pagoLlaves = SL_PAGO_LLAVES(llaves);
   return { pasos, ganBase, multSuma, factor, acumulado, llaves, pagoLlaves, total: ganBase * factor + pagoLlaves };
 }
+// Ronda de giros gratis: 10 giros; 3 llaves en un giro gratis dan +5 (máximo 60 en total).
+function slRondaGratis(rnd){
+  const gratis = []; let quedan = SL_GIROS, acumulado = 0, total = 0;
+  while (quedan > 0 && gratis.length < SL_MAX_GIROS){
+    const g = slGiro(rnd, "gratis", acumulado);
+    acumulado = g.acumulado; quedan--;
+    if (g.llaves >= 3){ quedan += SL_MAS_GIROS; g.masGiros = true; }
+    gratis.push(g); total += g.total;
+  }
+  return { gratis, total };
+}
 // Jugada completa: giro normal y, si salen 4+ llaves, la ronda de giros gratis. Resultado en «veces la apuesta».
 function slJugada(rnd = azar){
   const base = slGiro(rnd, "base");
   let total = base.total, gratis = null;
-  if (base.llaves >= 4){
-    gratis = []; let quedan = SL_GIROS, acumulado = 0;
-    while (quedan > 0 && gratis.length < SL_MAX_GIROS){
-      const g = slGiro(rnd, "gratis", acumulado);
-      acumulado = g.acumulado; quedan--;
-      if (g.llaves >= 3){ quedan += SL_MAS_GIROS; g.masGiros = true; }
-      gratis.push(g); total += g.total;
-    }
-  }
+  if (base.llaves >= 4){ const r = slRondaGratis(rnd); gratis = r.gratis; total += r.total; }
   const topado = total > SL_TOPE;
   return { base, gratis, total: Math.min(total, SL_TOPE), topado };
+}
+// Compra de los giros gratis (con fichas de práctica): la ronda completa, sin el giro normal.
+// Cuesta SL_PRECIO_COMPRA veces la apuesta; ese precio está calculado para que la compra devuelva lo mismo que el juego normal.
+function slCompra(rnd = azar){
+  const r = slRondaGratis(rnd), topado = r.total > SL_TOPE;
+  return { base: null, gratis: r.gratis, total: Math.min(r.total, SL_TOPE), topado, comprada: true };
 }

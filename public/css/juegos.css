@@ -128,6 +128,8 @@
 .sl-cartel.bono{ flex-direction:column; align-items:center; bottom:40%; padding:16px 26px; font-size:1rem; }
 .sl-cartel.bono strong{ font-family:var(--f-titulo); font-style:italic; font-size:1.8rem; color:var(--acento2); text-shadow:0 0 18px rgba(239,210,142,.7); }
 .sl-rapido{ margin-left:auto; font-size:.9rem; color:var(--suave); }
+.sl-comprar b{ color:var(--acento2); font-variant-numeric:tabular-nums; }
+.sl-comprar.confirmar{ background:var(--oro-grad); color:var(--sobre-acento); animation:latidoSube .7s ease-in-out infinite alternate; } .sl-comprar.confirmar b{ color:inherit; }
 /* tabla de pagos corta */
 .sl-pagos{ display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:6px; margin-top:20px; container-type:inline-size; }
 .sl-pagos > div{ display:grid; grid-template-columns:38px 1fr; grid-template-rows:repeat(3, auto); column-gap:10px; align-items:center; padding:8px 10px; border-radius:10px; background:rgba(0,0,0,.22); box-shadow:inset 0 0 0 1px var(--linea); font-size:.78rem; color:var(--suave); }

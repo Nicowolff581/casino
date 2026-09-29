@@ -97,15 +97,17 @@ async function slMostrarGiro(g, modo, bet, previo){
   return total;
 }
 
-$("#s-girar").onclick = async () => {
-  if (ocupado || !apostar("#s-msg")) return;
-  ocupado = true; $("#s-girar").disabled = true; msg("#s-msg", ""); $("#sl-ganancia").textContent = "0";
-  const bet = apuesta, j = slJugada();
-  let mostrado = await slMostrarGiro(j.base, "base", bet, 0);
+// Una jugada: normal (cuesta la apuesta) o comprando los giros gratis (cuesta SL_PRECIO_COMPRA veces la apuesta).
+async function slJugar(compra){
+  const bet = apuesta, costo = compra ? bet * SL_PRECIO_COMPRA : bet;
+  if (ocupado || !apostar("#s-msg", costo)) return;
+  ocupado = true; $("#s-girar").disabled = $("#sl-comprar").disabled = true; msg("#s-msg", ""); $("#sl-ganancia").textContent = "0";
+  const j = compra ? slCompra() : slJugada();
+  let mostrado = j.base ? await slMostrarGiro(j.base, "base", bet, 0) : 0;
   if (j.gratis){
     let quedan = SL_GIROS;
     $("#sl-bono").hidden = false; $("#sl-giros").textContent = quedan; $("#sl-acum").textContent = "×0";
-    slCartel(`<strong>¡${SL_GIROS} giros gratis!</strong><span>Los faroles se acumulan</span>`, "bono"); sonido.gana(3);
+    slCartel(`<strong>¡${SL_GIROS} giros gratis${compra ? " comprados" : ""}!</strong><span>Los faroles se acumulan</span>`, "bono"); sonido.gana(compra ? 2 : 3);
     await slEspera(2000);
     for (const g of j.gratis){
       $("#sl-giros").textContent = --quedan;
@@ -116,10 +118,29 @@ $("#s-girar").onclick = async () => {
   }
   const pagado = slFichas(j.total, bet);
   $("#sl-ganancia").textContent = fmt(pagado);
-  const detalle = j.topado ? `¡Premio máximo de ×${fmt(SL_TOPE)}! ` : j.gratis ? `Giros gratis: ${j.gratis.length}. ` : "";
-  liquidar("#s-msg", pagado, bet, detalle);
-  ocupado = false; $("#s-girar").disabled = false;
+  const detalle = j.topado ? `¡Premio máximo de ×${fmt(SL_TOPE)}! ` : compra ? `Compraste ${SL_GIROS} giros gratis por ${fmt(costo)} y jugaste ${j.gratis.length}. ` : j.gratis ? `Giros gratis: ${j.gratis.length}. ` : "";
+  // Se compara con lo que costó: solo se celebra si recibes más de lo que pagaste por la compra.
+  liquidar("#s-msg", pagado, costo, detalle);
+  ocupado = false; $("#s-girar").disabled = $("#sl-comprar").disabled = false; slPrecio();
+}
+$("#s-girar").onclick = () => slJugar(false);
+// Comprar pide confirmar con un segundo toque (es una jugada cara).
+const slPrecio = () => { const b = $("#sl-comprar"); if (!b.classList.contains("confirmar")) $("#sl-precio").textContent = "· " + fmt(apuesta * SL_PRECIO_COMPRA); };
+$("#sl-comprar").onclick = () => {
+  const b = $("#sl-comprar");
+  if (ocupado) return;
+  if (!b.classList.contains("confirmar")){
+    if (apuesta * SL_PRECIO_COMPRA > saldo) return msg("#s-msg", `La compra cuesta ${fmt(apuesta * SL_PRECIO_COMPRA)} fichas (${SL_PRECIO_COMPRA} veces tu apuesta de ${fmt(apuesta)}). Baja la apuesta o usa «Recargar».`, "lose");
+    b.classList.add("confirmar"); b.firstChild.textContent = "¿Confirmas? Toca otra vez ";
+    msg("#s-msg", `Cuesta ${fmt(apuesta * SL_PRECIO_COMPRA)} fichas de práctica (${SL_PRECIO_COMPRA} × tu apuesta de ${fmt(apuesta)}). Los premios se pagan con tu apuesta de ${fmt(apuesta)}.`);
+    sonido.clic();
+    clearTimeout(b.t); b.t = setTimeout(() => { b.classList.remove("confirmar"); b.firstChild.textContent = "Comprar 10 giros gratis "; slPrecio(); }, 5000);
+    return;
+  }
+  clearTimeout(b.t); b.classList.remove("confirmar"); b.firstChild.textContent = "Comprar 10 giros gratis ";
+  slJugar(true);
 };
+setInterval(slPrecio, 300); slPrecio();
 
 // Tabla de pagos corta debajo de la máquina.
 $("#sl-pagos").innerHTML = SL_SIMBOLOS.slice().reverse().map(S =>

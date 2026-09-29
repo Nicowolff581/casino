@@ -207,6 +207,24 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     });
     ok(r.cambio === r.esperado, `Tragamonedas con ${r.giros} giros gratis: el saldo cambió ${r.cambio} (esperado ${r.esperado}) · «${r.texto}»`);
   }
+  {
+    // compra de giros gratis: el primer toque solo pide confirmar; el segundo cobra el precio y juega la ronda
+    const r = await pagina.evaluate(async () => {
+      setSaldo(5000); setApuesta(10);
+      const sj = secretoAzar(), esperado = slCompra(azarDesde(sj)), original = slCompra;
+      window.slCompra = () => original(azarDesde(sj));
+      $("#sl-comprar").click(); await espera(200);
+      const trasUnToque = saldo, precio = $("#sl-precio").textContent;
+      $("#sl-comprar").click();
+      await new Promise(res => { const t = setInterval(() => { if (!ocupado){ clearInterval(t); res(); } }, 100); });
+      window.slCompra = original;
+      return { trasUnToque, precio, cambio: saldo - 5000, esperado: Math.floor(esperado.total * 10 + 1e-9) - 10 * SL_PRECIO_COMPRA, giros: esperado.gratis.length, texto: $("#s-msg").textContent,
+        comprada: SL_COMPRA.promedio / SL_PRECIO_COMPRA };
+    });
+    ok(r.trasUnToque === 5000, "Comprar giros gratis: el primer toque solo pide confirmar (no cobra nada)");
+    ok(r.cambio === r.esperado, `Comprar ${r.giros} giros gratis con apuesta 10 (precio ${10 * 120}): el saldo cambió ${r.cambio} (esperado ${r.esperado}) · «${r.texto}»`);
+    ok(r.comprada > 0.94 && r.comprada < 0.98, `La compra de giros gratis devuelve ${(r.comprada * 100).toFixed(1)} % según la simulación guardada`);
+  }
   await jugar("bj", "#bj-msg", async () => {
     await pagina.click("#bj-repartir");
     if (await pagina.isEnabled("#bj-plantarse")) await pagina.click("#bj-plantarse");
