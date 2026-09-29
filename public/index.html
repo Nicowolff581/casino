@@ -249,18 +249,18 @@
       <!-- AVIÓN -->
       <section class="game" id="g-avion">
         <h2>Avión</h2>
-        <p class="reglas">El avión despega y en el camino recoge premios que suben tu multiplicador (+0.5, ×2…). Los cohetes lo parten a la mitad. Si al final llega a destino, cobras; si entra en la tormenta, pierdes.</p>
+        <p class="reglas">Elige tu apuesta y la velocidad, y toca «Jugar». El avión despega de un barco: los premios suben el contador (+1 = una vez tu apuesta, ×2 lo duplica…) y lo elevan; los cohetes lo parten a la mitad y lo bajan. Si llega al portaaviones, cobras el contador; si se queda sin altura, cae al mar.</p>
         <div class="historial-cab">Últimos 20 vuelos <small>(toca uno para ver su prueba de juego justo)</small></div>
         <div class="historial" id="av-hist" aria-label="Últimos 20 vuelos"></div>
         <div class="av-cielo"><canvas id="av-canvas" aria-hidden="true"></canvas><div class="av-mult" id="av-mult" aria-live="polite"></div></div>
         <div class="av-controles">
-          <div class="dificultad" id="av-vel" role="group" aria-label="Velocidad">
+          <div class="dificultad" id="av-vel" role="group" aria-label="Velocidad (solo cambia lo rápido que se ve)">
             <button data-k="0" aria-pressed="false" title="Lento">🐢 Lento</button>
             <button data-k="1" aria-pressed="true" title="Normal">🚶 Normal</button>
             <button data-k="2" aria-pressed="false" title="Rápido">🐇 Rápido</button>
             <button data-k="3" aria-pressed="false" title="Turbo">⚡ Turbo</button>
           </div>
-          <button class="btn" id="av-btn">Despegar</button>
+          <button class="btn" id="av-btn">Jugar</button>
         </div>
         <p class="av-nota" id="av-nota"></p>
         <div class="msg" id="av-msg" aria-live="polite"></div>
@@ -440,6 +440,7 @@
 <script src="js/avatares.js"></script>
 <script src="js/ruleta-comun.js"></script>
 <script src="js/blackjack-comun.js"></script>
+<script src="js/juegos/avion-motor.js"></script>
 <script src="js/juegos/avion.js"></script>
 <script src="js/juegos/pollo-muertes.js"></script>
 <script src="js/juegos/pollo.js"></script>

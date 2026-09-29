@@ -89,6 +89,18 @@ const sonido = (() => {
     boing(t = 0){ tono({ t, f: 160, f2: 640, tipo: "triangle", dur: 0.3, vol: 0.2 }); tono({ t: t + 0.25, f: 640, f2: 300, tipo: "triangle", dur: 0.35, vol: 0.12 }); },
     piano(t = 0){ this.golpe(t); [98, 139, 185, 233, 311, 415].forEach(f => tono({ t, f, tipo: "triangle", dur: 1.6, vol: 0.06 })); },
     globos(t = 0){ [523, 659, 784, 988, 1175].forEach((f, i) => tono({ t: t + i * 0.12, f, tipo: "sine", dur: 0.18, vol: 0.08 })); },
+    // Avión: cada premio tiene su propio sonido (más notas y más agudo cuanto más vale)
+    premio(i = 0){
+      const notas = [[659, 880], [587, 784, 988], [523, 659, 784, 1047], [523, 659, 784, 1047, 1319, 1568],
+        [440, 880], [392, 587, 880], [349, 523, 784, 1047], [330, 494, 740, 988, 1480]][i] || [880];
+      notas.forEach((f, k) => tono({ t: k * 0.06, f, tipo: i >= 4 ? "square" : "triangle", dur: 0.15, vol: i >= 4 ? 0.06 : 0.1 }));
+      if (i >= 4) tono({ f: 110 * (i - 2), f2: 440 * (i - 2), tipo: "sawtooth", dur: 0.28, vol: 0.05 });
+    },
+    cohete(t = 0){ soplo({ t, f: 700, f2: 2600, q: 2, dur: 0.5, vol: 0.18 }); },
+    chapuzon(t = 0){
+      soplo({ t, filtro: "lowpass", f: 2400, f2: 200, dur: 0.9, vol: 0.55, q: 0.4 }); soplo({ t: t + 0.05, f: 900, f2: 300, dur: 0.6, vol: 0.3 });
+      for (let i = 0; i < 8; i++) tono({ t: t + 0.25 + i * 0.07 + Math.random() * 0.05, f: 500 + Math.random() * 700, f2: 1200, tipo: "sine", dur: 0.06, vol: 0.04 });
+    },
     brillo(t = 0){ [2093, 2637, 3136].forEach((f, i) => tono({ t: t + i * 0.07, f, tipo: "sine", dur: 0.2, vol: 0.05 })); },
     // ajustes
     get activo(){ return conf.on; }, get volumen(){ return conf.vol; },

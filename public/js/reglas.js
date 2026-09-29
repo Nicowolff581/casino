@@ -13,28 +13,35 @@ const plinkoDevolucion = t => t.reduce((a, m, k) => a + combin(PL_FILAS, k) / 2 
 
 /* Resumen corto que muestran las tarjetas de inicio. */
 const RESUMEN_DEVOLUCION = {
-  avion: pct(AV_RTP, 0), pollo: "≈ " + pct(0.97, 0), plinko: "≈ " + pct(0.99, 0), slots: "≈ " + pct(SL_ESTADISTICAS.devuelve, 0),
+  avion: pct(AV_EXACTO.devuelve, 0), pollo: "≈ " + pct(0.97, 0), plinko: "≈ " + pct(0.99, 0), slots: "≈ " + pct(SL_ESTADISTICAS.devuelve, 0),
   bj: "≈ " + pct(0.996, 1), poker: "Sin comisión", ruleta: pct(36 / 37, 1), fantan: pct(ftPremio(1, 1, 1000) / 4000, 2)
 };
 
 const REGLAS = {
   avion: () => {
-    const nombres = ["Cohete (÷2)", ...AV_OPC.map(o => o[0])];
-    const probEvento = k => { const pc = avProbCohete(k), p = avPesos(k), t = p.reduce((a, b) => a + b); return [pc, ...p.map(w => (1 - pc) * w / t)]; };
-    return devuelve(pct(AV_RTP, 0), "devuelve a largo plazo en las 4 velocidades (cálculo exacto)") +
+    const E = AV_EXACTO, tot = AV_PESOS.reduce((a, b) => a + b);
+    return devuelve(pct(E.devuelve, 1), `devuelve a largo plazo (cálculo exacto). Simulando ${fmt(AV_SIMULADO.vuelos)} vuelos devolvió ${pct(AV_SIMULADO.devuelve, 1)}`) +
     `<h3>Cómo se juega</h3><ul>
-      <li>Apuestas y el avión despega. En el camino recoge premios: los <strong>+</strong> suman al multiplicador y los <strong>×</strong> lo multiplican. Los <strong>cohetes</strong> lo parten a la mitad.</li>
-      <li>Al final, o <strong>llega a destino</strong> y cobras <strong>apuesta × multiplicador</strong> (máximo ×${AV_TOPE}), o <strong>entra en una tormenta</strong> y pierdes la apuesta.</li>
-      <li>Todo el vuelo se decide al despegar. Lo que ves durante el vuelo no cambia el resultado.</li></ul>
-    <h3>Probabilidad de llegar a destino</h3>` +
-    tabla(["Velocidad", "Llega", "Multiplicador promedio", "Devuelve"], AV_NOMBRE.map((n, k) => [n, pct(AV_PROB[k], 1), "×" + num(AV_MULT_MEDIO[k]), pct(AV_PROB[k] * AV_MULT_MEDIO[k], 1)])) +
-    `<h3>Qué aparece en el camino</h3><p>Cada vuelo tiene entre 4 y ${3 + avEventos(3)} eventos (más en velocidades altas). Probabilidad de cada evento:</p>` +
-    tabla(["Evento", ...AV_NOMBRE], nombres.map((n, i) => [n, ...[0, 1, 2, 3].map(k => pct(probEvento(k)[i], 1))])) +
+      <li>Eliges tu apuesta y una de las 4 velocidades, y tocas «Jugar». Después no hay que decidir nada más: no hay botón de cobrar.</li>
+      <li>El avión despega de un barco a la altura 2 (de 4) y vuela sobre el mar. El <strong>contador</strong> sobre el avión empieza en tu apuesta.</li>
+      <li>En el camino hay entre ${AV_EV_MIN} y ${AV_EV_MAX} objetos, todos en su ruta:
+        <strong>+1, +2, +5, +10</strong> suman esas veces tu apuesta; <strong>×2, ×3, ×4, ×5</strong> multiplican el contador. Con cada premio el avión sube un nivel (máximo ${AV_ALT_MAX}).
+        Los <strong>cohetes</strong> parten el contador a la mitad y el avión baja un nivel.</li>
+      <li>Si llega al nivel 0, <strong>cae al mar</strong> justo donde lo golpeó el cohete y pierdes la apuesta. Si pasa todos los objetos, <strong>aterriza en el portaaviones</strong> y cobras apuesta × contador (máximo ×${AV_TOPE}).</li>
+      <li>La velocidad solo cambia lo rápido que ves el vuelo; puedes cambiarla mientras vuela. Las probabilidades son las mismas en las 4.</li>
+      <li>Si el contador quedó por debajo de ×1 (por los cohetes), al aterrizar recuperas solo una parte de tu apuesta y no se celebra como ganancia.</li></ul>
+    <h3>Objetos</h3>` +
+    tabla(["Objeto", "Qué hace", "Probabilidad de cada objeto"], [["🚀 Cohete", "÷2 y baja un nivel", pct(AV_COHETE, 2)],
+      ...AV_OBJ.map((o, j) => [o.t, o.suma ? `suma ${o.v} ${o.v > 1 ? "veces" : "vez"} tu apuesta y sube un nivel` : `multiplica el contador por ${o.v} y sube un nivel`, pct((1 - AV_COHETE) * AV_PESOS[j] / tot, 2)])]) +
+    `<h3>Resultados</h3>` +
+    tabla(["Resultado", "Probabilidad"], [["Aterriza en el portaaviones", pct(E.aterriza, 1)], ["Cae al mar", pct(1 - E.aterriza, 1)],
+      ["Aterriza con ×20 o más (premio grande)", "1 de cada " + fmt(Math.round(1 / E.x20))], ["Aterriza con ×40 o más (mega)", "1 de cada " + fmt(Math.round(1 / E.x40))],
+      ["Aterriza con ×80 o más (súper mega)", "1 de cada " + fmt(Math.round(1 / E.x80))], [`Llega al máximo ×${AV_TOPE}`, "1 de cada " + fmt(Math.round(1 / E.tope))]]) +
     `<h3>Prueba de juego justo</h3><ul>
       <li>Antes de cada vuelo se sortea un <strong>número secreto</strong> de 64 caracteres y se muestra su <strong>huella SHA-256</strong>.</li>
-      <li>Todos los eventos y el final del vuelo se calculan a partir de ese secreto: con el mismo secreto y la misma velocidad, siempre sale el mismo vuelo.</li>
+      <li>Todo el vuelo (cuántos objetos hay, cuáles son y dónde termina) se calcula a partir de ese secreto: con el mismo secreto siempre sale el mismo vuelo.</li>
       <li>Al terminar se revela el secreto. El botón «Comprobar» recalcula la huella y el vuelo; también puedes pegar el secreto en cualquier calculadora de SHA-256 de internet.</li>
-      <li>Límite honesto: como todo pasa en tu propio navegador, esto prueba que el resultado no se cambió después de mostrarte la huella. La posición de los premios en el cielo es solo decoración.</li></ul>` + NO_CELEBRA;
+      <li>Límite honesto: como todo pasa en tu propio navegador, esto prueba que el resultado no se cambió después de mostrarte la huella. El dibujo (nubes, islas, olas) es solo decoración.</li></ul>` + NO_CELEBRA;
   },
   pollo: () => {
     const difs = $$("#po-dif button").map(b => [b.textContent, +b.dataset.p]);

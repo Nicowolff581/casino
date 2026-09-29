@@ -81,14 +81,18 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     r.ftRestos = restos.slice(1); r.ftRtp = [1, 2, 3, 4].map(sel => restos.slice(1).reduce((a, c, i) => a + c / 40 * ftPremio(sel, i + 1, 100), 0) / 100);
     let minS = 99, maxS = 0; for (let i = 0; i < 20000; i++){ const x = ftSortear(); minS = Math.min(minS, x); maxS = Math.max(maxS, x); }
     r.ftRango = [minS, maxS];
-    // avión: cálculo exacto (debe coincidir con lo guardado) y simulación de 400.000 vuelos
-    r.avionExacto = [0, 1, 2, 3].map(k => [avMultEsperado(k), AV_MULT_MEDIO[k], avMultEsperado(k) * AV_PROB[k]]);
-    r.avion = [0, 1, 2, 3].map(k => { let pago = 0; const N = 400000; for (let i = 0; i < N; i++){ const g = avGenerar(k); if (azar() < AV_PROB[k]) pago += g.c; } return pago / N; });
-    // avión con secreto: siempre igual con el mismo secreto, y la frecuencia de llegada es la prometida
-    const sA = secretoAzar(), v1 = avSortear(2, sA), v2 = avSortear(2, sA);
-    r.avDeterminista = v1.c === v2.c && v1.exito === v2.exito && v1.ev.length === v2.ev.length;
-    r.avSecreto = [0, 1, 2, 3].map(k => { let llega = 0, pago = 0; const N = 15000; for (let i = 0; i < N; i++){ const g = avSortear(k, secretoAzar()); if (g.exito){ llega++; pago += g.c; } } return [llega / N, pago / N]; });
-    r.sha = [sha256(""), sha256("abc")]; r.avProb = AV_PROB;
+    // avión: cálculo exacto (debe coincidir con lo guardado) y simulación de 1 millón de vuelos
+    r.avExacto = avExacto(); r.avGuardado = AV_EXACTO;
+    { let pago = 0, pago2 = 0, cae = 0, caeUltimo = 0, bienCaido = true; const N = 1e6;
+      for (let i = 0; i < N; i++){ const g = avGenerar(); if (g.exito){ pago += g.c; pago2 += g.c * g.c; } else { cae++; if (g.ev.length === g.n) caeUltimo++; if (g.ev[g.ev.length - 1].t !== "cohete" || g.ev[g.ev.length - 1].h !== 0) bienCaido = false; } }
+      const media = pago / N; r.avion = { media, error: Math.sqrt(pago2 / N - media * media) / Math.sqrt(N), cae: cae / N, caeUltimo: caeUltimo / cae, bienCaido }; }
+    // avión con secreto: siempre igual con el mismo secreto, y aterriza con la frecuencia prometida
+    const sA = secretoAzar(), v1 = avSortear(sA), v2 = avSortear(sA);
+    r.avDeterminista = v1.c === v2.c && v1.exito === v2.exito && JSON.stringify(v1.ev) === JSON.stringify(v2.ev);
+    { let llega = 0; const N = 20000; for (let i = 0; i < N; i++) if (avSortear(secretoAzar()).exito) llega++; r.avSecreto = llega / N; }
+    // dibujo: dónde cae el avión sale del cohete que lo dejó sin altura
+    { let bien = true; for (let i = 0; i < 2000; i++){ const g = avPrepararVuelo(avGenerar()); if (!g.exito && g.xPA < g.ev[g.ev.length - 1].x + 1) bien = false; if (g.exito && Math.abs(avYDe(g, g.xToque) - Y_CUBIERTA) > 1e-9) bien = false; } r.avDibujo = bien; }
+    r.sha = [sha256(""), sha256("abc")];
     // pollo: pago esperado al cobrar en cada carril y dificultad
     r.pollo = [0.1, 0.2, 0.3, 0.45].map(p => { po.p = p; let peor = 1, mejor = 0; for (let i = 1; i <= PO_N; i++){ const e = poMult(i) * (1 - p) ** i; peor = Math.min(peor, e); mejor = Math.max(mejor, e); } return [peor, mejor]; });
     po.p = 0.2;
@@ -132,12 +136,15 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     ok(m.ftRestos.every(c => c === 10), `Fan-Tan: cada resto sale 10 de 40 veces (${m.ftRestos.join(", ")})`);
   ok(m.ftRango[0] === 20 && m.ftRango[1] === 59, `Fan-Tan sortea entre ${m.ftRango[0]} y ${m.ftRango[1]} fichas`);
   ok(m.ftRtp.every(v => Math.abs(v - 0.9625) < 1e-9), `Fan-Tan devuelve ${m.ftRtp.map(v => (v * 100).toFixed(2) + " %").join(" / ")}`);
-  m.avionExacto.forEach(([calc, guardado, rtp], k) => ok(Math.abs(calc - guardado) < 1e-5 && Math.abs(rtp - 0.97) < 1e-4, `Avión velocidad ${k} devuelve ${(rtp * 100).toFixed(2)} % (exacto)`));
+  ok(Object.keys(m.avGuardado).every(k => Math.abs(m.avGuardado[k] - m.avExacto[k]) <= Math.max(1e-6, m.avExacto[k] * 1e-5)) && Math.abs(m.avExacto.devuelve - 0.97) < 5e-4,
+    `Avión devuelve ${(m.avExacto.devuelve * 100).toFixed(2)} % (cálculo exacto, igual en las 4 velocidades) · aterriza ${(m.avExacto.aterriza * 100).toFixed(1)} %`);
+  ok(Math.abs(m.avExacto.aterriza + m.avExacto.cae - 1) < 1e-9, "Avión: aterrizan + caen al mar = 100 %");
+  ok(Math.abs(m.avion.media - m.avExacto.devuelve) < Math.max(3 * m.avion.error, 0.002), `Avión: 1.000.000 vuelos simulados devuelven ${(m.avion.media * 100).toFixed(2)} % (± ${(m.avion.error * 200).toFixed(2)} %)`);
+  ok(m.avion.bienCaido && m.avion.caeUltimo < 0.35, `Avión: siempre cae justo en el cohete que lo deja sin altura; solo ${(m.avion.caeUltimo * 100).toFixed(1)} % de las caídas son en el último objeto antes del portaaviones`);
   ok(m.avDeterminista, "Avión: el mismo número secreto produce siempre el mismo vuelo");
+  ok(Math.abs(m.avSecreto - m.avExacto.aterriza) < 4 * Math.sqrt(0.3 * 0.7 / 20000), `Avión con secreto: aterriza ${(m.avSecreto * 100).toFixed(1)} % (prometido ${(m.avExacto.aterriza * 100).toFixed(1)} %) en 20.000 vuelos`);
+  ok(m.avDibujo, "Avión: el dibujo lleva el avión justo a la cubierta del portaaviones cuando aterriza");
   ok(m.sha[0] === "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" && m.sha[1] === "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", "SHA-256 da las huellas oficiales de prueba");
-  m.avSecreto.forEach(([f, p], k) => { const e = Math.sqrt(m.avProb[k] * (1 - m.avProb[k]) / 15000) * 4; ok(Math.abs(f - m.avProb[k]) < e, `Avión con secreto, velocidad ${k}: llega ${(f * 100).toFixed(1)} % (prometido ${(m.avProb[k] * 100).toFixed(1)} %), devolvió ${(p * 100).toFixed(1)} % en 15.000 vuelos`); });
-  // El Turbo tiene premios raros muy grandes, así que la simulación varía más: margen amplio.
-  m.avion.forEach((v, k) => ok(Math.abs(v - 0.97) < (k === 3 ? 0.04 : 0.02), `Avión velocidad ${k} devuelve ${(v * 100).toFixed(2)} % (simulado)`));
   m.pollo.forEach(([a, b], i) => ok(a > 0.95 && b <= 0.97 + 1e-9, `Pollo dificultad ${i}: devuelve entre ${(a * 100).toFixed(2)} % y ${(b * 100).toFixed(2)} %`));
   const bjEsperado = { naturalGana: 25, naturalContraNatural: 10, crupierNatural: 0, gana: 20, empate: 10, pasado: 0, crupierPasado: 20, asBlando: 21 };
   for (const [k, v] of Object.entries(bjEsperado)) ok(m.bj[k] === v, `Blackjack ${k}: ${m.bj[k]} (esperado ${v})`);
@@ -250,7 +257,12 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
       `Fan-Tan: ${f.filas} filas de 4 + ${f.sobran} que sobran = ${total} fichas; mesa, panel y mensaje coinciden («${f.cuenta}»)`);
   }
   await jugar("plinko", "#pl-msg", async () => { await pagina.click("#pl-soltar"); await esperarLibre(() => !ocupado); });
-  await jugar("avion", "#av-msg", async () => { await pagina.click('#av-vel [data-k="3"]'); await pagina.click("#av-btn"); await esperarLibre(() => !ocupado); });
+  await jugar("avion", "#av-msg", async () => {
+    await pagina.click('#av-vel [data-k="3"]'); await pagina.click("#av-btn");
+    await pagina.waitForTimeout(600); await pagina.click('#av-vel [data-k="1"]');          // se puede cambiar la velocidad en pleno vuelo
+    await pagina.waitForTimeout(300); await pagina.click('#av-vel [data-k="3"]');
+    await esperarLibre(() => !ocupado);
+  });
   {
     await pagina.click('nav button[data-juego="avion"]');
     const huella = await pagina.textContent("#av-huella");
@@ -261,7 +273,7 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     const shaReal = require("crypto").createHash("sha256").update(j.codigos[1]).digest("hex");
     ok(j.r.huella === huella && j.codigos[0] === huella && shaReal === huella && comprobado.includes("✔") && j.nueva !== huella,
       `Avión: huella mostrada antes = SHA-256 del secreto revelado (verificado con Node), «Comprobar» dice ✔ y hay huella nueva para el siguiente vuelo`);
-    const n = await pagina.evaluate(async () => { for (let i = 0; i < 22; i++){ av.actual = { num: 900 + i, k: 1, secreto: "x", huella: "y", bet: 1 }; av.vuelo = { exito: false, c: 1 }; av.bet = 1; saldo += 0; avResolver(); } return [av.hist.length, $$("#av-hist button").length]; });
+    const n = await pagina.evaluate(async () => { for (let i = 0; i < 22; i++){ av.actual = { num: 900 + i, secreto: "x", huella: "y", bet: 1 }; av.vuelo = { exito: false, c: 1, ev: [] }; av.bet = 1; saldo += 0; avResolver(); } return [av.hist.length, $$("#av-hist button").length]; });
     ok(n[0] === 20 && n[1] === 20, `Avión: el historial guarda los últimos 20 vuelos (${n[1]} botones)`);
     await pagina.evaluate(() => { av.hist = av.hist.filter(h => h.num < 900); avPintarHistorial(); });
   }

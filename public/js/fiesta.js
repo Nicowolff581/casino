@@ -26,10 +26,12 @@ function lluviaMonedas(n = 30){
 }
 
 // Pantalla de «Gran premio»: el número sube desde 0 hasta lo cobrado.
-function granPremio(pagado, apostado){
+// Un juego puede tener sus propios niveles, p. ej. [[80, "¡Súper mega premio!"], [40, "¡Mega premio!"], [20, "¡Premio grande!"]].
+function granPremio(pagado, apostado, niveles){
   const caja = $("#gran-premio"); if (!caja.hidden) return;
-  const m = pagado / apostado;
-  $("#gp-titulo").textContent = m >= 50 ? "¡Premio legendario!" : "¡Gran premio!";
+  const m = pagado / apostado, nivel = niveles ? niveles.findIndex(([x]) => m >= x) : -1;
+  $("#gp-titulo").textContent = nivel >= 0 ? niveles[nivel][1] : m >= 50 ? "¡Premio legendario!" : "¡Gran premio!";
+  caja.dataset.nivel = nivel >= 0 ? niveles.length - 1 - nivel : m >= 50 ? 1 : 0;
   $("#gp-detalle").textContent = `${fmt(Math.round(m * 100) / 100)} veces tu apuesta · ganancia +${fmt(pagado - apostado)}`;
   caja.hidden = false;
   const num = $("#gp-monto"), t0 = performance.now(), dur = Math.min(3200, 1400 + Math.log10(m) * 900);
@@ -48,13 +50,13 @@ function granPremio(pagado, apostado){
 function cerrarGranPremio(){ $("#gran-premio").hidden = true; clearTimeout(granPremio.t); }
 $("#gran-premio").addEventListener("click", cerrarGranPremio);
 
-function celebrar(pagado, apostado){
+function celebrar(pagado, apostado, niveles){
   if (!(pagado > apostado)) return;                     // regla: nunca celebrar si recibes menos o lo mismo
-  const m = pagado / apostado;
-  if (m >= FIESTA_ENORME){
+  const m = pagado / apostado, enorme = niveles ? niveles[niveles.length - 1][0] : FIESTA_ENORME;
+  if (m >= enorme){
     sonido.gana(3); sonido.monedas(14, 0.4);
     // la pantalla grande llega un momento después, para que primero se vea el efecto del propio juego
-    setTimeout(() => granPremio(pagado, apostado), 700); lluviaMonedas(50); confeti(120);
+    setTimeout(() => granPremio(pagado, apostado, niveles), 700); lluviaMonedas(50); confeti(120);
     setTimeout(() => confeti(80, innerWidth * 0.25, innerHeight * 0.4), 450);
     setTimeout(() => confeti(80, innerWidth * 0.75, innerHeight * 0.4), 800);
   } else if (m >= FIESTA_GRANDE){

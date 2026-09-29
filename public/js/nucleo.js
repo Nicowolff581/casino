@@ -118,7 +118,7 @@ function apostar(id, cantidad = apuesta){
 function tipoResultado(pagado, apostado){
   return pagado > apostado ? "win" : pagado === apostado && pagado > 0 ? "neutral" : pagado > 0 ? "parcial" : "lose";
 }
-function liquidar(id, pagado, apostado, extra = ""){
+function liquidar(id, pagado, apostado, extra = "", niveles){
   if (pagado) setSaldo(saldo + pagado);
   const tipo = tipoResultado(pagado, apostado);
   const texto =
@@ -129,7 +129,7 @@ function liquidar(id, pagado, apostado, extra = ""){
     `Perdiste ${fmt(apostado)} fichas.`;
   msg(id, extra + texto, apostado === 0 ? "neutral" : tipo);
   // Sonido y celebración según el tamaño del premio (nunca si recibes menos de lo apostado).
-  if (apostado > 0){ if (tipo === "win") celebrar(pagado, apostado); else if (tipo === "lose") sonido.pierde(); }
+  if (apostado > 0){ if (tipo === "win") celebrar(pagado, apostado, niveles); else if (tipo === "lose") sonido.pierde(); }
   // Aviso para el historial y las estadísticas.
   document.dispatchEvent(new CustomEvent("jugada", { detail: { juego: juegoActivo, pagado, apostado, tipo } }));
   return tipo;
