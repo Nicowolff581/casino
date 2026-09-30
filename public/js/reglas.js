@@ -127,7 +127,13 @@ const REGLAS = {
       ["Columna («2 a 1»)", "12", pct(12 / 37), "2 a 1", pct(12 * ruPremio("c1", 1, 1) / 37)],
             ["Rojo o negro", "18", pct(18 / 37), "1 a 1", pct(18 * ruPremio("r", 1, 1) / 37)],
       ["Par o impar", "18", pct(18 / 37), "1 a 1", pct(18 * ruPremio("p", 2, 1) / 37)],
-      ["1 a 18 o 19 a 36", "18", pct(18 / 37), "1 a 1", pct(18 * ruPremio("b", 1, 1) / 37)]]),
+      ["1 a 18 o 19 a 36", "18", pct(18 / 37), "1 a 1", pct(18 * ruPremio("b", 1, 1) / 37)]]) +
+    `<h3>Cada número</h3><p>Cada número sale con probabilidad 1 de 37 = <strong>${pct(1 / 37, 2)}</strong>. Así salieron en ${fmt(RU_SIMULADO.giros)} giros simulados con el mismo código del juego:</p>
+    <div class="ru-numeros">${RU_SIMULADO.porNumero.map((p, n) => `<span><b style="background:${colorN(n)}">${n}</b>${pct(p, 2)}</span>`).join("")}</div>
+    <p class="nota-regla">En esos giros, apostando siempre a rojo devolvió ${pct(RU_SIMULADO.devuelve.rojo, 1)}, a la primera docena ${pct(RU_SIMULADO.devuelve["docena 1"], 1)} y a par ${pct(RU_SIMULADO.devuelve.par, 1)} (el valor exacto es ${pct(36 / 37, 1)}).</p>
+    <h3>La bola</h3><ul>
+      <li>El número se sortea con el generador aleatorio justo al tocar «Girar» (en la ruleta con amigos, antes de las apuestas, con su huella).</li>
+      <li>Después la bola hace su recorrido: da de 7 a 10 vueltas, frena distinto en cada giro, a veces choca con los rombos del borde y rebota de 1 a 6 veces entre casillas. Todo eso es solo el dibujo: el recorrido se arma para terminar en el número que ya salió, así que nunca cambia el resultado.</li></ul>`,
   fantan: () => devuelve(pct(ftPremio(1, 1, 1000) / 4000), "devuelve a largo plazo, elijas el número que elijas") +
     `<h3>Cómo se juega</h3><ul>
       <li>Eliges un número del 1 al 4. El crupier tapa entre 20 y 59 fichas con el cuenco (todas las cantidades igual de probables).</li>

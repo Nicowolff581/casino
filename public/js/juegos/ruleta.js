@@ -3,6 +3,9 @@
    (los comparte la ruleta en línea). Se pueden poner varias fichas en el mismo giro. */
 let giroRueda = 0;                                  // ángulo actual de la rueda (grados)
 const ruUlt = [];
+// Resultado de 1.000.000 de giros con el mismo código (pruebas/simular-ruleta.js): se muestra en las reglas.
+const RU_SIMULADO = { giros: 1000000, chi: 33.57, porNumero: [0.027097, 0.027256, 0.026951, 0.027177, 0.026825, 0.026867, 0.026939, 0.027072, 0.027012, 0.026936, 0.027378, 0.026905, 0.027201, 0.02687, 0.026893, 0.027002, 0.02707, 0.026682, 0.027222, 0.02704, 0.027143, 0.026857, 0.027314, 0.026783, 0.027073, 0.027063, 0.027022, 0.026836, 0.027042, 0.027031, 0.027256, 0.026914, 0.026946, 0.02689, 0.027131, 0.027084, 0.02722],
+  devuelve: {"pleno (17)":0.96055,"rojo":0.97365,"par":0.97528,"docena 1":0.97356,"columna 1":0.97493,"1 a 18":0.97252} };
 // Dibujo de la rueda en SVG. «p» distingue los degradados si hay dos ruedas en la página.
 function ruedaSVG(p = "r"){
   const seg = 360 / 37, c = 150, rad = a => a * Math.PI / 180;
@@ -66,45 +69,51 @@ const corto = (v, sufijo) => v.toLocaleString("es-CO", { maximumFractionDigits: 
 const fmtCorto = n => n >= 1e6 ? corto(n / 1e6, "M") : n >= 1e4 ? Math.round(n / 1e3) + "k" : n >= 1e3 ? corto(n / 1e3, "k") : String(n);
 
 /* ── animación de la bola (la usan la ruleta sola y la ruleta en línea) ──
-   La rueda gira en un sentido y la bola en el otro por el borde, frenando. Luego cae hacia las
-   casillas, rebota sobre las vecinas y se queda en la suya, girando con la rueda hasta que ésta se detiene.
-   Con los mismos datos del giro, todos ven exactamente el mismo movimiento.
-   Radios en % del tamaño de la rueda: borde 45 %, casillas 34,7 %. */
-const ruGiroNuevo = (rnd = azar) => ({ vueltas: 270 + Math.round(rnd() * 90), bola0: rnd() * 360 });   // la rueda gira lento: 3/4 a 1 vuelta
-function ruPonerBola(bola, ang, radio){
+   El recorrido lo arma ruTrayectoria (ruleta-comun.js) a partir de la semilla de cada giro: vueltas, frenado,
+   choques con los rombos y rebotes entre casillas cambian en cada giro. Con los mismos datos del giro,
+   todos ven exactamente el mismo movimiento, y siempre termina en el número sorteado. */
+const ruGiroNuevo = (rnd = azar) => ({ vueltas: 270 + Math.round(rnd() * 90), bola0: rnd() * 360, semilla: Math.floor(rnd() * 2 ** 31) });
+function ruPonerBola(bola, ang, radio, giro = 0){
   const a = ang * Math.PI / 180;
   bola.style.left = (50 + radio * Math.sin(a)) + "%"; bola.style.top = (50 - radio * Math.cos(a)) + "%";
+  bola.style.setProperty("--g", giro + "deg");
 }
-function ruAnimar({ svg, bola, idx, rueda0, vueltas, bola0, transcurrido = 0 }){
+// Rombos fijos del borde (no giran con la rueda): la bola a veces choca con ellos al caer.
+function ruRombos(caja){
+  if (caja.querySelector(".ru-rombos")) return;
+  const c = 150, r = RU_ROMBO * 3, pt = (a, rr) => [c + rr * Math.sin(a * Math.PI / 180), c - rr * Math.cos(a * Math.PI / 180)];
+  let s = "";
+  for (let k = 0; k < RU_ROMBOS; k++){
+    const a = (k + 0.5) * 360 / RU_ROMBOS, [x, y] = pt(a, r);
+    s += `<path d="M0 -6 L2.6 0 L0 6 L-2.6 0 Z" transform="translate(${x} ${y}) rotate(${a})" fill="url(#rombo-oro)" stroke="#5a3d0c" stroke-width=".6"/>`;
+  }
+  caja.querySelector("svg").insertAdjacentHTML("afterend", `<svg class="ru-rombos" viewBox="0 0 300 300" aria-hidden="true"><defs><linearGradient id="rombo-oro" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fff1b8"/><stop offset="60%" stop-color="#d4a441"/><stop offset="100%" stop-color="#7a5510"/></linearGradient></defs>${s}</svg>`);
+}
+function ruAnimar({ svg, bola, idx, rueda0, vueltas, bola0, semilla = 0, transcurrido = 0 }){
   // Siempre se anima completa (aunque el celular tenga «reducir movimiento»): el giro es parte del juego.
-  const seg = 360 / 37, rapido = false;
-  const T = RU_DURACION, TD = 14500, TC = 17500;                                      // total, caída, encaje (ms)
-  const rueda = t => rueda0 + vueltas * (1 - Math.pow(1 - Math.min(1, t / T), 3));        // frena suave
-  const casilla = t => rueda(t) + idx * seg;                                          // dónde está la casilla ganadora
-  const fin = casilla(TD) % 360;
-  const recorrido = ((bola0 - fin) % 360 + 360) % 360 + 360 * 8;                     // unas 8 vueltas de la bola (al revés), termina sobre la casilla
-  const posBola = t => bola0 - recorrido * (1 - Math.pow(1 - Math.min(1, t / TD), 2));
-  let rebotes = Math.floor(Math.max(0, transcurrido - TD) / (TC - TD) * 4); const t0 = performance.now() - transcurrido;
-  if (!rapido && transcurrido < TD - 400) sonido.giro(TD - 200 - transcurrido, 0.035, 0.28);
+  const tr = ruTrayectoria({ idx, rueda0, vueltas, bola0, semilla }), P = tr.plan, T = tr.T;
+  const t0 = performance.now() - transcurrido;
+  let ev = tr.eventos.findIndex(e => e.t >= transcurrido); if (ev < 0) ev = tr.eventos.length;
+  // el rodar de la bola: el tono cambia un poco en cada giro
+  if (transcurrido < P.TD - 400) sonido.giro(P.TD - 200 - transcurrido, 0.03 * P.tono, 0.28 * P.tono);
   return new Promise(listo => {
     const paso = ahora => {
-      const t = ahora - t0;
-      svg.style.transform = `rotate(${rueda(t)}deg)`;
-      if (t < TD) ruPonerBola(bola, posBola(t), 45 - 3 * Math.max(0, (t / TD - 0.65) / 0.35) ** 2);   // al perder fuerza se acerca al centro
-      else if (t < TC){
-        const u = (t - TD) / (TC - TD);
-        const salto = Math.abs(Math.cos(u * Math.PI * 3.5)) * Math.pow(1 - u, 2);        // rebota contra los separadores
-        ruPonerBola(bola, casilla(t) + seg * 2 * (1 - u) * Math.sin(u * Math.PI * 4), 34.7 + 7.3 * salto);
-        const r = Math.floor(u * 4); if (r > rebotes && !rapido){ rebotes = r; sonido.tope(); }
-      } else ruPonerBola(bola, casilla(t), 34.7);
+      const t = Math.min(T, ahora - t0), b = tr.bola(t);
+      svg.style.transform = `rotate(${tr.rueda(t)}deg)`;
+      // la bola gira sobre sí misma según lo que avanza (más rápido cuando corre por el borde)
+      ruPonerBola(bola, b.ang, b.radio, b.fase === "quieta" ? tr.rueda(t) * 3 : b.ang * -9);
+      while (ev < tr.eventos.length && tr.eventos[ev].t <= t){
+        const e = tr.eventos[ev++];
+        if (e.tipo === "rombo") sonido.rombo(e.f); else sonido.casillita(e.f);
+      }
       if (t < T) requestAnimationFrame(paso);
-      else { sonido.clic(); listo(rueda(T) % 360); }
+      else { sonido.clic(); listo(tr.rueda(T) % 360); }
     };
     requestAnimationFrame(paso);
   });
 }
 
-$("#rueda").innerHTML = ruedaSVG("r1");
+$("#rueda").innerHTML = ruedaSVG("r1"); ruRombos($("#rueda").parentElement);
 ruPonerBola($("#ru-bola"), 0, 45);
 const casillas = construirPano($("#ru-pano"));
 /* ── fichas sobre el paño ──

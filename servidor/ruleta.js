@@ -8,7 +8,7 @@
    Las fichas son las de la sala (iguales para todos al empezar, separadas del saldo personal). */
 import "../public/js/ruleta-comun.js";
 import * as P from "./poker.js";
-const { esApuestaRU, ruPagoTotal, sumaFichas, RU_DURACION, ROJOS } = globalThis;
+const { esApuestaRU, ruPagoTotal, sumaFichas, ruPlan, ROJOS } = globalThis;
 const PAUSA_RESULTADO = 7000, MAX_FICHAS = 60;
 
 export function azarEntero(n){
@@ -108,8 +108,9 @@ export function nuevaPartida(s, token){
 function girar(s, ahora){
   const r = s.ruleta, ORDEN = globalThis.ORDEN;
   r.fase = "giro";
-  r.giro = { idx: ORDEN.indexOf(r.numero), rueda0: r.rueda, vueltas: 270 + azarEntero(91), bola0: azarEntero(360), inicio: ahora };
-  r.fin = ahora + RU_DURACION + 400;
+  // la semilla solo decide cómo se ve el recorrido de la bola (todos ven el mismo); el número ya estaba sorteado
+  r.giro = { idx: ORDEN.indexOf(r.numero), rueda0: r.rueda, vueltas: 270 + azarEntero(91), bola0: azarEntero(360), semilla: azarEntero(2 ** 31), inicio: ahora };
+  r.fin = ahora + ruPlan(r.giro.semilla).T + 400;
 }
 function resolver(s, ahora){
   const r = s.ruleta, n = r.numero, pagos = {};

@@ -9,7 +9,7 @@ const amr = { listo: false, casillas: [], valor: 10, animada: 0, mostrada: 0, an
 function amrIniciar(){
   if (amr.listo) return;
   amr.listo = true;
-  $("#amr-rueda").innerHTML = ruedaSVG("r2");
+  $("#amr-rueda").innerHTML = ruedaSVG("r2"); ruRombos($("#amr-rueda").parentElement);
   ruPonerBola($("#amr-bola"), 0, 45);
   amr.casillas = construirPano($("#amr-pano"));
   amr.casillas.forEach(b => b.onclick = () => {
@@ -80,7 +80,7 @@ function amrPintar(s){
     amr.animando = true; amr.animada = r.ronda;
     $("#amr-resultado").className = "ru-resultado"; $("#amr-resultado").textContent = "";
     const transcurrido = Math.max(0, Date.now() + am.desfase - r.giro.inicio);
-    ruAnimar({ svg: $("#amr-rueda"), bola: $("#amr-bola"), idx: r.giro.idx, rueda0: r.giro.rueda0, vueltas: r.giro.vueltas, bola0: r.giro.bola0, transcurrido })
+    ruAnimar({ svg: $("#amr-rueda"), bola: $("#amr-bola"), idx: r.giro.idx, rueda0: r.giro.rueda0, vueltas: r.giro.vueltas, bola0: r.giro.bola0, semilla: r.giro.semilla, transcurrido })
       .then(() => { amr.animando = false; amrMostrarResultado(); });
   } else if (!r.giro && !amr.animando){
     $("#amr-rueda").style.transform = `rotate(${r.rueda}deg)`;

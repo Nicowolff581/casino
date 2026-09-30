@@ -38,6 +38,8 @@ const pausa = ms => new Promise(r => setTimeout(r, ms));
     else { const t0 = Date.now(); await ana.p.waitForFunction(() => am.estado.ruleta.fase === "giro", null, { timeout: 25000 }); ok(Date.now() - t0 < 20000, `Nadie tocó «Listo» y giró sola al terminar los 15 s`); }
     await ana.p.waitForFunction(() => am.estado.ruleta.fase !== "apuestas", null, { timeout: 5000 });
     await pausa(3000);
+    const semillas = await Promise.all(J.map(j => j.p.evaluate(() => am.estado.ruleta.giro?.semilla)));
+    ok(Number.isInteger(semillas[0]) && semillas.every(x => x === semillas[0]), `Los 3 recibieron la misma semilla del recorrido (${semillas[0]}): ven la misma bola`);
     const aMitad = await Promise.all(J.map(j => j.p.evaluate(() => ({ disco: $("#amr-resultado").textContent, estado: $("#amr-estado").textContent }))));
     ok(aMitad.every(x => x.disco === "" && x.estado.includes("No va más")), "Mientras la bola gira nadie ve el número (dice «No va más…»)");
     await Promise.all(J.map(j => j.p.waitForFunction(() => amr.mostrada === am.estado.ruleta.ronda && am.estado.ruleta.resultado, null, { timeout: 45000 })));

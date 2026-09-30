@@ -48,6 +48,7 @@ y abre `http://localhost:8787`.
 - `casino-nico-original.html`: copia intacta de la versión original.
 - `pruebas/probar.js`: prueba automática de reglas, pagos y consola (solo para desarrollo).
 - `pruebas/simular-tragamonedas.js`: simula millones de jugadas del tragamonedas para medir cuánto devuelve.
+- `pruebas/simular-ruleta.js`: 1 millón de giros con el recorrido real de la bola (siempre termina en el número sorteado, 1 de 37 cada número, 97,3 %).
 - `pruebas/simular-plinko.js`: suelta 1 millón de bolas de Plinko con la misma física de la página y revisa casillas, devolución y choques.
 - `pruebas/simular-avion.js`: simula 1 millón de vuelos del avión y los compara con el cálculo exacto (97 %).
 - `pruebas/probar-poker-en-linea.mjs`: miles de manos del crupier en línea (fichas, turnos, privacidad, botes laterales).

@@ -263,6 +263,9 @@ input[type="range"]{ accent-color:var(--acento); width:100%; }
 .gran-premio[data-nivel="2"] .gp-titulo{ background:linear-gradient(90deg, #ff4d6d, #ffd84a, #7ee29a, #5fd0ff, #b98cff, #ff4d6d); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; text-shadow:none; animation:arcoiris 1.6s linear infinite; }
 .gran-premio[data-nivel="2"] .gp-caja{ box-shadow:0 0 0 3px #ffd84a, 0 0 60px rgba(255,216,74,.55); }
 @keyframes arcoiris{ to{ background-position:200% 0; } }
+.ru-numeros{ display:grid; grid-template-columns:repeat(auto-fill, minmax(78px, 1fr)); gap:4px; margin:6px 0 10px; }
+.ru-numeros span{ display:flex; align-items:center; gap:6px; font-size:.85rem; font-variant-numeric:tabular-nums; }
+.ru-numeros b{ width:24px; height:24px; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:.75rem; flex:none; }
 .gp-nota{ margin-top:10px; color:var(--tenue); font-size:.8rem; letter-spacing:.08em; text-transform:uppercase; }
 .aviso-toast{ position:fixed; left:50%; bottom:calc(22px + env(safe-area-inset-bottom,0px)); transform:translate(-50%, 30px); z-index:65; padding:12px 20px; border-radius:999px;
   background:var(--superficie2); box-shadow:inset 0 0 0 1px var(--acento), var(--sombra); font-weight:800; color:var(--acento2); opacity:0; pointer-events:none; transition:opacity .3s, transform .35s var(--ease-rebote); }

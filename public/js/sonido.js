@@ -54,6 +54,9 @@ const sonido = (() => {
     salto(){ tono({ f: 380, f2: 760, tipo: "triangle", dur: 0.12, vol: 0.12 }); },
     // Plinko: cada toque suena un poco distinto (tono, timbre y volumen según la fuerza del choque)
     clavito(fila = 0, fuerza = 1){ tono({ f: (880 + fila * 60) * (0.93 + Math.random() * 0.14), tipo: Math.random() < 0.6 ? "sine" : "triangle", dur: 0.035 + Math.random() * 0.045, vol: 0.025 + 0.06 * fuerza }); },
+    // Ruleta: choque con un rombo (seco) y rebote en una casilla (más agudo); cada uno suena un poco distinto
+    rombo(f = 1){ tono({ f: 1500 * (0.9 + Math.random() * 0.25), f2: 700, tipo: "triangle", dur: 0.06, vol: 0.05 + 0.08 * f }); soplo({ f: 3800 + Math.random() * 1500, q: 6, dur: 0.03, vol: 0.2 + 0.25 * f }); },
+    casillita(f = 1){ tono({ f: 2300 * (0.85 + Math.random() * 0.3), tipo: "sine", dur: 0.04 + Math.random() * 0.03, vol: 0.03 + 0.06 * f }); soplo({ f: 5200 + Math.random() * 1800, q: 8, dur: 0.025, vol: 0.12 + 0.25 * f }); },
     clavo(k = 0){ tono({ f: 900 + k * 70, tipo: "sine", dur: 0.06, vol: 0.06 }); },
     tope(t = 0){ tono({ t, f: 170, f2: 70, tipo: "square", dur: 0.09, vol: 0.09 }); soplo({ t, filtro: "lowpass", f: 900, dur: 0.07, vol: 0.2 }); },
     // Clics que se van espaciando, como la bola de la ruleta o un rodillo frenando.
