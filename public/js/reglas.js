@@ -56,11 +56,15 @@ const REGLAS = {
   },
   plinko: () => devuelve("≈ " + pct(0.99, 0), "devuelve a largo plazo (cálculo exacto por riesgo, abajo)") +
     `<h3>Cómo se juega</h3><ul>
-      <li>La bola cae por ${PL_FILAS} filas de clavos. En cada clavo va a la izquierda o a la derecha con 50 % de probabilidad.</li>
-      <li>Cae en una de ${PL_FILAS + 1} casillas y cobras <strong>apuesta × multiplicador</strong> de esa casilla. Las del centro son las más probables.</li></ul>
+      <li>La bola cae por ${PL_FILAS} filas de clavos. <strong>Cada vez que toca un clavo</strong> se sortea en ese momento, con el generador aleatorio justo, si sigue por la izquierda o por la derecha: 50 % cada lado.</li>
+      <li>Cae en una de ${PL_FILAS + 1} casillas y cobras <strong>apuesta × multiplicador</strong> de esa casilla. Las del centro son las más probables.</li>
+      <li>La altura y la fuerza de cada rebote, el giro de la bola y los rebotes dobles cambian en cada caída, pero son solo el dibujo: nunca cambian hacia dónde va.</li></ul>
     <h3>Casillas (de izquierda a derecha)</h3>` +
-    tabla(["Casilla", "Probabilidad", "Riesgo bajo", "Riesgo medio", "Riesgo alto"], PL_TABLAS.bajo.map((_, k) =>
-      [k + 1, pct(combin(PL_FILAS, k) / 2 ** PL_FILAS, 3), ...["bajo", "medio", "alto"].map(r => "×" + num(PL_TABLAS[r][k], 1))]).concat([["<strong>Devuelve</strong>", "", ...["bajo", "medio", "alto"].map(r => `<strong>${pct(plinkoDevolucion(PL_TABLAS[r]))}</strong>`)]])) + NO_CELEBRA,
+    tabla(["Casilla", "Probabilidad", `Salió en ${fmt(PL_SIMULADO.bolas)} caídas`, "Riesgo bajo", "Riesgo medio", "Riesgo alto"], PL_TABLAS.bajo.map((_, k) =>
+      [k + 1, pct(combin(PL_FILAS, k) / 2 ** PL_FILAS, 3), pct(PL_SIMULADO.casillas[k], 3), ...["bajo", "medio", "alto"].map(r => "×" + num(PL_TABLAS[r][k], 1))])
+      .concat([["<strong>Devuelve</strong>", "", "", ...["bajo", "medio", "alto"].map(r => `<strong>${pct(plinkoDevolucion(PL_TABLAS[r]))}</strong>`)]],
+        [["En la simulación", "", "", ...["bajo", "medio", "alto"].map(r => pct(PL_SIMULADO.devuelve[r], 1))]])) +
+    `<p class="nota-regla">La simulación usa la misma física del juego. En riesgo alto la casilla ×170 sale 1 de cada 4.096 bolas, así que incluso con un millón de caídas la devolución simulada puede quedar un poco arriba o abajo del valor exacto.</p>` + NO_CELEBRA,
   slots: () => {
     const E = SL_ESTADISTICAS, totB = SL_PESOS.base.reduce((a, b) => a + b), totG = SL_PESOS.gratis.reduce((a, b) => a + b), totV = SL_PESOS_VALOR.reduce((a, b) => a + b);
     return devuelve(pct(E.devuelve, 1), `devuelve a largo plazo (simulado con ${fmt(E.jugadas / 1e6)} millones de jugadas, margen ±${pct(E.margen, 1)})`) +

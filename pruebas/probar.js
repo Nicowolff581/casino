@@ -60,11 +60,14 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     // plinko: distribución binomial exacta
     const comb = (n, k) => { let x = 1; for (let i = 1; i <= k; i++) x = x * (n - k + i) / i; return x; };
     r.plinko = Object.fromEntries(Object.entries(PL_TABLAS).map(([k, t]) => [k, t.reduce((a, mm, i) => a + comb(PL_FILAS, i) / 2 ** PL_FILAS * mm, 0)]));
-    // plinko: tablas iguales a las originales y simulación de 400.000 bolas con el sorteo real
+    // plinko: tablas iguales a las originales y 100.000 bolas con la física real del juego (sorteo en cada clavo)
     r.plTablasIguales = JSON.stringify(PL_TABLAS) === JSON.stringify({ bajo: [10, 3, 1.6, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 1.6, 3, 10], medio: [33, 11, 4, 2, 1.1, 0.6, 0.3, 0.6, 1.1, 2, 4, 11, 33], alto: [170, 24, 8.1, 2, 0.7, 0.2, 0.2, 0.2, 0.7, 2, 8.1, 24, 170] });
-    { const N = 400000, cuenta = new Array(PL_FILAS + 1).fill(0); for (let i = 0; i < N; i++) cuenta[plCasilla(plSortear())]++;
+    { const N = 100000, cuenta = new Array(PL_FILAS + 1).fill(0); let distinta = 0, choques = 0, tMax = 0;
+      for (let i = 0; i < N; i++){ const { b, pasos } = plfCaidaCompleta(azar); cuenta[b.casilla]++; if (b.dirs.length !== PL_FILAS || b.dirs.reduce((a, x) => a + x, 0) !== b.casilla) distinta++; choques += pasos.filter(p => p.tipo === "clavo").length; tMax = Math.max(tMax, b.tFin); }
+      r.plFisica = { distinta, choquesPorBola: choques / N, tMax };
       let chi = 0; cuenta.forEach((o, k) => { const e = N * comb(PL_FILAS, k) / 2 ** PL_FILAS; chi += (o - e) ** 2 / e; });
-      r.plChi = chi; r.plSim = Object.fromEntries(Object.entries(PL_TABLAS).map(([k, t]) => [k, cuenta.reduce((a, o, i) => a + o * t[i], 0) / N])); }
+      r.plChi = chi;
+      r.plSim = Object.fromEntries(Object.entries(PL_TABLAS).map(([k, t]) => [k, cuenta.reduce((a, o, i) => a + o * t[i], 0) / N])); }
     // ruleta: los 37 números para cada tipo de apuesta
     r.ruleta = Object.fromEntries(["17", "0", "r", "n", "p", "i", "b", "a", "d1", "d2", "d3", "c1", "c2", "c3"].map(sel => { let t = 0; for (let n = 0; n <= 36; n++) t += ruPremio(sel, n, 1); return [sel, t / 37]; }));
     // ruleta con varias apuestas: 2.000 combinaciones al azar, revisando los 37 números de cada una
@@ -125,8 +128,9 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
   ok(!m.fueraRango && Math.abs(m.promedio - 0.5) < 0.005, `azar entre 0 y 1, promedio ${m.promedio.toFixed(4)}`);
   ok(m.dado.every(d => Math.abs(d - 1) < 0.02), `dado justo: ${m.dado.map(d => d.toFixed(3)).join(" ")}`);
   ok(m.plTablasIguales, "Plinko: las tablas de pago son idénticas a las originales");
-  ok(m.plChi < 36, `Plinko: 400.000 bolas siguen la distribución exacta (prueba chi² = ${m.plChi.toFixed(1)}, debe ser menor que 36)`);
-  for (const [k, v] of Object.entries(m.plSim)) ok(Math.abs(v - m.plinko[k]) < (k === "alto" ? 0.025 : 0.01), `Plinko ${k}: simulado ${(v * 100).toFixed(2)} % vs exacto ${(m.plinko[k] * 100).toFixed(2)} %`);
+  ok(m.plChi < 36, `Plinko: 100.000 bolas con la física del juego siguen la distribución exacta (prueba chi² = ${m.plChi.toFixed(1)}, debe ser menor que 36)`);
+  ok(m.plFisica.distinta === 0 && Math.abs(m.plFisica.choquesPorBola - 12) < 1e-9 && m.plFisica.tMax < 5, `Plinko: cada bola sortea en sus 12 clavos y cae en la casilla de su sorteo; la más lenta tardó ${m.plFisica.tMax.toFixed(1)} s (ninguna se traba)`);
+  for (const [k, v] of Object.entries(m.plSim)) ok(Math.abs(v - m.plinko[k]) < (k === "alto" ? 0.045 : 0.015), `Plinko ${k}: simulado ${(v * 100).toFixed(2)} % vs exacto ${(m.plinko[k] * 100).toFixed(2)} %`);
   ok(!m.slFallas.length, `Tragamonedas: 20.000 jugadas cumplen las reglas (8+ iguales, pagos de la tabla, cascadas y giros gratis)${m.slFallas.length ? " · " + m.slFallas.join(", ") : ""}`);
   ok(m.slDeterminista, "Tragamonedas: con el mismo azar sale exactamente la misma jugada (la animación no cambia nada)");
   ok(Math.abs(m.slSim - m.slEst.devuelve) < 0.05, `Tragamonedas: 300.000 jugadas devolvieron ${(m.slSim * 100).toFixed(1)} % (cifra de las reglas: ${(m.slEst.devuelve * 100).toFixed(2)} % con ${m.slEst.jugadas / 1e6} millones); giros gratis 1 de cada ${Math.round(1 / m.slBonos)}`);

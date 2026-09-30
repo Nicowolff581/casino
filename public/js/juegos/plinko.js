@@ -1,18 +1,18 @@
 /* ═════════ PLINKO (salón de neón) ═════════
-   La bola cruza 12 filas de clavos; en cada una va a la izquierda o a la derecha
-   con 50 % de probabilidad. La casilla final es el número de rebotes a la derecha (0 a 12).
-   Todo lo demás (brillos, estela, vibración, partículas) es solo decoración. */
-const PL_FILAS = 12, SEG = 120;
+   La bola cruza 12 filas de clavos. Cada vez que toca un clavo se sortea en ese momento, con el
+   azar justo, si sigue por la izquierda o por la derecha (50 % cada lado). La casilla final es el
+   número de veces que fue a la derecha (0 a 12). La física del rebote está en plinko-fisica.js:
+   altura, fuerza, giro y rebotes dobles cambian en cada caída, pero son solo el dibujo. */
+const PL_FILAS = PLF.FILAS;
 const PL_TABLAS = {
   bajo:  [10, 3, 1.6, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 1.6, 3, 10],
   medio: [33, 11, 4, 2, 1.1, 0.6, 0.3, 0.6, 1.1, 2, 4, 11, 33],
   alto:  [170, 24, 8.1, 2, 0.7, 0.2, 0.2, 0.2, 0.7, 2, 8.1, 24, 170]
 };
-// Sorteo del camino: 12 decisiones izquierda (0) / derecha (1), cada una 50 %.
-const plSortear = () => Array.from({ length: PL_FILAS }, () => azar() < 0.5 ? 0 : 1);
-const plCasilla = dirs => dirs.reduce((a, x) => a + x, 0);
-
-const pl = { riesgo: "medio", bolas: [], brillo: {}, flash: {}, particulas: [], textos: [], ondas: [], sacudida: null, animando: false };
+// Resultado de soltar 1.000.000 de bolas con esta misma física (pruebas/simular-plinko.js).
+const PL_SIMULADO = { bolas: 1000000, chi: 20.1, casillas: [0.000276, 0.002862, 0.016215, 0.053898, 0.120816, 0.193436, 0.225317, 0.192878, 0.120625, 0.053971, 0.016507, 0.002954, 0.000245],
+  devuelve: { bajo: 0.99059, medio: 0.99276, alto: 1.00028 } };
+const pl = { riesgo: "medio", bolas: [], brillo: {}, flash: {}, golpe: {}, particulas: [], textos: [], ondas: [], sacudida: null, animando: false };
 const plCanvas = $("#pl-canvas"), plCtx = plCanvas.getContext("2d");
 function plTam(){ if (ajustarCanvas(plCanvas, plCtx)) plDibujar(performance.now()); }
 function plGeo(){
@@ -20,19 +20,8 @@ function plGeo(){
   const gap = Math.min(W / (PL_FILAS + 2), (H - 30) / (PL_FILAS + 1.6));
   return { W, H, gap, cx: W / 2, top: gap * 0.9 };
 }
-function plPuntos(b, g){
-  const pts = [[g.cx, 0]]; let k = 0;
-  for (let r = 0; r < PL_FILAS; r++){ pts.push([g.cx + (k - r / 2) * g.gap, g.top + r * g.gap - g.gap * 0.32]); k += b.dirs[r]; }
-  pts.push([g.cx + (k - PL_FILAS / 2) * g.gap, g.top + PL_FILAS * g.gap + g.gap * 0.1]);
-  return pts;
-}
-// Posición de la bola e milisegundos después de soltarla (rebota en arco entre clavos).
-function plPos(pts, e, g){
-  e = Math.max(0, e);
-  const s = Math.min(Math.floor(e / SEG), pts.length - 2), t = Math.min(1, (e - s * SEG) / SEG);
-  const [x0, y0] = pts[s], [x1, y1] = pts[s + 1];
-  return [x0 + (x1 - x0) * t, y0 + (y1 - y0) * t * t - (s > 0 ? g.gap * 0.28 * Math.sin(Math.PI * t) : 0)];
-}
+// De medidas de la física (1 = distancia entre filas) a píxeles del lienzo.
+const plPx = (g, x, y) => [g.cx + x * g.gap, g.top + y * g.gap];
 // Color de neón de cada casilla: turquesa al centro, fucsia hacia afuera y dorado en los bordes.
 function colorCaja(k, luz = 60){
   const t = Math.abs(k - PL_FILAS / 2) / (PL_FILAS / 2);
@@ -60,7 +49,7 @@ function plDibujar(ahora){
   const rp = Math.max(2.5, g.gap * 0.1);
   for (let r = 0; r < PL_FILAS; r++) for (let i = 0; i < r + 3; i++){
     let x = g.cx + (i - (r + 2) / 2) * g.gap, y = g.top + r * g.gap;
-    const f = pl.flash[r + "-" + i], d = f ? ahora - f : 1e9, k = Math.max(0, 1 - d / 420);
+    const f = pl.flash[r + "-" + i], d = f ? ahora - f : 1e9, k = Math.max(0, 1 - d / 420) * (0.55 + 0.45 * (pl.golpe[r + "-" + i] ?? 1));
     if (k > 0){ x += Math.sin(d / 11) * rp * 0.7 * k; y += Math.cos(d / 13) * rp * 0.4 * k; }
     const halo = c.createRadialGradient(x, y, 0, x, y, rp * (3 + k * 4));
     halo.addColorStop(0, k ? `rgba(255,90,220,${0.35 + 0.5 * k})` : "rgba(62,231,255,.28)"); halo.addColorStop(1, "rgba(0,0,0,0)");
@@ -92,20 +81,25 @@ function plDibujar(ahora){
   // ondas expansivas
   pl.ondas = pl.ondas.filter(o => ahora - o.t0 < 700);
   pl.ondas.forEach(o => { const k = (ahora - o.t0) / 700; c.strokeStyle = o.color.replace("hsl", "hsla").replace("%)", `%,${1 - k})`); c.lineWidth = 3 * (1 - k) + 1; c.beginPath(); c.arc(o.x, o.y, g.gap * (0.5 + k * o.tam), 0, Math.PI * 2); c.stroke(); });
-  // bolas con estela
-  const rb = g.gap * 0.22;
+  // bolas con estela (cada una con su propio recorrido y su propio giro)
+  const rb = g.gap * PLF.RB;
   pl.bolas.forEach(b => {
-    const pts = b.pts || (b.pts = plPuntos(b, g)), e = ahora - b.t0;
-    for (let i = 9; i >= 1; i--){
-      const [tx, ty] = plPos(pts, e - i * 18, g), a = 0.32 * (1 - i / 10);
-      c.fillStyle = `rgba(255,${120 + i * 10},60,${a})`; c.beginPath(); c.arc(tx, ty, rb * (1 - i * 0.07), 0, Math.PI * 2); c.fill();
-    }
-    const [x, y] = plPos(pts, e, g);
+    b.rastro.forEach(([tx, ty], i) => {
+      const a = 0.3 * (i + 1) / b.rastro.length, [px, py] = plPx(g, tx, ty);
+      c.fillStyle = `rgba(255,${200 - i * 8},60,${a})`; c.beginPath(); c.arc(px, py, rb * (0.45 + 0.5 * (i + 1) / b.rastro.length), 0, Math.PI * 2); c.fill();
+    });
+    const [x, y] = plPx(g, ...plfPos(b.f, (ahora - b.t0) / 1000));
     const halo = c.createRadialGradient(x, y, 0, x, y, rb * 3.2); halo.addColorStop(0, "rgba(255,210,90,.55)"); halo.addColorStop(1, "rgba(0,0,0,0)");
     c.fillStyle = halo; c.beginPath(); c.arc(x, y, rb * 3.2, 0, Math.PI * 2); c.fill();
     const core = c.createRadialGradient(x - rb * 0.35, y - rb * 0.35, 0, x, y, rb);
     core.addColorStop(0, "#ffffff"); core.addColorStop(0.45, "#ffe45e"); core.addColorStop(1, "#ff7a1a");
     c.fillStyle = core; c.beginPath(); c.arc(x, y, rb, 0, Math.PI * 2); c.fill();
+    // franja que gira: así se ve que la bola rueda
+    c.save(); c.translate(x, y); c.rotate(b.f.ang);
+    c.strokeStyle = "rgba(160,50,0,.55)"; c.lineWidth = Math.max(1, rb * 0.22); c.lineCap = "round";
+    c.beginPath(); c.arc(0, 0, rb * 0.62, -0.9, 0.9); c.stroke();
+    c.fillStyle = "rgba(255,255,255,.8)"; c.beginPath(); c.arc(-rb * 0.55, 0, rb * 0.13, 0, Math.PI * 2); c.fill();
+    c.restore();
   });
   // partículas
   pl.particulas.forEach(p => { const k = p.vida / p.max; c.fillStyle = p.color.replace("hsl", "hsla").replace("%)", `%,${k})`); c.beginPath(); c.arc(p.x, p.y, p.r * (0.5 + k * 0.5), 0, Math.PI * 2); c.fill(); });
@@ -138,22 +132,25 @@ function plEfecto(k, m, ahora){
 function plLoop(ahora){
   const tabla = PL_TABLAS[pl.riesgo], dt = Math.min(0.05, (ahora - (pl.ultimo || ahora)) / 1000); pl.ultimo = ahora;
   pl.bolas.forEach(b => {
-    const s = Math.floor((ahora - b.t0) / SEG);
-    if (s >= 1 && s <= PL_FILAS && b.ult !== s){
-      b.ult = s; const fila = s - 1, k = b.dirs.slice(0, fila).reduce((a, x) => a + x, 0);
-      pl.flash[fila + "-" + (k + 1)] = ahora; sonido.clavo(fila);
+    const t = (ahora - b.t0) / 1000;
+    for (const p of plfAvanzar(b.f, t)){
+      if (p.tipo === "clavo" || p.tipo === "doble"){
+        const clave = p.fila + "-" + p.clavo;
+        pl.flash[clave] = ahora; pl.golpe[clave] = p.fuerza;
+        sonido.clavito(p.fila, p.fuerza);
+      } else if (p.tipo === "casilla"){
+        const k = p.casilla, m = tabla[k], gana = Math.floor(b.bet * m);
+        pl.brillo[k] = ahora; plEfecto(k, m, ahora);
+        liquidar("#pl-msg", gana, b.bet, `${m}× → ${fmt(gana)} fichas. `);
+        const h = $("#pl-hist"), sp = document.createElement("span");
+        sp.style.cssText = `--c:${colorCaja(k)}`; sp.textContent = m + "×"; h.prepend(sp);
+        while (h.children.length > 8) h.lastChild.remove();
+      }
     }
+    b.f.ang += b.f.giro * dt;
+    b.rastro.push(plfPos(b.f, t)); if (b.rastro.length > 9) b.rastro.shift();
   });
-  pl.bolas = pl.bolas.filter(b => {
-    if (ahora - b.t0 < SEG * (PL_FILAS + 1)) return true;
-    const k = plCasilla(b.dirs), m = tabla[k], gana = Math.floor(b.bet * m);
-    pl.brillo[k] = ahora; plEfecto(k, m, ahora);
-    liquidar("#pl-msg", gana, b.bet, `${m}× → ${fmt(gana)} fichas. `);
-    const h = $("#pl-hist"), sp = document.createElement("span");
-    sp.style.cssText = `--c:${colorCaja(k)}`; sp.textContent = m + "×"; h.prepend(sp);
-    while (h.children.length > 8) h.lastChild.remove();
-    return false;
-  });
+  pl.bolas = pl.bolas.filter(b => !b.f.fin || ahora - b.t0 < b.f.tFin * 1000 + 250);
   const g = plGeo();
   pl.particulas = pl.particulas.filter(p => (p.vida -= dt) > 0);
   pl.particulas.forEach(p => { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += g.gap * 9 * dt; p.vx *= 0.99; });
@@ -165,7 +162,7 @@ function plLoop(ahora){
 }
 $("#pl-soltar").onclick = () => {
   if (!apostar("#pl-msg")) return;
-  pl.bolas.push({ dirs: plSortear(), t0: performance.now(), bet: apuesta });
+  pl.bolas.push({ f: plfNueva(azar), t0: performance.now(), bet: apuesta, rastro: [] });   // azar = generador justo (nucleo.js)
   ocupado = true; bloquear("#pl-riesgo button", true);
   if (!pl.animando){ pl.animando = true; requestAnimationFrame(plLoop); }
 };

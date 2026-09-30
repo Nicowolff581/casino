@@ -52,6 +52,8 @@ const sonido = (() => {
     },
     carta(t = 0){ soplo({ t, filtro: "highpass", f: 1400, f2: 5000, dur: 0.11, vol: 0.22, q: 0.7 }); },
     salto(){ tono({ f: 380, f2: 760, tipo: "triangle", dur: 0.12, vol: 0.12 }); },
+    // Plinko: cada toque suena un poco distinto (tono, timbre y volumen según la fuerza del choque)
+    clavito(fila = 0, fuerza = 1){ tono({ f: (880 + fila * 60) * (0.93 + Math.random() * 0.14), tipo: Math.random() < 0.6 ? "sine" : "triangle", dur: 0.035 + Math.random() * 0.045, vol: 0.025 + 0.06 * fuerza }); },
     clavo(k = 0){ tono({ f: 900 + k * 70, tipo: "sine", dur: 0.06, vol: 0.06 }); },
     tope(t = 0){ tono({ t, f: 170, f2: 70, tipo: "square", dur: 0.09, vol: 0.09 }); soplo({ t, filtro: "lowpass", f: 900, dur: 0.07, vol: 0.2 }); },
     // Clics que se van espaciando, como la bola de la ruleta o un rodillo frenando.

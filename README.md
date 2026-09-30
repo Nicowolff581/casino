@@ -34,7 +34,7 @@ y abre `http://localhost:8787`.
 - `public/js/reglas.js`: reglas y tablas de probabilidades (se calculan con los números de cada juego).
 - `public/js/interfaz.js`: pantalla de inicio, ventana de reglas, panel de sonido y pantalla de carga.
 - `public/js/cartas.js`: baraja y dibujo de cartas.
-- `public/js/juegos/`: un archivo por juego (el tragamonedas y el avión separan su motor de resultados en `tragamonedas-motor.js` y `avion-motor.js`).
+- `public/js/juegos/`: un archivo por juego (el tragamonedas y el avión separan su motor de resultados en `tragamonedas-motor.js` y `avion-motor.js`; el Plinko, su física en `plinko-fisica.js`).
 - `public/muestras/estilos.html`: muestra de los 3 estilos visuales.
 - `public/js/manos.js`: valor de las manos de póker y botes laterales (lo usan la página y el servidor).
 - `public/js/amigos.js`: pantalla de «Jugar con amigos» (entrada, mesa, botones y reacciones).
@@ -48,6 +48,7 @@ y abre `http://localhost:8787`.
 - `casino-nico-original.html`: copia intacta de la versión original.
 - `pruebas/probar.js`: prueba automática de reglas, pagos y consola (solo para desarrollo).
 - `pruebas/simular-tragamonedas.js`: simula millones de jugadas del tragamonedas para medir cuánto devuelve.
+- `pruebas/simular-plinko.js`: suelta 1 millón de bolas de Plinko con la misma física de la página y revisa casillas, devolución y choques.
 - `pruebas/simular-avion.js`: simula 1 millón de vuelos del avión y los compara con el cálculo exacto (97 %).
 - `pruebas/probar-poker-en-linea.mjs`: miles de manos del crupier en línea (fichas, turnos, privacidad, botes laterales).
 - `pruebas/probar-en-linea.js`: 4 jugadores en 4 ventanas contra el servidor local (`npx wrangler dev --port 8790`).
