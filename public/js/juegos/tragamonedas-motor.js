@@ -101,3 +101,12 @@ function slCompra(rnd = azar){
   const r = slRondaGratis(rnd), topado = r.total > SL_TOPE;
   return { base: null, gratis: r.gratis, total: Math.min(r.total, SL_TOPE), topado, comprada: true };
 }
+/* ── modo demostración (solo con el enlace ?demo=slots) ──
+   Para mostrar un premio enorme sin esperar: reproduce una jugada REAL de este mismo motor, elegida a propósito
+   (se buscó entre millones de semillas una que pagara más de 3.000 veces la apuesta). No cambia el juego normal:
+   sin ese enlace todas las jugadas son al azar. La pantalla avisa que es una demostración. */
+function slAzarSemilla(semilla){
+  let a = semilla >>> 0;
+  return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+const SL_DEMO = { semilla: 27956236, veces: 3175.35 };

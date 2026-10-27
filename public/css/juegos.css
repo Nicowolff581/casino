@@ -212,6 +212,8 @@
 .sl-comprar.confirmar{ background:var(--acento); color:var(--sobre-acento); animation:latidoSube .7s ease-in-out infinite alternate; } .sl-comprar.confirmar b{ color:inherit; }
 /* símbolo chico dentro de la tabla de las reglas */
 .sl-mini{ display:inline-grid; width:26px; vertical-align:middle; margin-right:8px; container-type:inline-size; } .sl-mini .sl-s{ width:26px; animation:none; } .sl-mini .sl-ficha b{ font-size:14px; }
+.sl-demo{ margin:0 auto 12px; max-width:720px; padding:10px 16px; border-radius:12px; background:#3a1440; color:#ffd9f4; font-size:.95rem; }
+.sl-demo b{ color:#fff; }
 /* tabla de pagos corta */
 .sl-pagos{ display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:6px; margin-top:20px; container-type:inline-size; }
 .sl-pagos > div{ display:grid; grid-template-columns:40px 1fr; grid-template-rows:repeat(3, auto); column-gap:10px; align-items:center; padding:8px 10px; border-radius:10px; background:var(--superficie2); font-size:.82rem; color:var(--suave); }

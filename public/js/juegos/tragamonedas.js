@@ -222,7 +222,9 @@ async function slJugar(compra){
   if (ocupado || !apostar("#s-msg", costo)) return;
   ocupado = true; slBotones(); msg("#s-msg", ""); slMarcador(0);
   slMaquina.classList.remove("gana");
-  const j = compra ? slCompra() : slJugada();
+  const demo = !compra && sl.demo;
+  const j = compra ? slCompra() : demo ? slJugada(slAzarSemilla(SL_DEMO.semilla)) : slJugada();
+  if (demo) slTerminarDemo();
   let mostrado = j.base ? await slMostrarGiro(j.base, "base", bet, 0, costo) : 0;
   if (j.gratis){
     let quedan = SL_GIROS;
@@ -237,7 +239,7 @@ async function slJugar(compra){
   }
   const pagado = slFichas(j.total, bet);
   slMarcador(pagado);
-  const detalle = j.topado ? `¡Premio máximo de ×${fmt(SL_TOPE)}! ` : compra ? `Compraste ${SL_GIROS} giros gratis por ${fmt(costo)} y jugaste ${j.gratis.length}. ` : j.gratis ? `Giros gratis: ${j.gratis.length}. ` : "";
+  const detalle = demo ? "Jugada de demostración (elegida a propósito, no al azar). " : j.topado ? `¡Premio máximo de ×${fmt(SL_TOPE)}! ` : compra ? `Compraste ${SL_GIROS} giros gratis por ${fmt(costo)} y jugaste ${j.gratis.length}. ` : j.gratis ? `Giros gratis: ${j.gratis.length}. ` : "";
   // Se compara con lo que costó: solo se celebra (luces y fiesta) si recibes más de lo que pagaste.
   if (pagado > costo){ slMaquina.classList.add("gana"); setTimeout(() => slMaquina.classList.remove("gana"), 2600); slMonedas(pagado / costo); }
   liquidar("#s-msg", pagado, costo, detalle, SL_NIVELES);
@@ -292,3 +294,10 @@ $("#sl-pagos").innerHTML = SL_SIMBOLOS.slice().reverse().map(S =>
   `<div>${slSimboloHTML({ s: SL_LLAVE })}<span><b>4</b> ×3</span><span><b>5</b> ×5</span><span><b>6+</b> ×100</span></div>`;
 // Cuadrícula inicial (decorativa) para que la máquina no se vea vacía.
 sl.celdas = Array.from({ length: SL_COLS * SL_FILAS }, (_, i) => slCrear(slCelda(azar, "base"), i, i % SL_FILAS, 0, false));
+// Modo demostración: solo con el enlace …/?demo=slots#slots. La siguiente jugada normal es la jugada real elegida (SL_DEMO).
+sl.demo = new URLSearchParams(location.search).get("demo") === "slots";
+function slTerminarDemo(){
+  sl.demo = false; $("#sl-demo")?.remove();
+  try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}
+}
+if (sl.demo) slMaquina.insertAdjacentHTML("beforebegin", `<p class="sl-demo" id="sl-demo"><b>Modo demostración.</b> Tu próxima jugada es una jugada real de esta máquina elegida a propósito (paga ${fmt(Math.floor(SL_DEMO.veces))} veces la apuesta), no al azar. Después todo vuelve a ser al azar.</p>`);
