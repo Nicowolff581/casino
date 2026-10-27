@@ -262,10 +262,16 @@ function slCambiarApuesta(dir){
 }
 $("#sl-menos").onclick = () => slCambiarApuesta(-1);
 $("#sl-mas").onclick = () => slCambiarApuesta(1);
-function slBotones(){ $("#s-girar").disabled = $("#sl-comprar").disabled = $("#sl-menos").disabled = $("#sl-mas").disabled = ocupado; }
+// También se puede tocar el número y escribir el monto que uno quiera.
+const slCampo = $("#sl-apuesta");
+slCampo.addEventListener("focus", () => slCampo.select());
+slCampo.addEventListener("input", () => { const v = Math.floor(+slCampo.value); if (v >= 1) setApuesta(v); });
+slCampo.addEventListener("change", () => { const v = Math.floor(+slCampo.value); setApuesta(v >= 1 ? v : 1); slConsola(); });
+slCampo.addEventListener("keydown", e => { if (e.key === "Enter") slCampo.blur(); });
+function slBotones(){ $("#s-girar").disabled = $("#sl-comprar").disabled = $("#sl-menos").disabled = $("#sl-mas").disabled = slCampo.disabled = ocupado; }
 // Comprar pide confirmar con un segundo toque (es una jugada cara).
 function slConsola(){
-  $("#sl-apuesta").textContent = fmt(apuesta);
+  if (document.activeElement !== slCampo) slCampo.value = apuesta;     // no se pisa lo que se está escribiendo
   const b = $("#sl-comprar"); if (!b.classList.contains("confirmar")) $("#sl-precio").textContent = "· " + fmt(apuesta * SL_PRECIO_COMPRA);
 }
 const slPrecio = slConsola;

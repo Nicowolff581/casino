@@ -194,6 +194,11 @@
 .sl-apuesta button{ width:34px; height:34px; border-radius:50%; border:none; background:#3a1622; color:#ffe7a8; font-size:1.3rem; font-weight:800; line-height:1; box-shadow:inset 0 0 0 1px rgba(216,178,90,.5); transition:transform .12s, background .15s; }
 .sl-apuesta button:hover:not(:disabled){ background:#4d1d2c; } .sl-apuesta button:active:not(:disabled){ transform:scale(.9); }
 .sl-apuesta button:disabled{ opacity:.4; cursor:not-allowed; }
+.sl-apuesta input{ width:4.6em; min-width:0; padding:4px 6px; border:none; border-radius:8px; background:#2a0f18; color:#fff; font:900 1.35rem/1.1 var(--f-texto); text-align:center;
+  font-variant-numeric:tabular-nums; box-shadow:inset 0 0 0 1px rgba(216,178,90,.45); -moz-appearance:textfield; appearance:textfield; }
+.sl-apuesta input::-webkit-outer-spin-button, .sl-apuesta input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+.sl-apuesta input:focus{ outline:2px solid #ffe08a; outline-offset:1px; }
+.sl-apuesta input:disabled{ opacity:.7; }
 .sl-girar{ position:relative; width:80px; height:80px; border-radius:50%; border:none; display:grid; place-content:center; justify-items:center; gap:2px; color:#2a1400;
   background:radial-gradient(circle at 50% 30%, #ffe9a6, #e0aa3c 60%, #a8741c); font-weight:900; font-size:.95rem;
   box-shadow:0 0 0 4px #1d0a12, 0 0 0 6px #b8862c, 0 8px 0 #6a4510, 0 12px 24px rgba(0,0,0,.6); transition:transform .1s, box-shadow .1s, filter .2s; }
@@ -232,11 +237,11 @@
   .sl-consola{ gap:8px; padding:8px 10px; }
   .sl-girar{ width:76px; height:76px; } .sl-girar svg{ width:28px; height:28px; }
   .sl-medidor b{ font-size:1.15rem; }
-  .sl-apuesta{ gap:6px; } .sl-apuesta button{ width:30px; height:30px; }
+  .sl-apuesta{ gap:6px; } .sl-apuesta button{ width:30px; height:30px; } .sl-apuesta input{ width:3.9em; font-size:1.1rem; }
   .sl-tecla{ display:none; }
   /* en el celular la apuesta se cambia en la consola de la máquina: el panel de arriba queda solo con «Todos los juegos» */
-  .vista-juego[data-juego="slots"] .panel-apuesta > :not(.volver), .vista-juego[data-juego="ruleta"] .panel-apuesta > :not(.volver){ display:none; }
-  .vista-juego[data-juego="slots"] .panel-apuesta, .vista-juego[data-juego="ruleta"] .panel-apuesta{ padding:10px 14px; }
+  .vista-juego[data-juego="slots"] .panel-apuesta > :not(.volver){ display:none; }
+  .vista-juego[data-juego="slots"] .panel-apuesta{ padding:10px 14px; }
   #g-slots .reglas{ display:none; }
 }
 
