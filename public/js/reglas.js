@@ -85,8 +85,8 @@ const REGLAS = {
       <li>Los premios se calculan con tu apuesta, no con el precio. En promedio la ronda paga ${num(SL_COMPRA.promedio)} veces tu apuesta, así que la compra devuelve <strong>${pct(SL_COMPRA.promedio / SL_PRECIO_COMPRA, 1)}</strong> (simulado con ${fmt(SL_COMPRA.rondas / 1e6)} millones de rondas compradas), casi lo mismo que el juego normal.</li>
       <li>Muchas veces la ronda paga menos de lo que costó: solo se celebra si recibes más de lo que pagaste. Son solo fichas de práctica: no se compra nada con dinero real.</li></ul>
     <h3>Tabla de pagos (veces tu apuesta)</h3>` +
-    tabla(["Símbolo", "Sale", "8-9", "10-11", "12 o más"], SL_SIMBOLOS.map((S, i) => [`${S.ico} ${S.nombre}`, pct(SL_PESOS.base[i] / totB, 1), "×" + num(S.pagos[0]), "×" + num(S.pagos[1]), "×" + num(S.pagos[2])]).reverse()
-      .concat([["🗝️ Llave (4 / 5 / 6+)", pct(SL_PESOS.base[SL_LLAVE] / totB, 1), "×" + SL_PAGO_LLAVES(4), "×" + SL_PAGO_LLAVES(5), "×" + SL_PAGO_LLAVES(6)]])) +
+    tabla(["Símbolo", "Sale", "8-9", "10-11", "12 o más"], SL_SIMBOLOS.map((S, i) => [`<span class="sl-mini">${slSimboloHTML({ s: i })}</span>${S.nombre}`, pct(SL_PESOS.base[i] / totB, 1), "×" + num(S.pagos[0]), "×" + num(S.pagos[1]), "×" + num(S.pagos[2])]).reverse()
+      .concat([[`<span class="sl-mini">${slSimboloHTML({ s: SL_LLAVE })}</span>Llave (4 / 5 / 6+)`, pct(SL_PESOS.base[SL_LLAVE] / totB, 1), "×" + SL_PAGO_LLAVES(4), "×" + SL_PAGO_LLAVES(5), "×" + SL_PAGO_LLAVES(6)]])) +
     `<h3>Faroles</h3><p>Salen en ${pct(SL_PESOS.base[SL_FAROL] / totB, 1)} de las casillas del juego normal y en ${pct(SL_PESOS.gratis[SL_FAROL] / totG, 1)} en los giros gratis. En los giros gratis también salen más seguido los símbolos comunes.</p>` +
     tabla(["Valor", "Probabilidad"], SL_VALORES.map((v, i) => ["×" + v, pct(SL_PESOS_VALOR[i] / totV, 1)])) + NO_CELEBRA;
   },

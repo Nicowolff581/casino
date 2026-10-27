@@ -69,38 +69,63 @@
 .bote{ margin-top:14px; color:var(--suave); font-weight:700; display:inline-flex; gap:8px; align-items:center; background:rgba(0,0,0,.4); padding:6px 14px; border-radius:999px; }
 .bote b{ color:var(--texto); font-variant-numeric:tabular-nums; }
 
-/* ── tragamonedas «Medianoche en el Club» ── */
-.sl-maquina{ position:relative; max-width:660px; margin:0 auto; padding:14px 14px 16px; border-radius:22px;
-  background:radial-gradient(120% 70% at 50% 0%, #3a1f5c, #1a0f2e 55%, #0e0819);
-  box-shadow:inset 0 0 0 2px var(--acento), inset 0 0 0 7px rgba(0,0,0,.3), inset 0 0 0 8px rgba(239,210,142,.35), 0 22px 50px rgba(0,0,0,.55), 0 0 60px rgba(120,60,200,.2); }
-.sl-marquesina{ text-align:center; line-height:1; margin:2px 0 10px; }
-.sl-marquesina span{ font-family:var(--f-titulo); font-style:italic; font-weight:800; font-size:clamp(1.5rem, 5vw, 2.2rem); color:var(--acento2); text-shadow:0 0 18px rgba(239,210,142,.6), 0 2px 0 #5a3a0a; }
-.sl-marquesina small{ display:block; margin-top:4px; font-size:.7rem; letter-spacing:.4em; text-transform:uppercase; color:#c9b7ef; }
-.sl-info{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin:0 4px 8px; font-size:.85rem; color:#c9b7ef; font-weight:700; }
-.sl-info b{ color:#fff; font-variant-numeric:tabular-nums; font-size:1.05rem; }
-.sl-bono{ padding:3px 10px; border-radius:999px; background:rgba(216,178,90,.18); box-shadow:inset 0 0 0 1px var(--acento); color:var(--acento2); animation:msgGana .4s; }
+/* ── tragamonedas «Medianoche en el Club» ──
+   Es el dibujo de la máquina (data-ui): mueble laqueado, letrero con focos, ventana de rodillos y consola.
+   El ancho se calcula para que la máquina entera, con el botón «Girar», quepa en la pantalla. */
+.sl-maquina{ --ancho:min(100%, max(340px, calc((100svh - 462px) * 1.2 + 44px)), 760px);
+  position:relative; width:var(--ancho); margin:0 auto; padding:0 16px 14px; border-radius:26px 26px 18px 18px;
+  background:linear-gradient(180deg, #2a0d17, #14060c 30%, #0c0408); color:#f3e6ff;
+  box-shadow:inset 0 0 0 2px #b8862c, inset 0 0 0 5px #1a070d, inset 0 0 0 6px rgba(243,216,147,.5), 0 30px 60px rgba(0,0,0,.6); transition:box-shadow .4s; }
+.sl-marquesina{ position:relative; text-align:center; line-height:1; margin:0 -16px 10px; padding:16px 0 10px; border-radius:26px 26px 0 0;
+  background:radial-gradient(70% 120% at 50% 0%, #5a1428, #2a0a14 70%); box-shadow:inset 0 -2px 0 #b8862c; }
+.sl-marquesina span{ position:relative; font-family:var(--f-titulo); font-weight:800; font-size:clamp(1.5rem, 4.6vw, 2.3rem); color:#ffe7a8;
+  text-shadow:0 0 14px rgba(255,200,90,.65), 0 2px 0 #6a3a08; }
+.sl-marquesina small{ position:relative; display:block; margin-top:3px; font-size:.82rem; font-weight:700; color:#e8c9d4; }
+/* focos: corren despacio; rápido al girar; oro al ganar; rosa en los giros gratis */
+.sl-focos{ position:absolute; left:18px; right:18px; top:5px; display:flex; justify-content:space-between; pointer-events:none; }
+.sl-focos.abajo{ position:static; margin:12px 4px 0; }
+.sl-focos i{ width:8px; height:8px; border-radius:50%; background:#5a3a14; box-shadow:0 0 0 1px rgba(0,0,0,.4); animation:slFoco 1.8s linear infinite; animation-delay:calc(var(--i) * -.1s); }
+@keyframes slFoco{ 0%, 60%{ background:#5a3a14; box-shadow:0 0 0 1px rgba(0,0,0,.4); } 70%, 90%{ background:#fff1c2; box-shadow:0 0 8px 2px rgba(255,214,120,.9); } }
+.sl-maquina.girando .sl-focos i{ animation-duration:.5s; }
+.sl-maquina.gana .sl-focos i{ animation:slFocoOro .28s steps(2) infinite; }
+@keyframes slFocoOro{ 50%{ background:#fff1c2; box-shadow:0 0 10px 3px rgba(255,214,120,.95); } }
+.sl-maquina.gana{ box-shadow:inset 0 0 0 2px #ffe08a, inset 0 0 0 5px #1a070d, inset 0 0 0 6px rgba(243,216,147,.8), 0 30px 60px rgba(0,0,0,.6), 0 0 70px rgba(255,200,90,.35); }
+.sl-maquina.bono .sl-focos i{ animation-name:slFocoRosa; animation-duration:.9s; }
+@keyframes slFocoRosa{ 0%, 55%{ background:#3a1440; box-shadow:none; } 65%, 90%{ background:#ffc6f0; box-shadow:0 0 9px 2px rgba(255,110,220,.9); } }
+.sl-info{ position:absolute; left:14px; right:14px; top:12px; z-index:7; display:flex; justify-content:space-between; align-items:center; gap:10px; pointer-events:none; font-size:.88rem; font-weight:700; color:#e8c9d4; }
+.sl-info b{ color:#fff; font-variant-numeric:tabular-nums; }
+.sl-combo{ padding:3px 12px; border-radius:999px; background:rgba(40,10,20,.85); box-shadow:inset 0 0 0 1px rgba(255,224,138,.6); opacity:0; transform:scale(.8); transition:opacity .2s, transform .3s var(--ease-rebote); font-weight:800; color:#ffe08a; }
+.sl-combo.ver{ opacity:1; transform:none; } .sl-combo:empty{ visibility:hidden; }
+.sl-bono{ margin-left:auto; padding:3px 12px; border-radius:999px; background:rgba(60,10,50,.88); box-shadow:inset 0 0 0 1px rgba(255,150,230,.6); color:#ffd9f4; animation:msgGana .4s; }
 .sl-bono[hidden]{ display:none; }
-.sl-rejilla{ position:relative; aspect-ratio:6 / 5; border-radius:14px; overflow:hidden; container-type:inline-size;
-  background:radial-gradient(circle at 50% 40%, #241444, #0c0718 75%); box-shadow:inset 0 0 0 2px rgba(216,178,90,.45), inset 0 0 50px rgba(0,0,0,.7); }
-.sl-rejilla::before{ content:""; position:absolute; inset:0; pointer-events:none;
-  background:linear-gradient(90deg, transparent calc(100%/6 - 1px), rgba(255,255,255,.04) 0) 0 0 / calc(100%/6) 100%; }
+/* ventana de los rodillos */
+.sl-ventana{ position:relative; padding:6px; border-radius:16px; background:#0a0510; box-shadow:inset 0 0 0 2px #b8862c, 0 0 0 4px #1a070d; }
+.sl-rejilla{ position:relative; aspect-ratio:6 / 5; border-radius:11px; overflow:hidden; container-type:inline-size;
+  background:radial-gradient(circle at 50% 35%, #2a1650, #0e0820 75%); box-shadow:inset 0 12px 30px rgba(0,0,0,.7), inset 0 -12px 30px rgba(0,0,0,.7); transition:background .5s; }
+.sl-maquina.bono .sl-rejilla{ background:radial-gradient(circle at 50% 35%, #4a1650, #1a0822 75%); }
+.sl-rejilla::before{ content:""; position:absolute; inset:0; pointer-events:none; z-index:3;
+  background:linear-gradient(90deg, transparent calc(100%/6 - 1px), rgba(255,255,255,.05) 0) 0 0 / calc(100%/6) 100%,
+             linear-gradient(180deg, rgba(255,255,255,.07), transparent 12%, transparent 88%, rgba(0,0,0,.35)); }
 .sl-c{ position:absolute; left:calc(var(--c) * 100% / 6); top:calc(var(--f) * 100% / 5); width:calc(100% / 6); height:calc(100% / 5); display:grid; place-items:center;
-  transition:top .5s cubic-bezier(.3,.9,.35,1.18), opacity .35s, transform .35s; }
-.sl-c.sale{ top:calc((var(--f) + 6) * 100% / 5); opacity:0; transition-duration:.45s; transition-timing-function:ease-in; }
-.sl-s{ position:relative; width:84%; height:84%; display:grid; place-items:center; border-radius:24%; font-size:8.2cqw; line-height:1;
-  box-shadow:0 .4cqw .8cqw rgba(0,0,0,.5); }
-.sl-s span{ filter:drop-shadow(0 .3cqw .3cqw rgba(0,0,0,.4)); }
-/* palos: fichas redondas con borde de casino */
-.sl-trebol, .sl-diamante, .sl-corazon, .sl-pica{ border-radius:50%; color:#fff; font-size:7cqw; font-family:Georgia, serif;
-  background:radial-gradient(circle, var(--c1) 0 52%, transparent 54%), repeating-conic-gradient(#fff 0 12deg, var(--c2) 12deg 45deg);
+  transition:top .5s cubic-bezier(.32,.9,.35,1.14), opacity .35s, transform .35s; }
+.sl-c.impulso{ transform:translateY(-6%); transition-duration:.11s; transition-timing-function:ease-out; }
+.sl-c.sale{ top:calc((var(--f) + 6) * 100% / 5); opacity:0; transition-duration:.45s; transition-timing-function:cubic-bezier(.5,0,.9,.5); filter:blur(1px); }
+.sl-c.aterriza .sl-s{ animation:slAterriza .28s ease-out; }
+@keyframes slAterriza{ 35%{ transform:scale(1.06, .9) translateY(4%); } 70%{ transform:scale(.97, 1.04); } }
+.sl-s{ position:relative; width:84%; aspect-ratio:1; height:auto; display:grid; place-items:center; border-radius:24%; line-height:1; box-shadow:0 .5cqw 1cqw rgba(0,0,0,.55); transition:opacity .25s, filter .25s; }
+.sl-s svg{ width:76%; height:auto; aspect-ratio:1; filter:drop-shadow(0 .4cqw .4cqw rgba(0,0,0,.45)); overflow:visible; }
+/* palos: fichas de casino con su palo dibujado */
+.sl-trebol, .sl-diamante, .sl-corazon, .sl-pica{ border-radius:50%; color:#fff;
+  background:radial-gradient(circle, var(--c1) 0 57%, #fff 58% 61%, transparent 62%), repeating-conic-gradient(#fff 0 12deg, var(--c2) 12deg 45deg);
   box-shadow:inset 0 0 0 .6cqw var(--c2), 0 .5cqw 0 rgba(0,0,0,.35), 0 .8cqw 1.4cqw rgba(0,0,0,.45); }
+.sl-trebol svg, .sl-diamante svg, .sl-corazon svg, .sl-pica svg{ width:50%; fill:#fff; }
 .sl-trebol{ --c1:#2fae62; --c2:#16693a; } .sl-diamante{ --c1:#3f8ef0; --c2:#1b4d9c; }
 .sl-corazon{ --c1:#e8385b; --c2:#8f1230; } .sl-pica{ --c1:#8b5cf6; --c2:#4a2594; }
-/* objetos del club */
-.sl-dado{ background:linear-gradient(160deg, #6a2030, #3a0f1a); box-shadow:inset 0 0 0 .4cqw rgba(255,160,170,.35), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
-.sl-coctel{ background:linear-gradient(160deg, #11606a, #07323a); box-shadow:inset 0 0 0 .4cqw rgba(120,240,230,.35), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
-.sl-sombrero{ background:linear-gradient(160deg, #3b3550, #1a1626); box-shadow:inset 0 0 0 .4cqw rgba(200,190,255,.3), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
-.sl-saxo{ background:linear-gradient(160deg, #6b4a12, #3a2606); box-shadow:inset 0 0 0 .4cqw rgba(255,210,120,.45), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
+/* objetos del club: azulejos con su dibujo */
+.sl-dado{ background:linear-gradient(160deg, #7a2236, #3a0f1a); box-shadow:inset 0 0 0 .4cqw rgba(255,160,170,.35), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
+.sl-coctel{ background:linear-gradient(160deg, #136d78, #07323a); box-shadow:inset 0 0 0 .4cqw rgba(120,240,230,.35), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
+.sl-sombrero{ background:linear-gradient(160deg, #4a4366, #1d1829); box-shadow:inset 0 0 0 .4cqw rgba(200,190,255,.3), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
+.sl-saxo{ background:linear-gradient(160deg, #3a2a52, #17102a); box-shadow:inset 0 0 0 .4cqw rgba(255,210,120,.45), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
 .sl-ficha{ border-radius:50%; background:radial-gradient(circle, #133a28 0 50%, transparent 52%), repeating-conic-gradient(#f3d893 0 15deg, #b8862c 15deg 30deg);
   box-shadow:inset 0 0 0 .5cqw #8a6420, 0 0 2.2cqw rgba(255,214,107,.55), 0 .6cqw 1.2cqw rgba(0,0,0,.5); }
 .sl-ficha b{ font-family:var(--f-titulo); font-size:7.5cqw; color:#f3d893; text-shadow:0 0 1.2cqw rgba(255,214,107,.8); }
@@ -111,32 +136,93 @@
 .sl-farol.n2{ background:radial-gradient(circle at 40% 35%, #ffe0f4, #ff6fd0 45%, #9a1b7e 100%); color:#2a0020; box-shadow:0 0 3cqw rgba(255,90,210,.85); }
 .sl-farol.n3{ background:radial-gradient(circle at 40% 35%, #e0fbff, #53e6ff 45%, #0d6a9a 100%); color:#001a2a; box-shadow:0 0 3.6cqw rgba(80,230,255,.95); animation:slLatido 1s ease-in-out infinite; }
 @keyframes slLatido{ 50%{ transform:scale(1.06); } }
-/* estados */
+/* premios: los ganadores saltan y brillan; el resto se apaga para que se vea qué ganó */
+.sl-rejilla.con-premio .sl-c:not(.gana) .sl-s{ opacity:.35; filter:saturate(.5); }
 .sl-c.gana{ z-index:2; } .sl-c.gana .sl-s{ animation:slGana .42s ease-in-out infinite alternate; box-shadow:0 0 0 .6cqw #fff6c9, 0 0 3.5cqw #ffd66b; }
-@keyframes slGana{ to{ transform:scale(1.12); } }
+@keyframes slGana{ from{ transform:scale(1.04); } to{ transform:scale(1.14); } }
 .sl-c.explota .sl-s{ animation:slExplota .3s ease-out forwards; }
 @keyframes slExplota{ to{ transform:scale(1.6) rotate(12deg); opacity:0; filter:brightness(2.5) blur(1px); } }
 .sl-c.brilla .sl-s{ animation:slBrilla .5s ease-in-out 3 alternate; }
 @keyframes slBrilla{ to{ transform:scale(1.25); filter:brightness(1.4); } }
+.sl-flota{ position:absolute; z-index:6; transform:translate(-50%, -50%); font-weight:900; font-size:clamp(1rem, 4.5cqw, 1.9rem); color:#f3e6ff; pointer-events:none; white-space:nowrap;
+  text-shadow:0 2px 0 #1a0822, 0 0 10px rgba(0,0,0,.8); animation:slFlota 1.4s cubic-bezier(.2,.8,.3,1) forwards; }
+.sl-flota.fuerte{ color:#ffe08a; text-shadow:0 2px 0 #4a2a00, 0 0 16px rgba(255,200,90,.9); }
+@keyframes slFlota{ 0%{ opacity:0; transform:translate(-50%, -20%) scale(.6); } 18%{ opacity:1; transform:translate(-50%, -60%) scale(1.15); } 80%{ opacity:1; } 100%{ opacity:0; transform:translate(-50%, -160%) scale(1); } }
 /* cartel de premios */
-.sl-cartel{ position:absolute; left:50%; bottom:22px; transform:translate(-50%, 10px); z-index:5; display:flex; flex-wrap:wrap; justify-content:center; gap:6px 12px; max-width:92%;
-  padding:8px 16px; border-radius:14px; background:rgba(8,4,18,.88); box-shadow:inset 0 0 0 1px var(--acento), 0 10px 30px rgba(0,0,0,.6); opacity:0; pointer-events:none;
+.sl-cartel{ position:absolute; left:50%; bottom:16px; transform:translate(-50%, 10px); z-index:7; display:flex; flex-wrap:wrap; justify-content:center; gap:6px 12px; max-width:92%;
+  padding:8px 16px; border-radius:14px; background:rgba(8,4,18,.9); box-shadow:inset 0 0 0 1px var(--acento), 0 10px 30px rgba(0,0,0,.6); opacity:0; pointer-events:none;
   font-weight:800; font-size:.9rem; color:#e9dcff; transition:opacity .25s, transform .3s var(--ease-rebote); }
 .sl-cartel.ver{ opacity:1; transform:translate(-50%, 0); }
 .sl-cartel:empty{ display:none; }
 .sl-cartel b{ color:var(--gana); } .sl-cartel.mult b{ color:#ffd66b; }
 .sl-cartel.bono{ flex-direction:column; align-items:center; bottom:40%; padding:16px 26px; font-size:1rem; }
-.sl-cartel.bono strong{ font-family:var(--f-titulo); font-style:italic; font-size:1.8rem; color:var(--acento2); text-shadow:0 0 18px rgba(239,210,142,.7); }
-.sl-rapido{ margin-left:auto; font-size:.9rem; color:var(--suave); }
+.sl-cartel.bono strong{ font-family:var(--f-titulo); font-size:1.8rem; color:var(--acento2); }
+/* presentación de los giros gratis */
+.sl-intro{ position:absolute; inset:6px; z-index:8; display:grid; place-items:center; border-radius:11px; text-align:center; overflow:hidden;
+  background:radial-gradient(circle at 50% 50%, rgba(120,20,110,.92), rgba(20,4,30,.96) 70%); opacity:0; transition:opacity .3s; }
+.sl-intro[hidden]{ display:none; }
+.sl-intro.ver{ opacity:1; }
+.sl-intro::before{ content:""; position:absolute; inset:-50%; background:repeating-conic-gradient(rgba(255,200,240,.12) 0 10deg, transparent 10deg 20deg); animation:slRayos 6s linear infinite; }
+@keyframes slRayos{ to{ transform:rotate(360deg); } }
+.sl-intro div{ position:relative; display:grid; gap:6px; }
+.sl-intro.ver div{ animation:slIntro .7s cubic-bezier(.2,.9,.3,1.3) both; }
+@keyframes slIntro{ from{ transform:scale(.4) rotate(-6deg); opacity:0; } }
+.sl-intro small{ font-weight:800; font-size:1rem; color:#ffd9f4; }
+.sl-intro strong{ font-family:var(--f-titulo); font-size:clamp(2rem, 9cqw, 3.4rem); line-height:1; color:#ffe7a8; text-shadow:0 0 22px rgba(255,180,90,.8), 0 3px 0 #6a3a08; }
+.sl-intro span{ font-weight:700; color:#f3e6ff; }
+/* consola: apuesta, botón redondo de girar y premio */
+.sl-consola{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:14px; margin-top:12px; padding:8px 14px 10px; border-radius:14px;
+  background:#1d0a12; box-shadow:inset 0 0 0 1px rgba(216,178,90,.35); }
+.sl-medidor{ display:grid; gap:2px; }
+.sl-medidor > span{ font-size:.8rem; font-weight:700; color:#d9b9c6; }
+.sl-medidor b{ font-size:1.45rem; font-weight:900; color:#fff; font-variant-numeric:tabular-nums; }
+.sl-premio{ text-align:right; } .sl-premio b{ color:#ffe08a; }
+.sl-apuesta{ display:flex; align-items:center; gap:10px; }
+.sl-apuesta button{ width:34px; height:34px; border-radius:50%; border:none; background:#3a1622; color:#ffe7a8; font-size:1.3rem; font-weight:800; line-height:1; box-shadow:inset 0 0 0 1px rgba(216,178,90,.5); transition:transform .12s, background .15s; }
+.sl-apuesta button:hover:not(:disabled){ background:#4d1d2c; } .sl-apuesta button:active:not(:disabled){ transform:scale(.9); }
+.sl-apuesta button:disabled{ opacity:.4; cursor:not-allowed; }
+.sl-girar{ position:relative; width:80px; height:80px; border-radius:50%; border:none; display:grid; place-content:center; justify-items:center; gap:2px; color:#2a1400;
+  background:radial-gradient(circle at 50% 30%, #ffe9a6, #e0aa3c 60%, #a8741c); font-weight:900; font-size:.95rem;
+  box-shadow:0 0 0 4px #1d0a12, 0 0 0 6px #b8862c, 0 8px 0 #6a4510, 0 12px 24px rgba(0,0,0,.6); transition:transform .1s, box-shadow .1s, filter .2s; }
+.sl-girar svg{ width:30px; height:30px; }
+.sl-girar:hover:not(:disabled){ filter:brightness(1.08); }
+.sl-girar:hover:not(:disabled) svg{ animation:slGiraIcono .6s ease-in-out; }
+@keyframes slGiraIcono{ to{ transform:rotate(360deg); } }
+.sl-girar:active:not(:disabled){ transform:translateY(6px); box-shadow:0 0 0 4px #1d0a12, 0 0 0 6px #b8862c, 0 2px 0 #6a4510, 0 6px 14px rgba(0,0,0,.6); }
+.sl-girar:disabled{ cursor:wait; filter:saturate(.6) brightness(.8); }
+.sl-girar:disabled svg{ animation:slGiraIcono .7s linear infinite; }
+.sl-girar:focus-visible{ outline:3px solid #fff1c2; outline-offset:6px; }
+.sl-extras{ justify-content:center; align-items:center; margin-top:18px; }
+.sl-rapido{ font-size:.9rem; color:var(--suave); }
+.sl-tecla{ color:var(--tenue); font-size:.85rem; }
 .sl-comprar b{ color:var(--acento2); font-variant-numeric:tabular-nums; }
-.sl-comprar.confirmar{ background:var(--oro-grad); color:var(--sobre-acento); animation:latidoSube .7s ease-in-out infinite alternate; } .sl-comprar.confirmar b{ color:inherit; }
+.sl-comprar.confirmar{ background:var(--acento); color:var(--sobre-acento); animation:latidoSube .7s ease-in-out infinite alternate; } .sl-comprar.confirmar b{ color:inherit; }
+/* símbolo chico dentro de la tabla de las reglas */
+.sl-mini{ display:inline-grid; width:26px; vertical-align:middle; margin-right:8px; container-type:inline-size; } .sl-mini .sl-s{ width:26px; animation:none; } .sl-mini .sl-ficha b{ font-size:14px; }
 /* tabla de pagos corta */
 .sl-pagos{ display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:6px; margin-top:20px; container-type:inline-size; }
-.sl-pagos > div{ display:grid; grid-template-columns:38px 1fr; grid-template-rows:repeat(3, auto); column-gap:10px; align-items:center; padding:8px 10px; border-radius:10px; background:rgba(0,0,0,.22); box-shadow:inset 0 0 0 1px var(--linea); font-size:.78rem; color:var(--suave); }
-.sl-pagos .sl-s{ grid-row:1 / 4; width:38px; height:38px; font-size:20px; }
-.sl-pagos .sl-trebol, .sl-pagos .sl-diamante, .sl-pagos .sl-corazon, .sl-pagos .sl-pica{ font-size:18px; box-shadow:inset 0 0 0 3px var(--c2); }
+.sl-pagos > div{ display:grid; grid-template-columns:40px 1fr; grid-template-rows:repeat(3, auto); column-gap:10px; align-items:center; padding:8px 10px; border-radius:10px; background:var(--superficie2); font-size:.82rem; color:var(--suave); }
+.sl-pagos .sl-s{ grid-row:1 / 4; width:40px; }
 .sl-pagos .sl-ficha b{ font-size:18px; }
+.sl-pagos .sl-farol{ font-size:13px; }
 .sl-pagos b{ color:var(--texto); display:inline-block; min-width:38px; }
+@media (prefers-reduced-motion: reduce){
+  .sl-focos i, .sl-intro::before, .sl-llave, .sl-farol.n3{ animation:none !important; }
+  .sl-c.aterriza .sl-s, .sl-flota{ animation-duration:.01s; }
+}
+@media (max-width:600px){
+  .sl-maquina{ padding:0 10px 12px; }
+  .sl-marquesina{ margin:0 -10px 6px; }
+  .sl-consola{ gap:8px; padding:8px 10px; }
+  .sl-girar{ width:76px; height:76px; } .sl-girar svg{ width:28px; height:28px; }
+  .sl-medidor b{ font-size:1.15rem; }
+  .sl-apuesta{ gap:6px; } .sl-apuesta button{ width:30px; height:30px; }
+  .sl-tecla{ display:none; }
+  /* en el celular la apuesta se cambia en la consola de la máquina: el panel de arriba queda solo con «Todos los juegos» */
+  .vista-juego[data-juego="slots"] .panel-apuesta > :not(.volver){ display:none; }
+  .vista-juego[data-juego="slots"] .panel-apuesta{ padding:10px 14px; }
+  #g-slots .reglas{ display:none; }
+}
 
 /* ── ruleta ── */
 .ruleta-zona{ display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start; }

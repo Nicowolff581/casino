@@ -180,6 +180,7 @@ function mostrarJuego(id){
   $("#v-inicio").classList.toggle("activa", id === "inicio");
   $("#v-amigos").classList.toggle("activa", id === "amigos");
   $("#v-juego").classList.toggle("activa", !especial);
+  $("#v-juego").dataset.juego = especial ? "" : id;                      // para estilos propios de cada juego
   $$(".game").forEach(g => g.classList.toggle("activo", g.id === "g-" + id));
   if (cambiaVista) scrollTo({ top: 0, behavior: "instant" });
   try { history.replaceState(null, "", "#" + id); } catch (e) {}

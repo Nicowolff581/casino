@@ -3,29 +3,28 @@
 
 /* ── tarjetas de la pantalla de inicio ── */
 const INFO_JUEGOS = [
-  { id: "poker",  nombre: "Texas Hold'em", desc: "Contra Valentina y Mateo", fondo: "linear-gradient(165deg, #1c4a36, #0e241a)", brillo: "rgba(216,178,90,.25)" },
-  { id: "bj",     nombre: "Blackjack",     desc: "Llega a 21 sin pasarte",   fondo: "linear-gradient(165deg, #1a3d52, #0c1d28)", brillo: "rgba(120,190,255,.2)" },
-  { id: "ruleta", nombre: "Ruleta",        desc: "Europea, un solo cero",    fondo: "linear-gradient(165deg, #5c1422, #2a0910)", brillo: "rgba(239,210,142,.25)" },
-  { id: "slots",  nombre: "Tragamonedas",  desc: "Medianoche en el Club",            fondo: "linear-gradient(165deg, #54301a, #26140a)", brillo: "rgba(255,190,90,.25)" },
-  { id: "avion",  nombre: "Avión",         desc: "Del barco al portaaviones",         fondo: "linear-gradient(165deg, #1d2d5c, #0c142c)", brillo: "rgba(140,170,255,.25)" },
-  { id: "plinko", nombre: "Plinko",        desc: "Suelta la bola",           fondo: "linear-gradient(165deg, #3d1d55, #1a0c28)", brillo: "rgba(220,140,255,.22)" },
-  { id: "pollo",  nombre: "Pollo",         desc: "Cruza y cobra a tiempo",   fondo: "linear-gradient(165deg, #4a4418, #201d08)", brillo: "rgba(255,230,120,.22)" },
-  { id: "fantan", nombre: "Fan-Tan",       desc: "Un clásico chino",         fondo: "linear-gradient(165deg, #5a2a12, #2a1206)", brillo: "rgba(255,170,110,.22)" },
+  { id: "slots",  nombre: "Medianoche en el Club", desc: "Tragamonedas con cascadas y giros gratis" },
+  { id: "ruleta", nombre: "Ruleta",        desc: "Europea, un solo cero" },
+  { id: "bj",     nombre: "Blackjack",     desc: "Llega a 21 sin pasarte" },
+  { id: "poker",  nombre: "Texas Hold'em", desc: "Contra Valentina y Mateo" },
+  { id: "avion",  nombre: "Avión",         desc: "Del barco al portaaviones" },
+  { id: "plinko", nombre: "Plinko",        desc: "Suelta la bola entre los clavos" },
+  { id: "pollo",  nombre: "Pollo",         desc: "Cruza y cobra a tiempo" },
+  { id: "fantan", nombre: "Fan-Tan",       desc: "Un clásico chino de fichas" },
 ];
+// Cada tarjeta muestra una captura real del juego (img/lobby, se rehacen con pruebas/capturar-miniaturas.js).
 $("#tarjetas").innerHTML = INFO_JUEGOS.map((j, i) =>
-  `<button class="tarjeta" data-ir="${j.id}" style="--i:${i};--fondo-tarjeta:${j.fondo};--brillo:${j.brillo}">
-    <span class="brillo"></span><span class="rtp" title="Cuánto devuelve a largo plazo">${RESUMEN_DEVOLUCION[j.id]}</span>
-    <svg class="arte" aria-hidden="true"><use href="#i-${j.id}"/></svg><b>${j.nombre}</b><small>${j.desc}</small></button>`).join("") +
-  "";
-$("#v-inicio").insertAdjacentHTML("beforeend", `<p class="pie-inicio">El porcentaje de cada tarjeta es cuánto devuelve el juego a largo plazo. Toca «Reglas» dentro de cada juego para ver cómo se calcula.</p>`);
+  `<button class="tarjeta" data-ir="${j.id}" style="--i:${i}">
+    <span class="foto"><img src="img/lobby/${j.id}.jpg" alt="" width="640" height="400" loading="${i < 4 ? "eager" : "lazy"}"></span>
+    <span class="tarjeta-texto"><b>${j.nombre}</b><small>${j.desc}</small><span class="rtp" title="Cuánto devuelve a largo plazo">${j.id === "poker" ? "Sin comisión de la casa" : "Devuelve " + RESUMEN_DEVOLUCION[j.id]}</span></span></button>`).join("");
+$("#v-inicio").insertAdjacentHTML("beforeend", `<p class="pie-inicio">«Devuelve» es cuánto paga cada juego a la larga por cada 100 fichas apostadas. Toca «Reglas» dentro de cada juego para ver cómo se calcula.</p>`);
 $$("#tarjetas [data-ir]").forEach(b => b.addEventListener("click", () => ir(b.dataset.ir)));
 
-$("#hero-avatares").innerHTML = ["siete", "corona", "corazon", "dado"].map(a => `<span>${avatarHTML(a)}</span>`).join("") + '<span class="mas">+2</span>';
 
 /* ── botón «Reglas» en cada juego ── */
 const dialogo = $("#reglas-dialogo");
 $$(".game").forEach(g => {
-  const id = g.id.slice(2), h2 = g.querySelector("h2"), cab = document.createElement("div");
+  const id = g.id.slice(2), h2 = g.querySelector("h1"), cab = document.createElement("div");
   cab.className = "juego-cab"; h2.replaceWith(cab); cab.appendChild(h2);
   if (!REGLAS[id]) return;
   const b = document.createElement("button");
@@ -34,7 +33,7 @@ $$(".game").forEach(g => {
   cab.appendChild(b);
 });
 function abrirReglas(id){
-  $("#reglas-titulo").textContent = "Reglas · " + $("#g-" + id + " h2").textContent;
+  $("#reglas-titulo").textContent = "Reglas · " + $("#g-" + id + " h1").textContent;
   $("#reglas-cuerpo").innerHTML = REGLAS[id]();
   sonido.clic();
   dialogo.showModal();

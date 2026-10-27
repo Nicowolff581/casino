@@ -86,16 +86,16 @@
       <section class="vista vista-inicio activa" id="v-inicio" aria-label="Inicio">
         <div class="hero">
           <div class="hero-texto">
-            <span class="sobretitulo">Bienvenido al club</span>
-            <h1>Tu casino de práctica, <em>con probabilidades honestas.</em></h1>
-            <p>Ocho juegos con sus reglas y probabilidades a la vista. Todo con fichas de mentira: aquí se juega por diversión.</p>
+            <h1>Ocho juegos, fichas de práctica</h1>
+            <p>Cada juego muestra sus reglas, sus pagos y cuánto devuelve. Las fichas no valen dinero real: aquí se juega por diversión.</p>
           </div>
           <div class="amigos">
-            <span class="chip-nuevo"><svg><use href="#i-amigos"/></svg>Nuevo · En línea</span>
-            <h2>Jugar con amigos</h2>
-            <p>Crea una sala privada de Texas Hold'em, comparte el código y jueguen todos con las mismas fichas de práctica.</p>
-            <div class="avatares" id="hero-avatares" aria-hidden="true"></div>
-            <button class="btn" data-ir="amigos">Crear o entrar a una sala</button>
+            <img src="img/lobby/amigos.jpg" alt="Mesa de blackjack en línea con tres jugadores: Ana, Beto y Caro" width="946" height="560" loading="eager">
+            <div class="amigos-texto">
+              <h2>Juega con amigos</h2>
+              <p>Texas Hold'em, Ruleta o Blackjack en una sala privada. Compartes el código y todos empiezan con las mismas fichas.</p>
+              <button class="btn" data-ir="amigos">Crear o entrar a una sala</button>
+            </div>
           </div>
         </div>
         <h2 class="seccion-titulo">Juegos</h2>
@@ -147,7 +147,7 @@
           <p class="am-fichas-nota">Fichas de la sala: iguales para todos, no cambian tu saldo personal.</p>
           <!-- blackjack en línea -->
           <div class="amb" id="amb" hidden>
-            <div class="felt felt-bj amb-mesa">
+            <div class="felt felt-bj amb-mesa" data-ui>
               <svg class="felt-arco" viewBox="0 0 600 120" aria-hidden="true"><path id="arco-amb" d="M40,20 Q300,130 560,20" fill="none"/><text><textPath href="#arco-amb" startOffset="50%" text-anchor="middle">BLACKJACK PAGA 3 A 2 · EL CRUPIER SE PLANTA EN 17</textPath></text></svg>
               <div class="lado"><h3>Crupier <b id="amb-dv"></b></h3><div class="fila-cartas" id="amb-d"></div></div>
               <div class="amb-asientos" id="amb-asientos"></div>
@@ -194,7 +194,7 @@
                 <div class="amr-jugadores" id="amr-jugadores"></div>
               </div>
             </div>
-            <div class="pano-scroll"><div class="pano" id="amr-pano"></div></div>
+            <div class="pano-scroll" data-ui><div class="pano" id="amr-pano"></div></div>
             <div class="amr-controles">
               <div class="amr-valores" id="amr-valores" role="group" aria-label="Valor de la ficha"></div>
               <div class="ru-herramientas">
@@ -248,17 +248,17 @@
 
       <!-- AVIÓN -->
       <section class="game" id="g-avion">
-        <h2>Avión</h2>
+        <h1>Avión</h1>
         <p class="reglas">Elige tu apuesta y la velocidad, y toca «Jugar». El avión despega de un barco: los premios suben el contador (+1 = una vez tu apuesta, ×2 lo duplica…) y lo elevan; los cohetes lo parten a la mitad y lo bajan. Si llega al portaaviones, cobras el contador; si se queda sin altura, cae al mar.</p>
         <div class="historial-cab">Últimos 20 vuelos <small>(toca uno para ver su prueba de juego justo)</small></div>
         <div class="historial" id="av-hist" aria-label="Últimos 20 vuelos"></div>
-        <div class="av-cielo"><canvas id="av-canvas" aria-hidden="true"></canvas><div class="av-mult" id="av-mult" aria-live="polite"></div></div>
+        <div class="av-cielo" data-ui><canvas id="av-canvas" aria-hidden="true"></canvas><div class="av-mult" id="av-mult" aria-live="polite"></div></div>
         <div class="av-controles">
           <div class="dificultad" id="av-vel" role="group" aria-label="Velocidad (solo cambia lo rápido que se ve)">
-            <button data-k="0" aria-pressed="false" title="Lento">🐢 Lento</button>
-            <button data-k="1" aria-pressed="true" title="Normal">🚶 Normal</button>
-            <button data-k="2" aria-pressed="false" title="Rápido">🐇 Rápido</button>
-            <button data-k="3" aria-pressed="false" title="Turbo">⚡ Turbo</button>
+            <button data-k="0" aria-pressed="false" title="Lento">Lento</button>
+            <button data-k="1" aria-pressed="true" title="Normal">Normal</button>
+            <button data-k="2" aria-pressed="false" title="Rápido">Rápido</button>
+            <button data-k="3" aria-pressed="false" title="Turbo">Turbo</button>
           </div>
           <button class="btn" id="av-btn">Jugar</button>
         </div>
@@ -274,13 +274,13 @@
   
       <!-- POLLO -->
       <section class="game" id="g-pollo">
-        <h2>Pollo</h2>
+        <h1>Pollo</h1>
         <p class="reglas">Ayuda al pollo a cruzar la carretera carril por carril. Cada carril sube el multiplicador, pero en cualquiera le puede pasar algo… muy de caricatura. Cobra cuando quieras.</p>
         <div class="dificultad" id="po-dif" role="group" aria-label="Dificultad">
           <button data-p="0.1" aria-pressed="false">Fácil</button><button data-p="0.2" aria-pressed="true">Medio</button>
           <button data-p="0.3" aria-pressed="false">Difícil</button><button data-p="0.45" aria-pressed="false">Extremo</button>
         </div>
-        <div class="po-escena"><canvas id="po-canvas" aria-hidden="true"></canvas></div>
+        <div class="po-escena" data-ui><canvas id="po-canvas" aria-hidden="true"></canvas></div>
         <div class="acciones">
           <button class="btn" id="po-jugar">Empezar</button>
           <button class="btn sec" id="po-avanzar" disabled>Avanzar</button>
@@ -291,43 +291,57 @@
   
       <!-- PLINKO -->
       <section class="game" id="g-plinko">
-        <h2>Plinko</h2>
+        <h1>Plinko</h1>
         <p class="reglas">Suelta la bola en el salón de neón y mira dónde cae. Los bordes pagan mucho, pero casi nunca llega ahí. Puedes soltar varias bolas seguidas.</p>
         <div class="dificultad" id="pl-riesgo" role="group" aria-label="Riesgo">
           <button data-r="bajo" aria-pressed="false">Riesgo bajo</button><button data-r="medio" aria-pressed="true">Riesgo medio</button><button data-r="alto" aria-pressed="false">Riesgo alto</button>
         </div>
-        <div class="pl-zona"><div class="pl-caja"><canvas id="pl-canvas" aria-hidden="true"></canvas></div><div class="pl-hist" id="pl-hist" aria-label="Últimos resultados"></div></div>
+        <div class="pl-zona"><div class="pl-caja" data-ui><canvas id="pl-canvas" aria-hidden="true"></canvas></div><div class="pl-hist" id="pl-hist" aria-label="Últimos resultados"></div></div>
         <div class="acciones"><button class="btn" id="pl-soltar">Soltar bola</button></div>
         <div class="msg" id="pl-msg" aria-live="polite"></div>
       </section>
   
       <!-- TRAGAMONEDAS -->
       <section class="game" id="g-slots">
-        <h2>Medianoche en el Club</h2>
-        <p class="reglas">Tragamonedas de 6×5 que paga en cualquier parte: 8 o más símbolos iguales en cualquier lugar ganan. Los ganadores explotan y caen nuevos (cascada). Los faroles multiplican el premio y 4 llaves 🗝️ dan 10 giros gratis. También puedes comprar los 10 giros gratis con fichas de práctica.</p>
-        <div class="sl-maquina">
-          <div class="sl-marquesina" aria-hidden="true"><span>Medianoche</span><small>en el Club</small></div>
-          <div class="sl-info">
-            <div>Premio de la jugada <b id="sl-ganancia">0</b></div>
-            <div class="sl-bono" id="sl-bono" hidden>Giros gratis <b id="sl-giros">0</b> · Multiplicador <b id="sl-acum">×0</b></div>
+        <h1>Medianoche en el Club</h1>
+        <p class="reglas">8 o más iguales en cualquier parte ganan. 4 llaves dan 10 giros gratis.</p>
+        <div class="sl-maquina" id="sl-maquina" data-ui>
+          <div class="sl-marquesina" aria-hidden="true"><div class="sl-focos" id="sl-focos-arriba"></div><span>Medianoche</span><small>en el Club</small></div>
+          <div class="sl-ventana">
+            <div class="sl-info">
+              <div class="sl-combo" id="sl-combo" aria-live="polite"></div>
+              <div class="sl-bono" id="sl-bono" hidden>Giros gratis <b id="sl-giros">0</b> · Multiplicador <b id="sl-acum">×0</b></div>
+            </div>
+            <div class="sl-rejilla" id="sl-rejilla" aria-label="Cuadrícula de 6 por 5 símbolos"></div>
+            <div class="sl-cartel" id="sl-cartel" aria-live="polite"></div>
+            <div class="sl-intro" id="sl-intro" hidden></div>
           </div>
-          <div class="sl-rejilla" id="sl-rejilla" aria-label="Cuadrícula de 6 por 5 símbolos"></div>
-          <div class="sl-cartel" id="sl-cartel" aria-live="polite"></div>
+          <div class="sl-consola">
+            <div class="sl-medidor">
+              <span>Apuesta</span>
+              <div class="sl-apuesta">
+                <button id="sl-menos" aria-label="Bajar la apuesta">−</button><b id="sl-apuesta">50</b><button id="sl-mas" aria-label="Subir la apuesta">+</button>
+              </div>
+            </div>
+            <button class="sl-girar" id="s-girar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Girar</span></button>
+            <div class="sl-medidor sl-premio"><span>Premio</span><b id="sl-ganancia">0</b></div>
+          </div>
+          <div class="sl-focos abajo" id="sl-focos-abajo" aria-hidden="true"></div>
         </div>
-        <div class="acciones">
-          <button class="btn" id="s-girar">Girar</button>
+        <div class="acciones sl-extras">
           <button class="btn sec sl-comprar" id="sl-comprar">Comprar 10 giros gratis <b id="sl-precio"></b></button>
           <label class="interruptor sl-rapido"><input type="checkbox" id="sl-rapido"><span></span>Giro rápido</label>
+          <span class="sl-tecla">También puedes girar con la barra espaciadora.</span>
         </div>
         <div class="msg" id="s-msg" aria-live="polite"></div>
         <div class="sl-pagos" id="sl-pagos"></div>
       </section>
-  
+
       <!-- BLACKJACK -->
       <section class="game" id="g-bj">
-        <h2>Blackjack</h2>
+        <h1>Blackjack</h1>
         <p class="reglas">Acércate a 21 sin pasarte. El crupier pide carta hasta llegar a 17. Un blackjack natural paga 3 a 2.</p>
-        <div class="felt felt-bj">
+        <div class="felt felt-bj" data-ui>
           <svg class="felt-arco" viewBox="0 0 600 120" aria-hidden="true"><path id="arco-bj" d="M40,20 Q300,130 560,20" fill="none"/><text><textPath href="#arco-bj" startOffset="50%" text-anchor="middle">BLACKJACK PAGA 3 A 2 · EL CRUPIER SE PLANTA EN 17</textPath></text></svg>
           <div class="lado"><h3>Crupier <b id="bj-dv"></b></h3><div class="fila-cartas" id="bj-d"></div></div>
           <div class="lado" style="margin-top:70px"><div class="fila-cartas" id="bj-p"></div><h3 style="margin-top:10px">Tú <b id="bj-pv"></b></h3><div id="bj-fichas"></div></div>
@@ -343,9 +357,9 @@
   
       <!-- TEXAS HOLD'EM -->
       <section class="game" id="g-poker">
-        <h2>Texas Hold'em</h2>
+        <h1>Texas Hold'em</h1>
         <p class="reglas">Juegas contra Valentina y Mateo. Cada uno recibe dos cartas y en la mesa salen cinco comunitarias en tres rondas. Gana la mejor mano de cinco cartas. El monto de la apuesta es la ciega grande.</p>
-        <div class="felt felt-th">
+        <div class="felt felt-th" data-ui>
         <div class="th-rivales" id="th-rivales"></div>
         <div class="th-centro">
           <div class="fila-cartas" id="th-board"></div>
@@ -364,9 +378,9 @@
   
       <!-- RULETA -->
       <section class="game" id="g-ruleta">
-        <h2>Ruleta europea</h2>
+        <h1>Ruleta europea</h1>
         <p class="reglas">Toca el paño para poner fichas del monto elegido: puedes apostar a varios números y apuestas exteriores en el mismo giro. Un número paga 35 a 1; docenas y columnas («2 a 1») pagan 2 a 1; rojo, negro, par, impar, 1 a 18 y 19 a 36 pagan 1 a 1. Si sale el cero, las exteriores pierden.</p>
-        <div class="ruleta-zona">
+        <div class="ruleta-zona" data-ui>
           <div class="rueda-caja">
             <svg id="rueda" viewBox="0 0 300 300" aria-hidden="true"></svg>
             <div class="bola" id="ru-bola"></div>
@@ -374,7 +388,7 @@
           </div>
           <div class="ru-ultimos" id="ru-ult" aria-label="Últimos números"></div>
         </div>
-        <div class="pano-scroll">
+        <div class="pano-scroll" data-ui>
           <div class="pano" id="ru-pano"></div>
         </div>
         <div class="ru-barra">
@@ -391,9 +405,9 @@
   
       <!-- FAN-TAN -->
       <section class="game" id="g-fantan">
-        <h2>Fan-Tan</h2>
+        <h1>Fan-Tan</h1>
         <p class="reglas">Un juego chino antiguo. Toca un lado del tapete para elegir tu número. El crupier tapa un montón de fichas con el cuenco y luego las retira de cuatro en cuatro, acomodándolas en filas. Si al final sobran tantas como tu número, ganas 3 a 1 (menos 5 % de comisión).</p>
-        <div class="ft-zona">
+        <div class="ft-zona" data-ui>
           <div class="ft-mesa" role="group" aria-label="Tu número">
             <div class="ft-cuadro" aria-hidden="true"></div>
             <button class="ft-lado" data-n="1" aria-pressed="false"><span>一<br><small>1</small></span></button>
