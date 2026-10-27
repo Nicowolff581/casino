@@ -18,7 +18,7 @@ function cargarMotor(){
 
 if (isMainThread){
   const total = Math.round((+process.argv[2] || 4) * 1e6), hilos = os.cpus().length, porHilo = Math.ceil(total / hilos);
-  const inicio = Date.now(); let listos = 0; const suma = { n: 0, s: 0, s2: 0, gana: 0, bonos: 0, sBono: 0, max: 0, topados: 0, sBase: 0 };
+  const inicio = Date.now(); let listos = 0; const suma = { n: 0, s: 0, s2: 0, gana: 0, bonos: 0, sBono: 0, max: 0, topados: 0, sBase: 0, x20: 0, x50: 0, x100: 0 };
   for (let i = 0; i < hilos; i++){
     new Worker(__filename, { workerData: porHilo }).on("message", r => {
       for (const k in suma) suma[k] = k === "max" ? Math.max(suma[k], r[k]) : suma[k] + r[k];
@@ -28,16 +28,18 @@ if (isMainThread){
         jugadas: suma.n, devuelve: media, margen95: err, desviacion: desv,
         juegoNormal: suma.sBase / suma.n, girosGratis: suma.sBono / suma.n,
         frecuenciaPremio: suma.gana / suma.n, unBonoCada: suma.n / Math.max(1, suma.bonos), premioMaximo: suma.max, topados: suma.topados,
+        x20Cada: suma.n / Math.max(1, suma.x20), x50Cada: suma.n / Math.max(1, suma.x50), x100Cada: suma.n / Math.max(1, suma.x100),
         segundos: (Date.now() - inicio) / 1000,
       };
       console.log(JSON.stringify(res, null, 2));
     });
   }
 } else {
-  const { jugada, azar } = cargarMotor(), r = { n: 0, s: 0, s2: 0, gana: 0, bonos: 0, sBono: 0, max: 0, topados: 0, sBase: 0 };
+  const { jugada, azar } = cargarMotor(), r = { n: 0, s: 0, s2: 0, gana: 0, bonos: 0, sBono: 0, max: 0, topados: 0, sBase: 0, x20: 0, x50: 0, x100: 0 };
   for (let i = 0; i < workerData; i++){
     const j = jugada(azar);
     r.n++; r.s += j.total; r.s2 += j.total * j.total; if (j.total > 0) r.gana++;
+    if (j.total >= 20) r.x20++; if (j.total >= 50) r.x50++; if (j.total >= 100) r.x100++;
     const baseT = j.base ? j.base.total : 0, bono = j.total - Math.min(baseT, j.total);
     r.sBase += Math.min(baseT, j.total);
     if (j.gratis){ r.bonos++; r.sBono += bono; }

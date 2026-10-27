@@ -73,12 +73,14 @@ const REGLAS = {
       <li><strong>Paga en cualquier parte:</strong> 8 o más símbolos iguales en cualquier lugar de la pantalla forman premio. No hay líneas.</li>
       <li><strong>Cascada:</strong> los símbolos ganadores explotan, los de arriba caen y entran nuevos. Se repite mientras haya premio.</li>
       <li><strong>Farol</strong> (×2 a ×100): al terminar las cascadas, si hubo premio, se suman los faroles en pantalla y multiplican el premio del giro.</li>
-      <li><strong>4 o más llaves 🗝️</strong> pagan y dan ${SL_GIROS} giros gratis. En los giros gratis los faroles se acumulan y el total multiplica cada premio siguiente. 3 llaves durante los giros gratis dan +${SL_MAS_GIROS}.</li>
+      <li><strong>4 o más llaves</strong> pagan y dan ${SL_GIROS} giros gratis. En los giros gratis los faroles se acumulan y el total multiplica cada premio siguiente. 3 llaves durante los giros gratis dan +${SL_MAS_GIROS}.</li>
       <li>Premio máximo por jugada: ×${fmt(SL_TOPE)} tu apuesta. El total de cada jugada se redondea hacia abajo a fichas enteras.</li>
       <li>Toda la jugada (cascadas y giros gratis incluidos) se sortea al tocar «Girar»; la animación solo la muestra.</li></ul>
     <h3>Números de la simulación</h3>` +
     tabla(["Dato", "Valor"], [["Devuelve en total", pct(E.devuelve, 2) + " ± " + pct(E.margen, 2)], ["…del juego normal", pct(E.normal, 1)], ["…de los giros gratis", pct(E.gratis, 1)],
-      ["Jugadas con algún premio", pct(E.frecuencia, 1)], ["Giros gratis", `1 de cada ${fmt(Math.round(E.bonoCada))} jugadas`]]) +
+      ["Jugadas con algún premio", pct(E.frecuencia, 1)], ["Giros gratis", `1 de cada ${fmt(Math.round(E.bonoCada))} jugadas`],
+      ["Premio de 20 veces la apuesta o más", `1 de cada ${fmt(Math.round(E.x20Cada))} jugadas`], ["Premio de 50 veces o más", `1 de cada ${fmt(Math.round(E.x50Cada))} jugadas`],
+      ["Premio de 100 veces o más", `1 de cada ${fmt(Math.round(E.x100Cada))} jugadas`]]) +
     `<p class="nota-regla">Este juego es de volatilidad alta: la mayoría de las jugadas pagan poco o nada y, de vez en cuando, paga mucho. Por eso el porcentaje solo se nota después de muchísimas jugadas.</p>
     <h3>Comprar los giros gratis</h3><ul>
       <li>Con el botón «Comprar ${SL_GIROS} giros gratis» pagas <strong>${SL_PRECIO_COMPRA} veces tu apuesta</strong> en fichas de práctica y entras directo a la ronda de ${SL_GIROS} giros gratis (con las mismas reglas: faroles que se acumulan y +${SL_MAS_GIROS} giros con 3 llaves). Por ejemplo, con apuesta ${fmt(20)} cuesta ${fmt(20 * SL_PRECIO_COMPRA)}.</li>

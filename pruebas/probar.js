@@ -226,8 +226,8 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
         comprada: SL_COMPRA.promedio / SL_PRECIO_COMPRA };
     });
     ok(r.trasUnToque === 5000, "Comprar giros gratis: el primer toque solo pide confirmar (no cobra nada)");
-    ok(r.cambio === r.esperado, `Comprar ${r.giros} giros gratis con apuesta 10 (precio ${10 * 120}): el saldo cambió ${r.cambio} (esperado ${r.esperado}) · «${r.texto}»`);
-    ok(r.comprada > 0.94 && r.comprada < 0.98, `La compra de giros gratis devuelve ${(r.comprada * 100).toFixed(1)} % según la simulación guardada`);
+    ok(r.cambio === r.esperado, `Comprar ${r.giros} giros gratis con apuesta 10 (precio ${10 * 142}): el saldo cambió ${r.cambio} (esperado ${r.esperado}) · «${r.texto}»`);
+    ok(r.comprada > 0.94 && r.comprada < 1, `La compra de giros gratis devuelve ${(r.comprada * 100).toFixed(1)} % según la simulación guardada`);
   }
   await jugar("bj", "#bj-msg", async () => {
     await pagina.click("#bj-repartir");

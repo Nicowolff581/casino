@@ -28,17 +28,17 @@ const SL_SIMBOLOS = [
 const SL_LLAVE = SL_SIMBOLOS.length, SL_FAROL = SL_SIMBOLOS.length + 1;       // índices especiales
 // Pesos de sorteo de cada casilla: 9 símbolos normales, llave y farol.
 const SL_PESOS = {
-  base:   [30, 27, 25, 22, 17, 14, 11, 8.5, 5.5, 2.715, 1.9],
-  gratis: [38, 34, 30, 23.5, 15.5, 12, 9, 6.7, 4.5, 2.7, 5.5],        // en giros gratis salen más símbolos comunes y faroles
+  base:   [28, 26, 25, 23, 19, 16, 13, 10, 7, 3.37, 1.9],            // más llaves: los giros gratis salen más seguido
+  gratis: [38, 34, 30, 23.5, 15.5, 12, 9, 6.7, 4.5, 2.7, 8.5],        // en giros gratis salen muchos más faroles (multiplicadores)
 };
 const SL_VALORES = [2, 3, 4, 5, 8, 10, 15, 20, 25, 50, 100];
 const SL_PESOS_VALOR = [38, 24, 14, 9, 6, 4, 2.2, 1.4, 0.9, 0.35, 0.15];
 // Resultado de simular millones de jugadas con este mismo código (pruebas/simular-tragamonedas.js).
 // Si se cambian pesos o pagos, hay que volver a simular y actualizar estos números.
-const SL_ESTADISTICAS = { jugadas: 80e6, devuelve: 0.9611, margen: 0.0021, normal: 0.6432, gratis: 0.3179, frecuencia: 0.3772, bonoCada: 364 };
+const SL_ESTADISTICAS = { jugadas: 40e6, devuelve: 0.9909, margen: 0.0041, normal: 0.4248, gratis: 0.5660, frecuencia: 0.2834, bonoCada: 247, x20Cada: 185, x50Cada: 298, x100Cada: 476 };
 // Compra de giros gratis: precio en veces la apuesta y lo que devuelve (simulado con pruebas/simular-tragamonedas.js, MODO=compra).
-const SL_PRECIO_COMPRA = 120;
-const SL_COMPRA = { rondas: 10e6, promedio: 115.86, margen: 0.08 };   // la ronda comprada paga en promedio 115,86 × la apuesta → devuelve 96,5 %
+const SL_PRECIO_COMPRA = 142;
+const SL_COMPRA = { rondas: 4e6, promedio: 139.86, margen: 0.14 };   // la ronda comprada paga en promedio 139,86 × la apuesta → devuelve 98,5 %
 const SL_PAGO_LLAVES = n => n >= 6 ? 100 : n === 5 ? 5 : n === 4 ? 3 : 0;
 
 const slTramo = n => n >= 12 ? 2 : n >= 10 ? 1 : 0;
