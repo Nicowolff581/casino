@@ -9,8 +9,8 @@ const amr = { listo: false, casillas: [], valor: 10, animada: 0, mostrada: 0, an
 function amrIniciar(){
   if (amr.listo) return;
   amr.listo = true;
-  $("#amr-rueda").innerHTML = ruedaSVG("r2"); ruRombos($("#amr-rueda").parentElement);
-  ruPonerBola($("#amr-bola"), 0, 45);
+  ruMontarRueda($("#amr-rueda").parentElement, "r2");
+  ruPonerBola($("#amr-bola"), 0, RU_BORDE);
   amr.casillas = construirPano($("#amr-pano"));
   amr.casillas.forEach(b => b.onclick = () => {
     const s = am.estado; if (!s || s.ruleta.fase !== "apuestas") return avisar("No va más: espera la siguiente ronda.");
@@ -42,12 +42,12 @@ function amrPintar(s){
   amr.casillas.forEach(b => {
     b.querySelectorAll(".ficha-ru, .ficha-otro").forEach(x => x.remove());
     const t = b.dataset.t;
-    if (mias[t]){ const c = document.createElement("span"); c.className = "ficha-ru"; c.textContent = fmtCorto(mias[t]); b.appendChild(c); }
+    if (mias[t]){ const c = document.createElement("span"); c.className = "ficha-ru " + ruClaseFicha(mias[t]); c.textContent = fmtCorto(mias[t]); b.appendChild(c); }
     Object.entries(otras[t] || {}).slice(0, 4).forEach(([a, m], i) => {
       const c = document.createElement("span"); c.className = "ficha-otro"; c.style.cssText = `--c:${AMR_COLORES[a]};--i:${i}`; c.title = `${amrNombre(s, +a)}: ${fmt(m)}`;
       b.appendChild(c);
     });
-    if (r.fase !== "resultado" || amr.mostrada !== r.ronda) b.classList.remove("gano", "perdio");
+    if (r.fase !== "resultado" || amr.mostrada !== r.ronda){ b.classList.remove("gano", "perdio"); b.querySelector(".ru-dolly")?.remove(); }
   });
   // jugadores
   $("#amr-jugadores").innerHTML = s.jugadores.map(j => {
@@ -97,6 +97,7 @@ function amrMostrarResultado(){
   const n = r.resultado.numero, disco = $("#amr-resultado");
   disco.textContent = n; disco.className = "ru-resultado ver " + (n === 0 ? "v" : ROJOS.has(n) ? "r" : "n");
   amr.casillas.forEach(b => { if (b.querySelector(".ficha-ru")) b.classList.add(ruPremio(b.dataset.t, n, 1) ? "gano" : "perdio"); });
+  ruMarcador(amr.casillas, n);
   const mio = r.resultado.pagos[s.tuAsiento];
   if (mio){ if (mio.pagado > mio.apostado) celebrar(mio.pagado, mio.apostado); else if (!mio.pagado) sonido.pierde(); }
   amrPintar(s);

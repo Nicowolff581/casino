@@ -15,6 +15,7 @@ const SL_PASOS_APUESTA = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 200
 
 /* ── símbolos dibujados (SVG), iguales en todos los aparatos ── */
 document.body.insertAdjacentHTML("afterbegin", `<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="sl-desenfoque" x="0" y="-20%" width="100%" height="140%"><feGaussianBlur stdDeviation="0 6"/></filter>
   <symbol id="sl-p-trebol" viewBox="0 0 100 100"><circle cx="50" cy="31" r="15"/><circle cx="31" cy="54" r="15"/><circle cx="69" cy="54" r="15"/><path d="M45 50C45 70 41 80 32 88h36c-9-8-13-18-13-38z"/></symbol>
   <symbol id="sl-p-diamante" viewBox="0 0 100 100"><path d="M50 8 81 50 50 92 19 50z"/></symbol>
   <symbol id="sl-p-corazon" viewBox="0 0 100 100"><path d="M50 87C24 67 11 53 11 36c0-13 10-22 22-22 8 0 14 5 17 12 3-7 9-12 17-12 12 0 22 9 22 22 0 17-13 31-39 51z"/></symbol>
@@ -83,24 +84,64 @@ function slFlotante(celdas, texto, fuerte){
   slRejilla.appendChild(el); setTimeout(() => el.remove(), 1400);
 }
 
+/* ── rodillos como en una máquina real ──
+   Cada columna se arma como una tira: arriba los 5 símbolos que salieron, en el medio símbolos de relleno
+   (al azar, con la misma frecuencia del juego: no se eligen para «casi ganar») y abajo los que estaban.
+   La tira baja hasta mostrar los nuevos. Solo es el dibujo: el resultado ya estaba decidido. */
+async function slRodillos(nueva, modo){
+  slMaquina.classList.add("girando");
+  const fila = slRejilla.clientWidth / SL_COLS, vel = slVel(), promesas = [];
+  sonido.rodillo((900 + 210 * (SL_COLS - 1)) * vel);
+  for (let col = 0; col < SL_COLS; col++){
+    const relleno = 10 + col * 3, base = col * SL_FILAS;
+    const viejos = sl.celdas.slice(base, base + SL_FILAS);
+    const simbolos = [...nueva.slice(base, base + SL_FILAS), ...Array.from({ length: relleno }, () => slCelda(Math.random, modo))];
+    const tira = document.createElement("div");
+    tira.className = "sl-tira"; tira.style.setProperty("--c", col);
+    tira.innerHTML = simbolos.map(c => `<div class="sl-c-tira">${slSimboloHTML(c)}</div>`).join("");
+    viejos.forEach(el => { if (el){ el.classList.remove("aterriza", "gana", "explota", "brilla"); el.style.cssText = ""; el.className = "sl-c-tira"; tira.appendChild(el); } });
+    slRejilla.appendChild(tira);
+    const recorrido = (relleno + SL_FILAS) * fila, dur = (900 + col * 210) * vel;
+    const anim = tira.animate([
+      { transform: `translateY(${-recorrido}px)`, offset: 0, easing: "ease-out" },
+      { transform: `translateY(${-recorrido - fila * 0.25}px)`, offset: 0.07, easing: "cubic-bezier(.35,0,.2,1)" },   // impulso hacia arriba
+      { transform: `translateY(${fila * 0.22}px)`, offset: 0.9, easing: "ease-in-out" },                               // se pasa un poquito…
+      { transform: "translateY(0)", offset: 1 },                                                                        // …y vuelve: frenazo
+    ], { duration: dur, fill: "forwards" });
+    tira.classList.add("borroso");
+    setTimeout(() => tira.classList.remove("borroso"), dur * 0.72);
+    promesas.push(anim.finished.then(() => {
+      // la columna quedó quieta: se cambia la tira por las casillas normales (para las cascadas)
+      for (let f = 0; f < SL_FILAS; f++){
+        const i = base + f, el = document.createElement("div");
+        el.className = "sl-c"; el.style.setProperty("--c", col); el.style.setProperty("--f", f);
+        el.innerHTML = slSimboloHTML(nueva[i]); el.setAttribute("aria-label", slNombre(nueva[i]));
+        slRejilla.appendChild(el); sl.celdas[i] = el;
+      }
+      tira.remove();
+      sonido.tope();
+    }));
+  }
+  await Promise.all(promesas);
+  slMaquina.classList.remove("girando");
+  await slEspera(120);
+}
+// Monedas que caen a la bandeja de la máquina (solo cuando lo cobrado supera lo que costó la jugada).
+function slMonedas(veces){
+  const bandeja = $("#sl-bandeja"), n = Math.max(6, Math.min(40, Math.round(veces * 4)));
+  for (let i = 0; i < n; i++){
+    const m = document.createElement("i");
+    m.className = "sl-moneda"; m.style.cssText = `--x:${8 + Math.random() * 84}%;--r:${Math.round(Math.random() * 720 - 360)}deg;--d:${(i * 45 + Math.random() * 60) | 0}ms;--y:${(Math.random() * 6) | 0}px`;
+    bandeja.appendChild(m); setTimeout(() => m.remove(), 4200 + i * 45);
+  }
+  sonido.monedas(Math.min(14, n), 0.15);
+}
+
 // Muestra un giro completo (caída, premios, cascadas y multiplicadores). Devuelve lo ganado en fichas.
 // costo = lo que costó la jugada: hasta que lo cobrado no lo supera, los avisos son tranquilos (sin fiesta).
 async function slMostrarGiro(g, modo, bet, previo, costo){
-  // 1) los símbolos anteriores toman impulso hacia arriba y se van hacia abajo
-  slMaquina.classList.add("girando");
-  sl.celdas.forEach(el => el?.classList.add("impulso"));
-  await slEspera(110);
-  sl.celdas.forEach((el, i) => { if (el){ el.classList.remove("impulso", "aterriza"); el.style.transitionDelay = Math.floor(i / SL_FILAS) * 40 * slVel() + "ms"; el.classList.add("sale"); } });
-  const viejos = sl.celdas.filter(Boolean); setTimeout(() => viejos.forEach(el => el.remove()), 700);
-  sonido.cohete();
-  await slEspera(240);
-  // 2) cae la cuadrícula nueva, columna por columna, cada una con su golpe
-  const primera = g.pasos[0].rejilla;
-  sl.celdas = primera.map((c, i) => slCrear(c, i, (i % SL_FILAS) - 6, Math.floor(i / SL_FILAS) * 110 + (SL_FILAS - 1 - i % SL_FILAS) * 25));
-  sonido.rodillo(760 * slVel());
-  for (let col = 0; col < SL_COLS; col++) setTimeout(() => sonido.tope(), (420 + col * 110) * slVel());
-  await slEspera(1050);
-  slMaquina.classList.remove("girando");
+  // 1) y 2) los rodillos: cada columna baja rápido (borrosa), frena y rebota; se detienen una por una
+  await slRodillos(g.pasos[0].rejilla, modo);
   // 3) premios y cascadas
   let ganado = 0;
   for (let k = 0; k < g.pasos.length; k++){
@@ -198,7 +239,7 @@ async function slJugar(compra){
   slMarcador(pagado);
   const detalle = j.topado ? `¡Premio máximo de ×${fmt(SL_TOPE)}! ` : compra ? `Compraste ${SL_GIROS} giros gratis por ${fmt(costo)} y jugaste ${j.gratis.length}. ` : j.gratis ? `Giros gratis: ${j.gratis.length}. ` : "";
   // Se compara con lo que costó: solo se celebra (luces y fiesta) si recibes más de lo que pagaste.
-  if (pagado > costo){ slMaquina.classList.add("gana"); setTimeout(() => slMaquina.classList.remove("gana"), 2600); }
+  if (pagado > costo){ slMaquina.classList.add("gana"); setTimeout(() => slMaquina.classList.remove("gana"), 2600); slMonedas(pagado / costo); }
   liquidar("#s-msg", pagado, costo, detalle, SL_NIVELES);
   ocupado = false; slBotones(); slConsola();
 }

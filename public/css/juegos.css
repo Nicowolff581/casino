@@ -72,7 +72,7 @@
 /* ── tragamonedas «Medianoche en el Club» ──
    Es el dibujo de la máquina (data-ui): mueble laqueado, letrero con focos, ventana de rodillos y consola.
    El ancho se calcula para que la máquina entera, con el botón «Girar», quepa en la pantalla. */
-.sl-maquina{ --ancho:min(100%, max(340px, calc((100svh - 462px) * 1.2 + 44px)), 760px);
+.sl-maquina{ --ancho:min(100%, max(340px, calc((100svh - 506px) * 1.2 + 44px)), 760px);
   position:relative; width:var(--ancho); margin:0 auto; padding:0 16px 14px; border-radius:26px 26px 18px 18px;
   background:linear-gradient(180deg, #2a0d17, #14060c 30%, #0c0408); color:#f3e6ff;
   box-shadow:inset 0 0 0 2px #b8862c, inset 0 0 0 5px #1a070d, inset 0 0 0 6px rgba(243,216,147,.5), 0 30px 60px rgba(0,0,0,.6); transition:box-shadow .4s; }
@@ -108,6 +108,19 @@
              linear-gradient(180deg, rgba(255,255,255,.07), transparent 12%, transparent 88%, rgba(0,0,0,.35)); }
 .sl-c{ position:absolute; left:calc(var(--c) * 100% / 6); top:calc(var(--f) * 100% / 5); width:calc(100% / 6); height:calc(100% / 5); display:grid; place-items:center;
   transition:top .5s cubic-bezier(.32,.9,.35,1.14), opacity .35s, transform .35s; }
+/* rodillos girando: tiras que bajan con desenfoque vertical */
+.sl-tira{ position:absolute; left:calc(var(--c) * 100% / 6); top:0; width:calc(100% / 6); display:flex; flex-direction:column; will-change:transform; z-index:1; }
+.sl-c-tira{ position:relative; flex:none; height:calc(100cqw / 6); display:grid; place-items:center; }
+.sl-tira.borroso{ filter:url(#sl-desenfoque) brightness(1.15); }
+.sl-maquina.girando .sl-rejilla::after{ content:""; position:absolute; inset:0; z-index:2; pointer-events:none; background:linear-gradient(180deg, rgba(10,5,16,.6), transparent 18%, transparent 82%, rgba(10,5,16,.6)); }
+/* bandeja de las monedas */
+.sl-bandeja{ position:relative; height:34px; margin:10px 16% 0; border-radius:0 0 18px 18px; overflow:hidden;
+  background:linear-gradient(180deg, #050203, #2a1218 70%, #4a2a20); box-shadow:inset 0 3px 6px rgba(0,0,0,.8), 0 0 0 2px #b8862c; }
+.sl-moneda{ position:absolute; left:var(--x); top:-18px; width:18px; height:18px; margin-left:-8px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff6c9 0 18%, #e0b64f 50%, #9c6c08 100%); box-shadow:0 0 0 1px rgba(0,0,0,.35);
+  animation:slMoneda .7s cubic-bezier(.4,0,.8,.6) var(--d) forwards, slMonedaSale .6s ease-in calc(var(--d) + 3.4s) forwards; }
+@keyframes slMoneda{ 0%{ transform:translateY(0) rotate(0); } 72%{ transform:translateY(calc(32px - var(--y))) rotate(var(--r)) scaleY(.6); } 86%{ transform:translateY(calc(25px - var(--y))) rotate(var(--r)) scaleY(.5); } 100%{ transform:translateY(calc(30px - var(--y))) rotate(var(--r)) scaleY(.45); } }
+@keyframes slMonedaSale{ to{ opacity:0; } }
 .sl-c.impulso{ transform:translateY(-6%); transition-duration:.11s; transition-timing-function:ease-out; }
 .sl-c.sale{ top:calc((var(--f) + 6) * 100% / 5); opacity:0; transition-duration:.45s; transition-timing-function:cubic-bezier(.5,0,.9,.5); filter:blur(1px); }
 .sl-c.aterriza .sl-s{ animation:slAterriza .28s ease-out; }
@@ -207,6 +220,7 @@
 .sl-pagos .sl-farol{ font-size:13px; }
 .sl-pagos b{ color:var(--texto); display:inline-block; min-width:38px; }
 @media (prefers-reduced-motion: reduce){
+  .sl-tira.borroso{ filter:none; }
   .sl-focos i, .sl-intro::before, .sl-llave, .sl-farol.n3{ animation:none !important; }
   .sl-c.aterriza .sl-s, .sl-flota{ animation-duration:.01s; }
 }
@@ -219,58 +233,113 @@
   .sl-apuesta{ gap:6px; } .sl-apuesta button{ width:30px; height:30px; }
   .sl-tecla{ display:none; }
   /* en el celular la apuesta se cambia en la consola de la máquina: el panel de arriba queda solo con «Todos los juegos» */
-  .vista-juego[data-juego="slots"] .panel-apuesta > :not(.volver){ display:none; }
-  .vista-juego[data-juego="slots"] .panel-apuesta{ padding:10px 14px; }
+  .vista-juego[data-juego="slots"] .panel-apuesta > :not(.volver), .vista-juego[data-juego="ruleta"] .panel-apuesta > :not(.volver){ display:none; }
+  .vista-juego[data-juego="slots"] .panel-apuesta, .vista-juego[data-juego="ruleta"] .panel-apuesta{ padding:10px 14px; }
   #g-slots .reglas{ display:none; }
 }
 
 /* ── ruleta ── */
-.ruleta-zona{ display:flex; gap:28px; flex-wrap:wrap; align-items:flex-start; }
-.rueda-caja{ position:relative; width:min(340px, 82vw); aspect-ratio:1; flex:none; }
-.rueda-caja svg{ width:100%; height:100%; }
-.ru-resultado{ position:absolute; left:50%; top:50%; transform:translate(-50%, -50%) scale(.4); width:24%; aspect-ratio:1; border-radius:50%; display:grid; place-items:center;
-  font:800 clamp(1.4rem, 6vw, 2.2rem)/1 var(--f-texto); color:#fff; opacity:0; pointer-events:none; transition:opacity .3s, transform .45s var(--ease-rebote);
-  box-shadow:0 0 0 3px #f3d893, 0 0 24px rgba(243,216,147,.8); }
+.ruleta-zona{ display:grid; grid-template-columns:auto minmax(220px, 1fr); gap:28px; align-items:start; }
+/* la rueda: cuenco fijo + cabeza que gira + rombos + brillo fijo + bola con estela */
+.rueda-caja{ position:relative; width:min(360px, 84vw, calc(100svh - 330px)); min-width:280px; aspect-ratio:1; flex:none; border-radius:50%;
+  box-shadow:0 22px 40px rgba(0,0,0,.6), 0 0 0 6px #1c0f07, 0 0 0 7px rgba(212,164,65,.5); }
+.rueda-caja svg{ position:absolute; inset:0; width:100%; height:100%; }
+.ru-cabeza{ z-index:1; filter:drop-shadow(0 0 6px rgba(0,0,0,.6)); }
+.ru-cuenco{ z-index:0; }
+.ru-rombos{ z-index:2; pointer-events:none; filter:drop-shadow(0 1px 1px rgba(0,0,0,.7)); }
+.ru-brillo{ position:absolute; inset:0; z-index:3; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle at 34% 24%, rgba(255,250,235,.22), rgba(255,250,235,0) 34%), radial-gradient(circle at 70% 85%, rgba(255,230,180,.06), transparent 30%),
+             radial-gradient(circle, transparent 66%, rgba(0,0,0,.28) 80%, transparent 82%); }
+.ru-resultado{ position:absolute; left:50%; top:50%; z-index:5; transform:translate(-50%, -50%) scale(.4); width:26%; aspect-ratio:1; border-radius:50%; display:grid; place-items:center;
+  font:800 clamp(1.4rem, 6vw, 2.3rem)/1 var(--f-texto); color:#fff; opacity:0; pointer-events:none; transition:opacity .3s, transform .45s var(--ease-rebote);
+  box-shadow:0 0 0 3px #f3d893, 0 0 0 6px rgba(0,0,0,.4), 0 0 28px rgba(243,216,147,.8); }
 .ru-resultado.ver{ opacity:1; transform:translate(-50%, -50%) scale(1); }
-.ru-resultado.r{ background:#c8102e; } .ru-resultado.n{ background:#111418; } .ru-resultado.v{ background:#1fa84a; }
-.bola{ position:absolute; left:50%; top:5%; width:5.2%; aspect-ratio:1; border-radius:50%; transform:translate(-50%, -50%); z-index:2;
-  background:radial-gradient(circle at 35% 30%, #fff 0 20%, #dcdcdc 55%, #8a8a8a 100%); box-shadow:0 1px 3px rgba(0,0,0,.7); }
+.ru-resultado.r{ background:#b0122b; } .ru-resultado.n{ background:#17181d; } .ru-resultado.v{ background:#139142; }
+.bola{ position:absolute; left:50%; top:8%; width:4.4%; aspect-ratio:1; border-radius:50%; transform:translate(-50%, -50%); z-index:4;
+  background:radial-gradient(circle at 35% 30%, #fff 0 22%, #e6e6e6 55%, #9a9a9a 100%); box-shadow:0 2px 3px rgba(0,0,0,.75), 0 0 0 .5px rgba(0,0,0,.3); }
 .bola::after{ content:""; position:absolute; inset:18%; border-radius:50%; transform:rotate(var(--g, 0deg));
   background:conic-gradient(from 0deg, rgba(90,90,90,.45) 0 12%, transparent 12% 50%, rgba(90,90,90,.3) 50% 58%, transparent 58%); }   /* marquitas: se ve girar */
-.ru-rombos{ position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
-.ru-ultimos{ display:flex; flex-direction:column; gap:6px; }
-.ru-ultimos span{ width:40px; height:40px; border-radius:50%; display:grid; place-items:center; font-weight:800; color:#fff; box-shadow:inset 0 -3px 0 rgba(0,0,0,.3); }
-.ru-ultimos span:first-child{ box-shadow:0 0 0 3px var(--acento); }
-.pano-scroll{ overflow-x:auto; margin-top:20px; }
-.pano{ min-width:600px; padding:14px; border-radius:14px; background:radial-gradient(ellipse at 50% 30%, #1d7a50, #0d4a2f); box-shadow:inset 0 0 40px rgba(0,0,0,.45); }
-/* paño como en los casinos: casillas rojas y negras, «2 a 1» a la derecha, docenas y apuestas exteriores abajo */
-.pano-grid, .pano-docenas, .pano-ext{ display:grid; grid-template-columns:1.1fr repeat(12, 1fr) 1.1fr; }
-.pano-grid{ grid-template-rows:repeat(3, 48px); }
-.pano-docenas, .pano-ext{ height:40px; }
-.pano-docenas > *:nth-child(2), .pano-docenas > *:nth-child(3), .pano-docenas > *:nth-child(4){ grid-column:span 4; }
-.pano-ext > button{ grid-column:span 2; }
-.pano button{ position:relative; border:1px solid rgba(255,255,255,.7); color:#fff; font-weight:800; background:transparent; padding:0; font-size:.9rem; transition:filter .15s, background .15s; }
-.pano button:hover{ filter:brightness(1.25); background-color:rgba(255,255,255,.1); }
-.pano-grid .num.r{ background:#c8102e; } .pano-grid .num.n{ background:#111418; }
-.pano-grid .cero{ grid-row:1 / 4; background:#1fa84a; border-radius:36px 0 0 36px; font-size:1.2rem; }
-.pano-grid .col{ font-size:.8rem; letter-spacing:.02em; }
-.pano .ext.rojo{ background:#c8102e; } .pano .ext.negro{ background:#111418; }
-.pano .vacio{ border:none; pointer-events:none; }
-/* fichas puestas sobre el paño */
-.ficha-ru{ position:absolute; left:50%; top:50%; z-index:2; min-width:30px; height:30px; padding:0 3px; transform:translate(-50%, -50%); border-radius:999px; pointer-events:none;
-  display:grid; place-items:center; font:800 .66rem/1 var(--f-texto); color:#1d1406; letter-spacing:-.02em;
-  background:radial-gradient(circle, #f6dc97 0 42%, transparent 44%), repeating-conic-gradient(#d8b25a 0 30deg, #fff6dc 30deg 45deg);
-  box-shadow:inset 0 0 0 2px #a97a25, 0 3px 0 #7a5510, 0 5px 10px rgba(0,0,0,.55); transition:opacity .3s, filter .3s; }
+.bola.rastro{ z-index:3; opacity:0; box-shadow:none; background:rgba(255,255,255,var(--o)); filter:blur(1px); transition:opacity .2s; }
+.bola.rastro::after{ display:none; }
+/* columna de al lado: tablero de resultados, fichas, apuesta y botón */
+.ru-lado{ display:grid; gap:14px; align-content:start; min-width:0; }
+.ru-tablero{ padding:12px 14px; border-radius:12px; background:#0a0d0b; box-shadow:inset 0 0 0 1px rgba(216,178,90,.25); }
+.ru-tablero > b{ display:block; font-size:.88rem; color:var(--suave); margin-bottom:6px; }
+.ru-tablero ol{ list-style:none; margin:0; padding:0; display:grid; gap:2px; max-height:220px; overflow:hidden; }
+.ru-tablero li{ display:grid; grid-template-columns:1fr 1fr 1fr; font-weight:900; font-size:1.05rem; line-height:1.5; font-variant-numeric:tabular-nums; }
+.ru-tablero li span:nth-child(1){ color:#ff3b55; text-align:left; } .ru-tablero li span:nth-child(2){ color:#2ee87a; text-align:center; } .ru-tablero li span:nth-child(3){ color:#e9e6dc; text-align:right; }
+.ru-tablero li.ultimo{ font-size:1.5rem; text-shadow:0 0 12px currentColor; }
+.ru-tablero li.ultimo span:not(:empty){ animation:msgGana .5s; }
+.ru-tablero li.vacio{ font-size:.9rem; font-weight:700; color:var(--tenue); } .ru-tablero li.vacio span{ color:var(--tenue) !important; text-align:center !important; }
+.ru-fichero{ display:flex; gap:8px; flex-wrap:wrap; }
+.ru-fichero .ficha-ru{ position:static; transform:none; width:46px; height:46px; min-width:0; font-size:.78rem; pointer-events:auto; cursor:pointer; border:none; padding:0; transition:transform .15s; }
+.ru-fichero .ficha-ru:hover{ transform:translateY(-3px); }
+.ru-fichero .ficha-ru[aria-pressed="true"]{ transform:translateY(-6px); outline:3px solid var(--acento2); outline-offset:2px; }
+.ru-girar{ justify-self:start; padding:16px 34px; font-size:1.05rem; }
+.seleccion{ color:var(--suave); margin:0; }
+.seleccion b{ color:var(--acento); }
+.ru-herramientas{ display:flex; gap:6px; flex-wrap:wrap; }
+/* el paño: fieltro verde con líneas, como en una mesa real */
+.pano-scroll{ overflow-x:auto; margin-top:22px; }
+.pano{ min-width:620px; padding:16px; border-radius:16px; background:#0e5f38;
+  background-image:radial-gradient(rgba(255,255,255,.035) 1px, transparent 1px), radial-gradient(ellipse at 50% 20%, rgba(255,255,255,.08), transparent 60%);
+  background-size:3px 3px, 100% 100%; box-shadow:inset 0 0 0 3px #3a2412, inset 0 0 0 5px rgba(212,164,65,.55), inset 0 0 50px rgba(0,0,0,.4); }
+.pano-grid{ display:grid; grid-template-columns:1.1fr repeat(12, 1fr) 1.1fr; grid-template-rows:repeat(3, 50px) 42px 42px; }
+.pano-grid > *{ grid-row:var(--hr) / span var(--hrs, 1); grid-column:var(--hc) / span var(--hcs, 1); }
+.pano button{ position:relative; border:1.5px solid rgba(255,255,255,.75); margin:-.75px; color:#fff; font-weight:800; background:transparent; padding:0; font-size:.92rem; transition:filter .15s, background-color .15s; }
+.pano button:hover{ background-color:rgba(255,255,255,.12); }
+.pano button:active{ filter:brightness(1.3); }
+.pano .num .nro{ display:inline-grid; place-items:center; min-width:30px; height:30px; padding:0 4px; border-radius:6px; font-size:1rem; }
+.pano .num.r .nro{ background:#b0122b; } .pano .num.n .nro{ background:#121316; } .pano .num.v .nro{ background:#139142; }
+.pano .num.r:hover .nro, .pano .num.n:hover .nro{ box-shadow:0 0 0 2px rgba(255,255,255,.6); }
+.pano .cero{ border-radius:40px 0 0 40px; font-size:1.2rem; }
+.pano .col{ font-size:.82rem; }
+.pano .rombo{ display:block; width:30px; height:30px; margin:auto; transform:rotate(45deg) scaleY(.75); border-radius:3px; box-shadow:0 0 0 1.5px rgba(255,255,255,.75); }
+.pano .rojo .rombo{ background:#b0122b; } .pano .negro .rombo{ background:#121316; }
+@media (max-width:600px){
+  /* en el celular el paño va de pie, como en las aplicaciones de casino */
+  .pano-scroll{ overflow:visible; }
+  .pano{ min-width:0; padding:12px; }
+  .pano-grid{ grid-template-columns:1fr 1fr 1.25fr 1.25fr 1.25fr; grid-template-rows:46px repeat(12, 38px) 42px; }
+  .pano-grid > *{ grid-row:var(--vr) / span var(--vrs, 1); grid-column:var(--vc) / span var(--vcs, 1); }
+  .pano .cero{ border-radius:40px 40px 0 0; }
+  .pano .num .nro{ min-width:28px; height:26px; font-size:.95rem; }
+  .pano .ext{ font-size:.8rem; }
+  .pano .rombo{ width:24px; height:24px; }
+}
+/* fichas de casino: el color depende del valor */
+.ficha-ru{ --f:#e9e4d6; --b:#1d4f9c; --t:#111;
+  position:absolute; left:50%; top:50%; z-index:2; width:32px; height:32px; transform:translate(-50%, -50%); border-radius:50%; pointer-events:none;
+  display:grid; place-items:center; font:900 .64rem/1 var(--f-texto); color:var(--t); letter-spacing:-.02em;
+  background:radial-gradient(circle, var(--f) 0 44%, var(--b) 45% 52%, transparent 53%), repeating-conic-gradient(var(--b) 0 22.5deg, #fff 22.5deg 30deg, var(--b) 30deg 45deg);
+  box-shadow:0 0 0 1px rgba(0,0,0,.45), 0 3px 0 rgba(0,0,0,.45), 0 6px 10px rgba(0,0,0,.45); transition:opacity .3s, filter .3s; }
+.ficha-ru.v1{ --f:#f4f1e8; --b:#3b6fd1; --t:#1a2a50; }
+.ficha-ru.v5{ --f:#d81f3c; --b:#a10f27; --t:#fff; }
+.ficha-ru.v25{ --f:#1f9a54; --b:#0f6a36; --t:#fff; }
+.ficha-ru.v100{ --f:#26262b; --b:#0c0c0f; --t:#f3d893; }
+.ficha-ru.v500{ --f:#7d3fd6; --b:#4d1f95; --t:#fff; }
+.ficha-ru.v1k{ --f:#f08a1c; --b:#b25a05; --t:#2a1300; }
 .ficha-ru.cae{ animation:fichaCae .35s cubic-bezier(.3,.7,.3,1.3); }
 @keyframes fichaCae{ from{ transform:translate(-50%, -160%) scale(1.35); opacity:0; } }
-.pano button.gano .ficha-ru{ box-shadow:inset 0 0 0 2px #a97a25, 0 3px 0 #7a5510, 0 0 0 3px var(--gana), 0 0 18px var(--gana); animation:fichaGana .6s ease-in-out 3 alternate; }
+.pano button.gano .ficha-ru{ box-shadow:0 0 0 2px var(--gana), 0 0 18px var(--gana), 0 3px 0 rgba(0,0,0,.45); animation:fichaGana .6s ease-in-out 3 alternate; }
 @keyframes fichaGana{ to{ transform:translate(-50%, -62%) scale(1.12); } }
 .pano button.perdio .ficha-ru{ opacity:.35; filter:grayscale(1); }
-.ru-barra{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:12px; }
-.ru-barra .seleccion{ margin:0; }
-.ru-herramientas{ display:flex; gap:6px; flex-wrap:wrap; }
-.seleccion{ color:var(--suave); margin-top:12px; }
-.seleccion b{ color:var(--acento); }
+/* marcador de cristal sobre el número ganador */
+.ru-dolly{ position:absolute; left:50%; top:50%; z-index:3; width:24px; height:30px; transform:translate(-50%, -70%); pointer-events:none;
+  border-radius:12px 12px 6px 6px / 8px 8px 6px 6px; background:linear-gradient(90deg, rgba(255,255,255,.35), rgba(255,255,255,.85) 30%, rgba(200,225,255,.4) 60%, rgba(255,255,255,.7));
+  box-shadow:0 0 0 1px rgba(255,255,255,.8), 0 4px 8px rgba(0,0,0,.5), 0 0 16px rgba(255,255,255,.6); animation:dollyCae .5s cubic-bezier(.3,.8,.3,1.2); }
+.ru-dolly::after{ content:""; position:absolute; left:50%; top:4px; width:14px; height:5px; transform:translateX(-50%); border-radius:50%; background:rgba(255,255,255,.95); }
+@keyframes dollyCae{ from{ transform:translate(-50%, -260%); opacity:0; } }
+@media (max-width:900px){
+  .ruleta-zona{ grid-template-columns:1fr; justify-items:center; }
+  .rueda-caja{ width:min(340px, 86vw); }
+  .ru-lado{ width:100%; }
+  .ru-girar{ justify-self:stretch; }
+  .ru-tablero ol{ grid-auto-flow:column; grid-template-rows:auto; grid-auto-columns:minmax(34px, 1fr); max-height:none; }
+  .ru-tablero li{ grid-template-columns:1fr; text-align:center; }
+  .ru-tablero li span{ text-align:center !important; } .ru-tablero li span:empty{ display:none; }
+  .ru-tablero li.vacio{ grid-column:1 / -1; }
+}
 
 /* ── fan-tan ── */
 .ft-mesa{ position:relative; width:min(440px, 100%); aspect-ratio:1; border-radius:18px; margin:0 auto;

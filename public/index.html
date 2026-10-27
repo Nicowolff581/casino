@@ -326,6 +326,7 @@
             <button class="sl-girar" id="s-girar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Girar</span></button>
             <div class="sl-medidor sl-premio"><span>Premio</span><b id="sl-ganancia">0</b></div>
           </div>
+          <div class="sl-bandeja" id="sl-bandeja" aria-hidden="true"></div>
           <div class="sl-focos abajo" id="sl-focos-abajo" aria-hidden="true"></div>
         </div>
         <div class="acciones sl-extras">
@@ -379,27 +380,28 @@
       <!-- RULETA -->
       <section class="game" id="g-ruleta">
         <h1>Ruleta europea</h1>
-        <p class="reglas">Toca el paño para poner fichas del monto elegido: puedes apostar a varios números y apuestas exteriores en el mismo giro. Un número paga 35 a 1; docenas y columnas («2 a 1») pagan 2 a 1; rojo, negro, par, impar, 1 a 18 y 19 a 36 pagan 1 a 1. Si sale el cero, las exteriores pierden.</p>
+        <p class="reglas">Toca el paño para poner fichas. Un número paga 35 a 1; si sale el cero, las exteriores pierden.</p>
         <div class="ruleta-zona" data-ui>
           <div class="rueda-caja">
             <svg id="rueda" viewBox="0 0 300 300" aria-hidden="true"></svg>
             <div class="bola" id="ru-bola"></div>
             <div class="ru-resultado" id="ru-resultado" aria-live="polite"></div>
           </div>
-          <div class="ru-ultimos" id="ru-ult" aria-label="Últimos números"></div>
+          <div class="ru-lado">
+            <div class="ru-tablero"><b>Últimos números</b><ol id="ru-ult" aria-label="Últimos números"></ol></div>
+            <div class="ru-fichero" id="ru-fichero" role="group" aria-label="Valor de la ficha"></div>
+            <p class="seleccion" id="ru-sel" aria-live="polite">Toca el paño para poner fichas.</p>
+            <div class="ru-herramientas">
+              <button class="btn sec btn-chico" id="ru-deshacer" disabled>Deshacer</button>
+              <button class="btn sec btn-chico" id="ru-borrar" disabled>Borrar todo</button>
+              <button class="btn sec btn-chico" id="ru-repetir" disabled>Repetir apuesta</button>
+            </div>
+            <button class="btn ru-girar" id="ru-girar" disabled>Girar la ruleta</button>
+          </div>
         </div>
         <div class="pano-scroll" data-ui>
           <div class="pano" id="ru-pano"></div>
         </div>
-        <div class="ru-barra">
-          <p class="seleccion" id="ru-sel" aria-live="polite">Toca el paño para poner fichas.</p>
-          <div class="ru-herramientas">
-            <button class="btn sec btn-chico" id="ru-deshacer" disabled>Deshacer</button>
-            <button class="btn sec btn-chico" id="ru-borrar" disabled>Borrar todo</button>
-            <button class="btn sec btn-chico" id="ru-repetir" disabled>Repetir apuesta</button>
-          </div>
-        </div>
-        <div class="acciones"><button class="btn" id="ru-girar" disabled>Girar la ruleta</button></div>
         <div class="msg" id="ru-msg" aria-live="polite"></div>
       </section>
   

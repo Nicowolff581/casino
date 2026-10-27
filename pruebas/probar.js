@@ -244,7 +244,7 @@ const ok = (cond, texto) => { console.log((cond ? "  ✔ " : "  ✘ ") + texto);
     const conDocena = await pagina.evaluate(() => [$$('.pano [data-t^="d"]').length, $$('.pano [data-t^="c"]').length]);
     ok(conDocena[0] === 3 && conDocena[1] === 3, "Ruleta: el paño tiene las 3 docenas y las 3 columnas «2 a 1»");
     await pagina.click("#ru-deshacer");                                 // quita el 99 al 7
-    const antes = await pagina.evaluate(() => ({ saldo, fichas: ru.fichas.map(f => ({ ...f })), texto: $("#ru-sel").textContent, chips: $$(".ficha-ru").map(c => c.textContent) }));
+    const antes = await pagina.evaluate(() => ({ saldo, fichas: ru.fichas.map(f => ({ ...f })), texto: $("#ru-sel").textContent, chips: $$("#ru-pano .ficha-ru").map(c => c.textContent) }));
     ok(antes.fichas.length === 4 && antes.texto.includes("80") && antes.chips.sort().join() === "10,25,45", `Paño con 33 (10), 16 (25) y rojo (40+5): «${antes.texto}», fichas visibles ${antes.chips.join(" ")}`);
     await pagina.click("#ru-girar"); await esperarLibre(() => !ocupado);
     // la bola quedó sobre el número que salió: se busca la casilla más cercana a la bola en la rueda girada

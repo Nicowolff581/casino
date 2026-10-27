@@ -24,8 +24,8 @@
      sale de una «semilla» al azar de cada giro, así cada giro se ve distinto (vueltas, frenado, rombos,
      rebotes) y en la ruleta en línea todos ven exactamente el mismo. Se arma desde el final hacia atrás,
      por eso siempre termina en el número sorteado. Ángulos en grados; radios en % del tamaño de la rueda
-     (borde 45, casillas 34,7). */
-  const RU_BORDE = 45, RU_CASILLAS = 34.7, RU_ROMBO = 43.2, RU_ROMBOS = 8;
+     (pista 42, casillas 27,7). */
+  const RU_BORDE = 42, RU_CASILLAS = 27.7, RU_ROMBO = 39.6, RU_ROMBOS = 8;     // pista de la bola, centro de las casillas y rombos
   // Azar simple a partir de un número (mulberry32): solo decoración, no decide nada del resultado.
   function ruRnd(semilla){
     let a = semilla >>> 0;
